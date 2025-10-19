@@ -1,15 +1,15 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import Link from "next/link"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Select } from "@/components/ui/select"
-import { Button } from "@/components/ui/button"
-import { useToast } from "@/components/ui/toast"
-import { ToastContainer } from "@/components/ui/toast"
+import { useState } from "react";
+import Link from "next/link";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Select } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/toast";
+import { ToastContainer } from "@/components/ui/toast";
 
 export default function SubmitPage() {
   const [formData, setFormData] = useState({
@@ -18,56 +18,63 @@ export default function SubmitPage() {
     course: "",
     deadline: "",
     message: "",
-  })
-  const [file, setFile] = useState<File | null>(null)
-  const [errors, setErrors] = useState<Record<string, string>>({})
-  const [submitted, setSubmitted] = useState(false)
-  const { toasts, addToast } = useToast()
-  const [displayedToasts, setDisplayedToasts] = useState(toasts)
+  });
+  const [file, setFile] = useState<File | null>(null);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [submitted, setSubmitted] = useState(false);
+  const { toasts, addToast } = useToast();
+  const [displayedToasts, setDisplayedToasts] = useState(toasts);
 
   const courses = [
     { value: "it", label: "IT & Computer Science" },
     { value: "business", label: "Business & Management" },
     { value: "finance", label: "Finance & Accounting" },
     { value: "hospitality", label: "Hospitality & Tourism" },
-  ]
+  ];
 
   const validateForm = () => {
-    const newErrors: Record<string, string> = {}
-    if (!formData.name) newErrors.name = "Name is required"
-    if (!formData.email) newErrors.email = "Email is required"
-    if (!formData.course) newErrors.course = "Course is required"
-    if (!formData.deadline) newErrors.deadline = "Deadline is required"
-    if (!file) newErrors.file = "Module guide file is required"
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
-  }
+    const newErrors: Record<string, string> = {};
+    if (!formData.name) newErrors.name = "Name is required";
+    if (!formData.email) newErrors.email = "Email is required";
+    if (!formData.course) newErrors.course = "Course is required";
+    if (!formData.deadline) newErrors.deadline = "Deadline is required";
+    if (!file) newErrors.file = "Module guide file is required";
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!validateForm()) return
+    e.preventDefault();
+    if (!validateForm()) return;
 
-    addToast("Assignment submitted successfully! Redirecting to chat...", "success")
-    setDisplayedToasts([...toasts])
-    setSubmitted(true)
+    addToast(
+      "Assignment submitted successfully! Redirecting to chat...",
+      "success"
+    );
+    setDisplayedToasts([...toasts]);
+    setSubmitted(true);
 
     setTimeout(() => {
-      window.location.href = "/chat"
-    }, 2000)
-  }
+      window.location.href = "/chat";
+    }, 2000);
+  };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
     if (errors[name]) {
-      const newErrors = { ...errors }
-      delete newErrors[name]
-      setErrors(newErrors)
+      const newErrors = { ...errors };
+      delete newErrors[name];
+      setErrors(newErrors);
     }
-  }
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = e.target.files?.[0]
+    const selectedFile = e.target.files?.[0];
     if (selectedFile) {
       if (
         ![
@@ -76,13 +83,20 @@ export default function SubmitPage() {
           "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
         ].includes(selectedFile.type)
       ) {
-        setErrors({ ...errors, file: "Only PDF and Word documents are allowed" })
-        return
+        setErrors({
+          ...errors,
+          file: "Only PDF and Word documents are allowed",
+        });
+        return;
       }
-      setFile(selectedFile)
-      if (errors.file) setErrors({ ...errors, file: undefined })
+      setFile(selectedFile);
+      if (errors.file) {
+        const newErrors = { ...errors };
+        delete newErrors.file;
+        setErrors(newErrors);
+      }
     }
-  }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-950 py-12 px-4">
@@ -90,7 +104,8 @@ export default function SubmitPage() {
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-2">Submit Your Assignment</h1>
           <p className="text-slate-600 dark:text-slate-400">
-            Submit your assignment guide for help. Our experts will review and get back to you.
+            Submit your assignment guide for help. Our experts will review and
+            get back to you.
           </p>
         </div>
 
@@ -139,17 +154,23 @@ export default function SubmitPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-2">Module Guide (PDF or Word)</label>
+                <label className="block text-sm font-medium mb-2">
+                  Module Guide (PDF or Word)
+                </label>
                 <input
                   type="file"
                   accept=".pdf,.doc,.docx"
                   onChange={handleFileChange}
                   className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-900 text-sm cursor-pointer"
                 />
-                {errors.file && <p className="text-red-500 text-sm mt-1">{errors.file}</p>}
+                {errors.file && (
+                  <p className="text-red-500 text-sm mt-1">{errors.file}</p>
+                )}
                 {file && (
                   <div className="mt-3 p-3 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-lg">
-                    <p className="text-sm text-emerald-900 dark:text-emerald-100">✓ {file.name} selected</p>
+                    <p className="text-sm text-emerald-900 dark:text-emerald-100">
+                      ✓ {file.name} selected
+                    </p>
                   </div>
                 )}
               </div>
@@ -170,9 +191,12 @@ export default function SubmitPage() {
           </div>
         ) : (
           <div className="bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-lg p-8 text-center">
-            <h2 className="text-2xl font-bold text-emerald-900 dark:text-emerald-100 mb-2">Submission Successful!</h2>
+            <h2 className="text-2xl font-bold text-emerald-900 dark:text-emerald-100 mb-2">
+              Submission Successful!
+            </h2>
             <p className="text-emerald-800 dark:text-emerald-200 mb-4">
-              Your assignment has been submitted. You'll be redirected to the chat shortly.
+              Your assignment has been submitted. You'll be redirected to the
+              chat shortly.
             </p>
             <Link href="/chat">
               <Button>Go to Chat Now</Button>
@@ -182,15 +206,18 @@ export default function SubmitPage() {
 
         <div className="mt-8 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
           <p className="text-sm text-blue-900 dark:text-blue-100">
-            <strong>Demo:</strong> Submit your assignment guide for help. Our experts will review and get back to you.
+            <strong>Demo:</strong> Submit your assignment guide for help. Our
+            experts will review and get back to you.
           </p>
         </div>
       </div>
 
       <ToastContainer
         toasts={displayedToasts}
-        onRemove={(id) => setDisplayedToasts(displayedToasts.filter((t) => t.id !== id))}
+        onRemove={(id) =>
+          setDisplayedToasts(displayedToasts.filter((t) => t.id !== id))
+        }
       />
     </div>
-  )
+  );
 }
