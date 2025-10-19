@@ -1,29 +1,36 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import Link from "next/link"
-import { useTheme } from "@/hooks/use-theme"
-import { Menu, X, Moon, Sun } from "lucide-react"
+import { useState } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { useTheme } from "@/hooks/use-theme";
+import { Menu, X, Moon, Sun } from "lucide-react";
 
 export function Navbar() {
-  const [isOpen, setIsOpen] = useState(false)
-  const { theme, toggleTheme } = useTheme()
+  const [isOpen, setIsOpen] = useState(false);
+  const { theme, toggleTheme } = useTheme();
 
   const links = [
     { href: "/", label: "Home" },
     { href: "/#services", label: "Services" },
     { href: "/testimonials", label: "Testimonials" },
     { href: "/contact", label: "Contact" },
-  ]
+  ];
 
   return (
     <nav className="sticky top-0 z-50 bg-white dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 font-bold text-xl">
-            <span className="text-emerald-600">◆</span>
-            <span>Student Assist</span>
+          <Link href="/" className="flex items-center gap-2">
+            <Image
+              src="/Images/nav_logo.png"
+              alt="AssignmentGhar Logo"
+              width={180}
+              height={50}
+              priority
+              className="h-10 w-auto"
+            />
           </Link>
 
           {/* Desktop Links */}
@@ -46,7 +53,11 @@ export function Navbar() {
               className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
               aria-label="Toggle theme"
             >
-              {theme === "dark" ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+              {theme === "dark" ? (
+                <Sun className="w-5 h-5" />
+              ) : (
+                <Moon className="w-5 h-5" />
+              )}
             </button>
 
             <Link
@@ -63,7 +74,11 @@ export function Navbar() {
               aria-expanded={isOpen}
               aria-controls="mobile-menu"
             >
-              {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              {isOpen ? (
+                <X className="w-5 h-5" />
+              ) : (
+                <Menu className="w-5 h-5" />
+              )}
             </button>
           </div>
         </div>
@@ -92,5 +107,5 @@ export function Navbar() {
         )}
       </div>
     </nav>
-  )
+  );
 }

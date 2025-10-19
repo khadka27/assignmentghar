@@ -59,7 +59,11 @@ export default function SubmitPage() {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target
     setFormData((prev) => ({ ...prev, [name]: value }))
-    if (errors[name]) setErrors({ ...errors, [name]: undefined })
+    if (errors[name]) {
+      const newErrors = { ...errors }
+      delete newErrors[name]
+      setErrors(newErrors)
+    }
   }
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {

@@ -1,3 +1,16 @@
+# AssignmentGhar
+
+A modern assignment help platform built with Next.js 15, providing students with expert consultancy and support for their academic work.
+
+## Features
+
+- 💬 Real-time chat system
+- 📁 File sharing capabilities
+- 💳 QR payment integration
+- 🎓 Expert consultants
+- 🔒 Secure and confidential
+- 🌙 Dark mode support
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started

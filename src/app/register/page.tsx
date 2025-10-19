@@ -1,14 +1,14 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import Link from "next/link"
-import { AuthTabs } from "@/components/auth-tabs"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { useToast } from "@/components/ui/toast"
-import { ToastContainer } from "@/components/ui/toast"
+import { useState } from "react";
+import Link from "next/link";
+import { AuthTabs } from "@/components/auth-tabs";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/toast";
+import { ToastContainer } from "@/components/ui/toast";
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
@@ -16,43 +16,50 @@ export default function RegisterPage() {
     email: "",
     password: "",
     confirmPassword: "",
-  })
-  const [errors, setErrors] = useState<Record<string, string>>({})
-  const { toasts, addToast } = useToast()
-  const [displayedToasts, setDisplayedToasts] = useState(toasts)
+  });
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const { toasts, addToast } = useToast();
+  const [displayedToasts, setDisplayedToasts] = useState(toasts);
 
   const validateForm = () => {
-    const newErrors: Record<string, string> = {}
-    if (!formData.name) newErrors.name = "Name is required"
-    if (!formData.email) newErrors.email = "Email is required"
-    if (!formData.password) newErrors.password = "Password is required"
-    if (formData.password.length < 8) newErrors.password = "Password must be at least 8 characters"
-    if (formData.password !== formData.confirmPassword) newErrors.confirmPassword = "Passwords do not match"
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
-  }
+    const newErrors: Record<string, string> = {};
+    if (!formData.name) newErrors.name = "Name is required";
+    if (!formData.email) newErrors.email = "Email is required";
+    if (!formData.password) newErrors.password = "Password is required";
+    if (formData.password.length < 8)
+      newErrors.password = "Password must be at least 8 characters";
+    if (formData.password !== formData.confirmPassword)
+      newErrors.confirmPassword = "Passwords do not match";
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!validateForm()) return
+    e.preventDefault();
+    if (!validateForm()) return;
 
-    addToast("Demo mode: Account created successfully", "success")
-    setDisplayedToasts([...toasts])
-    setFormData({ name: "", email: "", password: "", confirmPassword: "" })
-  }
+    addToast("Demo mode: Account created successfully", "success");
+    setDisplayedToasts([...toasts]);
+    setFormData({ name: "", email: "", password: "", confirmPassword: "" });
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
-    if (errors[name]) setErrors({ ...errors, [name]: undefined })
-  }
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    if (errors[name]) {
+      const { [name]: _, ...rest } = errors;
+      setErrors(rest);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-950 flex items-center justify-center py-12 px-4">
       <div className="w-full max-w-md">
         <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-8">
           <h1 className="text-2xl font-bold mb-2">Create Account</h1>
-          <p className="text-slate-600 dark:text-slate-400 mb-8">Join Student Assist today</p>
+          <p className="text-slate-600 dark:text-slate-400 mb-8">
+            Join AssignmentGhar today
+          </p>
 
           <AuthTabs>
             {(userType) => (
@@ -126,15 +133,18 @@ export default function RegisterPage() {
 
         <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
           <p className="text-sm text-blue-900 dark:text-blue-100">
-            <strong>Demo:</strong> Form validation is active. Password must be at least 8 characters.
+            <strong>Demo:</strong> Form validation is active. Password must be
+            at least 8 characters.
           </p>
         </div>
       </div>
 
       <ToastContainer
         toasts={displayedToasts}
-        onRemove={(id) => setDisplayedToasts(displayedToasts.filter((t) => t.id !== id))}
+        onRemove={(id) =>
+          setDisplayedToasts(displayedToasts.filter((t) => t.id !== id))
+        }
       />
     </div>
-  )
+  );
 }

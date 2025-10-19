@@ -1,11 +1,11 @@
-import { testimonials } from "@/data/testimonials"
-import { Card } from "@/components/ui/card"
-import { Star } from "lucide-react"
+import { testimonials } from "@/data/testimonials";
+import { Card } from "@/components/ui/card";
+import { Star } from "lucide-react";
 
 export const metadata = {
-  title: "Testimonials - Student Assist",
+  title: "Testimonials - AssignmentGhar",
   description: "Read what our students say about our assignment help service.",
-}
+};
 
 export default function TestimonialsPage() {
   return (
@@ -14,9 +14,12 @@ export default function TestimonialsPage() {
       <section className="bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-950 py-20 md:py-32">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl mx-auto text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-6">What Our Students Say</h1>
+            <h1 className="text-4xl md:text-5xl font-bold mb-6">
+              What Our Students Say
+            </h1>
             <p className="text-lg text-slate-600 dark:text-slate-400">
-              Read testimonials from students who have benefited from our expert assignment help.
+              Read testimonials from students who have benefited from our expert
+              assignment help.
             </p>
           </div>
         </div>
@@ -30,18 +33,29 @@ export default function TestimonialsPage() {
               <Card key={testimonial.id}>
                 <div className="flex items-start justify-between mb-4">
                   <div>
-                    <p className="font-semibold text-lg">{testimonial.initials}</p>
-                    <p className="text-sm text-slate-600 dark:text-slate-400">{testimonial.course}</p>
+                    <p className="font-semibold text-lg">
+                      {testimonial.initials}
+                    </p>
+                    <p className="text-sm text-slate-600 dark:text-slate-400">
+                      {testimonial.course}
+                    </p>
                   </div>
                   <div className="flex gap-1">
                     {Array.from({ length: testimonial.rating }).map((_, i) => (
-                      <Star key={i} className="w-4 h-4 fill-emerald-600 text-emerald-600" />
+                      <Star
+                        key={i}
+                        className="w-4 h-4 fill-emerald-600 text-emerald-600"
+                      />
                     ))}
                   </div>
                 </div>
-                <p className="text-slate-700 dark:text-slate-300 italic">"{testimonial.text}"</p>
+                <p className="text-slate-700 dark:text-slate-300 italic">
+                  "{testimonial.text}"
+                </p>
                 {testimonial.approved && (
-                  <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-4">✓ Verified Student</p>
+                  <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-4">
+                    ✓ Verified Student
+                  </p>
                 )}
               </Card>
             ))}
@@ -66,16 +80,25 @@ export default function TestimonialsPage() {
               <Card key={idx}>
                 <div className="flex items-start justify-between mb-4">
                   <div>
-                    <p className="font-semibold text-lg">{testimonial.initials}</p>
-                    <p className="text-sm text-slate-600 dark:text-slate-400">{testimonial.course}</p>
+                    <p className="font-semibold text-lg">
+                      {testimonial.initials}
+                    </p>
+                    <p className="text-sm text-slate-600 dark:text-slate-400">
+                      {testimonial.course}
+                    </p>
                   </div>
                   <div className="flex gap-1">
                     {Array.from({ length: testimonial.rating }).map((_, i) => (
-                      <Star key={i} className="w-4 h-4 fill-emerald-600 text-emerald-600" />
+                      <Star
+                        key={i}
+                        className="w-4 h-4 fill-emerald-600 text-emerald-600"
+                      />
                     ))}
                   </div>
                 </div>
-                <p className="text-slate-700 dark:text-slate-300 italic">"{testimonial.text}"</p>
+                <p className="text-slate-700 dark:text-slate-300 italic">
+                  "{testimonial.text}"
+                </p>
               </Card>
             ))}
           </div>
@@ -88,19 +111,25 @@ export default function TestimonialsPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
             <div>
               <p className="text-4xl font-bold text-emerald-600 mb-2">500+</p>
-              <p className="text-slate-600 dark:text-slate-400">Happy Students</p>
+              <p className="text-slate-600 dark:text-slate-400">
+                Happy Students
+              </p>
             </div>
             <div>
               <p className="text-4xl font-bold text-emerald-600 mb-2">4.9/5</p>
-              <p className="text-slate-600 dark:text-slate-400">Average Rating</p>
+              <p className="text-slate-600 dark:text-slate-400">
+                Average Rating
+              </p>
             </div>
             <div>
               <p className="text-4xl font-bold text-emerald-600 mb-2">98%</p>
-              <p className="text-slate-600 dark:text-slate-400">On-time Delivery</p>
+              <p className="text-slate-600 dark:text-slate-400">
+                On-time Delivery
+              </p>
             </div>
           </div>
         </div>
       </section>
     </div>
-  )
+  );
 }

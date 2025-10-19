@@ -1,7 +1,8 @@
-import Link from "next/link"
+import Link from "next/link";
+import Image from "next/image";
 
 export function Footer() {
-  const currentYear = new Date().getFullYear()
+  const currentYear = new Date().getFullYear();
 
   return (
     <footer className="bg-slate-50 dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 mt-16">
@@ -9,12 +10,18 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
           {/* Brand */}
           <div>
-            <div className="flex items-center gap-2 font-bold text-lg mb-2">
-              <span className="text-emerald-600">◆</span>
-              <span>Student Assist</span>
+            <div className="mb-4">
+              <Image
+                src="/Images/nav_logo.png"
+                alt="AssignmentGhar Logo"
+                width={180}
+                height={50}
+                className="h-10 w-auto"
+              />
             </div>
             <p className="text-sm text-slate-600 dark:text-slate-400">
-              Expert assignment help and consultancy for college and university students.
+              Expert assignment help and consultancy for college and university
+              students.
             </p>
           </div>
 
@@ -60,15 +67,19 @@ export function Footer() {
           {/* Contact */}
           <div>
             <h3 className="font-semibold mb-4">Contact</h3>
-            <p className="text-sm text-slate-600 dark:text-slate-400 mb-2">Email: support@studentassist.com</p>
-            <p className="text-sm text-slate-600 dark:text-slate-400">Phone: +1 (555) 123-4567</p>
+            <p className="text-sm text-slate-600 dark:text-slate-400 mb-2">
+              Email: support@assignmentghar.com
+            </p>
+            <p className="text-sm text-slate-600 dark:text-slate-400">
+              Phone: +1 (555) 123-4567
+            </p>
           </div>
         </div>
 
         <div className="border-t border-slate-200 dark:border-slate-800 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-sm text-slate-600 dark:text-slate-400">
-              © {currentYear} Student Assist. All rights reserved.
+              © {currentYear} AssignmentGhar. All rights reserved.
             </p>
             <div className="flex gap-6 text-sm">
               <Link
@@ -88,5 +99,5 @@ export function Footer() {
         </div>
       </div>
     </footer>
-  )
+  );
 }
