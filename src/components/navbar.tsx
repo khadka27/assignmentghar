@@ -3,19 +3,127 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useSession, signOut } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { useTheme } from "@/hooks/use-theme";
-import { Menu, X, Moon, Sun } from "lucide-react";
+import {
+  Menu,
+  X,
+  Moon,
+  Sun,
+  User,
+  LogOut,
+  Settings,
+  LayoutDashboard,
+  Shield,
+} from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
+import axios from "axios";
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const { theme, toggleTheme } = useTheme();
+  const { data: session, status } = useSession();
+  const router = useRouter();
+  const { toast } = useToast();
 
-  const links = [
+  const isAuthenticated = status === "authenticated";
+  const userRole = session?.user?.role;
+  const isAdmin = userRole === "ADMIN";
+  const isExpert = userRole === "EXPERT";
+  const isStudent = userRole === "STUDENT";
+
+  // Guest links (not logged in)
+  const guestLinks = [
     { href: "/", label: "Home" },
     { href: "/#services", label: "Services" },
     { href: "/testimonials", label: "Testimonials" },
     { href: "/contact", label: "Contact" },
   ];
+
+  // Student links
+  const studentLinks = [
+    { href: "/", label: "Home" },
+    { href: "/submit", label: "Submit Assignment" },
+    { href: "/testimonials", label: "Testimonials" },
+    { href: "/contact", label: "Contact" },
+  ];
+
+  // Admin links
+  const adminLinks = [
+    { href: "/", label: "Home" },
+    { href: "/admin", label: "Dashboard" },
+    { href: "/testimonials", label: "Testimonials" },
+    { href: "/contact", label: "Contact" },
+  ];
+
+  // Expert links
+  const expertLinks = [
+    { href: "/", label: "Home" },
+    { href: "/expert", label: "Dashboard" },
+    { href: "/testimonials", label: "Testimonials" },
+    { href: "/contact", label: "Contact" },
+  ];
+
+  // Determine which links to show based on role
+  const links = isAdmin
+    ? adminLinks
+    : isExpert
+    ? expertLinks
+    : isStudent
+    ? studentLinks
+    : guestLinks;
+
+  // Handle logout
+  const handleLogout = async () => {
+    setIsLoggingOut(true);
+    try {
+      // Call logout API
+      await axios.post("/api/auth/logout");
+      
+      // Sign out with NextAuth
+      await signOut({ redirect: false });
+      
+      toast({
+        title: "Logged out successfully! 👋",
+        description: "See you again soon!",
+      });
+      
+      // Redirect to home
+      router.push("/");
+      router.refresh();
+    } catch (error) {
+      console.error("Logout error:", error);
+      toast({
+        title: "Logout failed",
+        description: "Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoggingOut(false);
+    }
+  };
+
+  // Get user initials for avatar
+  const getUserInitials = () => {
+    if (!session?.user?.name) return "U";
+    const names = session.user.name.split(" ");
+    if (names.length >= 2) {
+      return `${names[0][0]}${names[1][0]}`.toUpperCase();
+    }
+    return names[0][0].toUpperCase();
+  };
 
   return (
     <nav className="sticky top-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg border-b border-gray-200/50 dark:border-gray-700/50 transition-all duration-300">

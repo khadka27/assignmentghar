@@ -1,11 +1,17 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import GoogleProvider from "next-auth/providers/google";
 import bcrypt from "bcryptjs";
 import prisma from "@/lib/prisma";
 import type { NextAuthConfig } from "next-auth";
 
 export const authOptions: NextAuthConfig = {
   providers: [
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      allowDangerousEmailAccountLinking: true, // Allow linking Google account to existing email
+    }),
     CredentialsProvider({
       name: "credentials",
       credentials: {
@@ -60,11 +66,55 @@ export const authOptions: NextAuthConfig = {
     error: "/login",
   },
   callbacks: {
-    async jwt({ token, user }) {
+    async signIn({ user, account, profile }) {
+      // For OAuth providers (Google), ensure user has required fields
+      if (account?.provider === "google") {
+        // Check if user exists in database
+        const existingUser = await prisma.user.findUnique({
+          where: { email: user.email! },
+        });
+
+        if (existingUser) {
+          // User exists, update their info from Google
+          await prisma.user.update({
+            where: { email: user.email! },
+            data: {
+              name: user.name || existingUser.name,
+              image: user.image || existingUser.image,
+              emailVerified: new Date(), // Mark as verified since Google verified it
+              isVerified: true,
+            },
+          });
+        } else {
+          // New Google user - create with default role and mark as verified
+          await prisma.user.create({
+            data: {
+              email: user.email!,
+              name: user.name!,
+              image: user.image,
+              emailVerified: new Date(),
+              isVerified: true,
+              role: "STUDENT", // Default role for OAuth users
+              password: "", // OAuth users don't have passwords
+            },
+          });
+        }
+      }
+      return true;
+    },
+    async jwt({ token, user, account }) {
+      // On initial sign in
       if (user) {
-        token.id = user.id || "";
-        token.role = user.role || "STUDENT";
-        token.username = user.username || null;
+        // Fetch user from database to get role
+        const dbUser = await prisma.user.findUnique({
+          where: { email: user.email! },
+        });
+
+        if (dbUser) {
+          token.id = dbUser.id;
+          token.role = dbUser.role;
+          token.username = dbUser.username;
+        }
       }
       return token;
     },
