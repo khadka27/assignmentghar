@@ -11,14 +11,13 @@ export async function POST(request: NextRequest) {
     const session = await auth();
 
     if (!session) {
-      return NextResponse.json(
-        { error: "Not authenticated" },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
     }
 
     // Log the logout action
-    console.log(`User ${session.user?.email} logging out at ${new Date().toISOString()}`);
+    console.log(
+      `User ${session.user?.email} logging out at ${new Date().toISOString()}`
+    );
 
     // Return success response
     // The actual sign out is handled by NextAuth on the client side

@@ -204,11 +204,7 @@ export function Navbar() {
                       </Avatar>
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent
-                    className="w-56"
-                    align="end"
-                    forceMount
-                  >
+                  <DropdownMenuContent className="w-56" align="end" forceMount>
                     <DropdownMenuLabel className="font-normal">
                       <div className="flex flex-col space-y-1">
                         <p className="text-sm font-medium leading-none">
@@ -223,14 +219,11 @@ export function Navbar() {
                       </div>
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
-                    
+
                     {/* Admin Dashboard Link */}
                     {isAdmin && (
                       <DropdownMenuItem asChild>
-                        <Link
-                          href="/admin"
-                          className="cursor-pointer"
-                        >
+                        <Link href="/admin" className="cursor-pointer">
                           <Shield className="mr-2 h-4 w-4" />
                           <span>Admin Dashboard</span>
                         </Link>
@@ -240,10 +233,7 @@ export function Navbar() {
                     {/* Expert Dashboard Link */}
                     {isExpert && (
                       <DropdownMenuItem asChild>
-                        <Link
-                          href="/expert"
-                          className="cursor-pointer"
-                        >
+                        <Link href="/expert" className="cursor-pointer">
                           <LayoutDashboard className="mr-2 h-4 w-4" />
                           <span>Expert Dashboard</span>
                         </Link>
@@ -252,10 +242,7 @@ export function Navbar() {
 
                     {/* Profile Link */}
                     <DropdownMenuItem asChild>
-                      <Link
-                        href="/profile"
-                        className="cursor-pointer"
-                      >
+                      <Link href="/profile" className="cursor-pointer">
                         <User className="mr-2 h-4 w-4" />
                         <span>Profile</span>
                       </Link>
@@ -263,10 +250,7 @@ export function Navbar() {
 
                     {/* Settings Link */}
                     <DropdownMenuItem asChild>
-                      <Link
-                        href="/settings"
-                        className="cursor-pointer"
-                      >
+                      <Link href="/settings" className="cursor-pointer">
                         <Settings className="mr-2 h-4 w-4" />
                         <span>Settings</span>
                       </Link>
