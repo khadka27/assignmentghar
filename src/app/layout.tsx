@@ -5,6 +5,8 @@ import "./globals.css";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { ThemeProvider } from "@/components/theme-provider";
+import { Toaster } from "@/components/ui/toaster";
+import { SessionProvider } from "next-auth/react";
 
 const geistSans = Geist({ subsets: ["latin"] });
 const geistMono = Geist_Mono({ subsets: ["latin"] });
@@ -24,7 +26,6 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "https://assignmentghar.com",
   },
-  generator: "v0.app",
 };
 
 export default function RootLayout({
@@ -52,16 +53,19 @@ export default function RootLayout({
       <body
         className={`${geistSans.className} bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors`}
       >
-        <ThemeProvider>
-          <a href="#main-content" className="sr-only focus:not-sr-only">
-            Skip to main content
-          </a>
-          <Navbar />
-          <main id="main-content" className="min-h-screen">
-            {children}
-          </main>
-          <Footer />
-        </ThemeProvider>
+        <SessionProvider>
+          <ThemeProvider>
+            <a href="#main-content" className="sr-only focus:not-sr-only">
+              Skip to main content
+            </a>
+            <Navbar />
+            <main id="main-content" className="min-h-screen">
+              {children}
+            </main>
+            <Footer />
+            <Toaster />
+          </ThemeProvider>
+        </SessionProvider>
       </body>
     </html>
   );

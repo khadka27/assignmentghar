@@ -13,19 +13,19 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     ref
   ) => {
     const baseStyles =
-      "font-semibold rounded-xl transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none transform hover:scale-105 active:scale-95";
+      "font-semibold rounded-xl transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563eb] dark:focus-visible:ring-[#60a5fa] focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none transform hover:scale-105 active:scale-95";
 
     const variants = {
       primary:
-        "bg-blue-500 text-white hover:bg-blue-600 hover:shadow-lg hover:shadow-blue-500/30 dark:hover:shadow-blue-400/20",
+        "bg-[#2563eb] text-white hover:bg-[#1d4ed8] hover:shadow-lg hover:shadow-blue-500/30 dark:bg-[#60a5fa] dark:text-[#0f172a] dark:hover:bg-[#3b82f6] dark:hover:shadow-blue-400/30",
       secondary:
-        "bg-purple-500 text-white hover:bg-purple-600 hover:shadow-lg hover:shadow-purple-500/30 dark:hover:shadow-purple-400/20",
+        "bg-[#7c3aed] text-white hover:bg-[#6d28d9] hover:shadow-lg hover:shadow-purple-500/30 dark:bg-[#a78bfa] dark:text-[#0f172a] dark:hover:bg-[#818cf8] dark:hover:shadow-purple-400/30",
       outline:
-        "border-2 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-800 hover:border-blue-500 dark:hover:border-blue-400",
+        "border-2 border-[#e2e8f0] dark:border-[#334155] text-[#0f172a] dark:text-[#f1f5f9] hover:bg-[#f8fafc] dark:hover:bg-[#1e293b] hover:border-[#2563eb] dark:hover:border-[#60a5fa]",
       ghost:
-        "text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800",
+        "text-[#0f172a] dark:text-[#f1f5f9] hover:bg-[#f1f5f9] dark:hover:bg-[#1e293b]",
       gradient:
-        "bg-gradient-to-r from-blue-500 to-purple-500 text-white hover:from-blue-600 hover:to-purple-600 hover:shadow-lg hover:shadow-blue-500/40",
+        "bg-gradient-to-r from-[#2563eb] to-[#7c3aed] text-white hover:from-[#1d4ed8] hover:to-[#6d28d9] hover:shadow-lg hover:shadow-blue-500/40 dark:from-[#60a5fa] dark:to-[#a78bfa] dark:text-[#0f172a] dark:hover:from-[#3b82f6] dark:hover:to-[#818cf8]",
     };
 
     const sizes = {

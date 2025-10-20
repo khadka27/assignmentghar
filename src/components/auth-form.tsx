@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -15,11 +15,14 @@ import {
 } from "@/components/ui/card";
 import { Alert } from "@/components/ui/alert";
 import { Spinner } from "@/components/ui/spinner";
+import { useToast } from "@/hooks/use-toast";
 
 type AuthMode = "login" | "register" | "verify";
 
 export function AuthForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const { toast } = useToast();
   const [mode, setMode] = useState<AuthMode>("login");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -161,15 +164,53 @@ export function AuthForm() {
 
       if (result?.error) {
         setError(result.error);
+        toast({
+          title: "Login Failed",
+          description: result.error,
+          variant: "destructive",
+        });
       } else {
+        // Fetch user session to get role
+        const response = await fetch("/api/auth/session");
+        const session = await response.json();
+
+        const userRole = session?.user?.role;
+        let redirectPath = "/";
+
+        // Role-based routing
+        if (userRole === "ADMIN") {
+          redirectPath = "/admin";
+          toast({
+            title: "Welcome Admin! 👑",
+            description: "Redirecting to admin dashboard...",
+          });
+        } else if (userRole === "EXPERT") {
+          redirectPath = "/expert";
+          toast({
+            title: "Welcome Expert! 🎓",
+            description: "Redirecting to expert dashboard...",
+          });
+        } else {
+          redirectPath = searchParams.get("callbackUrl") || "/";
+          toast({
+            title: "Welcome Student! 📚",
+            description: "Login successful!",
+          });
+        }
+
         setSuccess("Login successful! Redirecting...");
         setTimeout(() => {
-          router.push("/");
+          router.push(redirectPath);
           router.refresh();
-        }, 1000);
+        }, 1500);
       }
     } catch {
       setError("An error occurred during login");
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred",
+        variant: "destructive",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -312,19 +353,19 @@ export function AuthForm() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-purple-900 dark:to-gray-900 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-[#0f172a] dark:via-[#1e293b] dark:to-[#0f172a] flex items-center justify-center p-4">
       <div className="w-full max-w-md">
-        <Card className="backdrop-blur-sm bg-white/90 dark:bg-gray-800/90 shadow-2xl border-0">
+        <Card className="backdrop-blur-sm bg-white/95 dark:bg-[#1e293b]/95 shadow-2xl border border-[#e2e8f0] dark:border-[#334155]">
           <CardHeader className="space-y-1 pb-6">
             <div className="flex items-center justify-center mb-4">
-              <div className="text-4xl">🎓</div>
+              <div className="text-5xl">🎓</div>
             </div>
-            <CardTitle className="text-2xl font-bold text-center bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            <CardTitle className="text-2xl font-bold text-center text-gradient">
               {mode === "login" && "Welcome Back"}
               {mode === "register" && "Create Account"}
               {mode === "verify" && "Verify Email"}
             </CardTitle>
-            <CardDescription className="text-center">
+            <CardDescription className="text-center text-[#475569] dark:text-[#cbd5e1]">
               {mode === "login" && "Sign in to your AssignmentGhar account"}
               {mode === "register" && "Join AssignmentGhar today"}
               {mode === "verify" &&
@@ -334,13 +375,16 @@ export function AuthForm() {
 
           <CardContent className="space-y-4">
             {error && (
-              <Alert variant="destructive" className="animate-shake">
+              <Alert
+                variant="destructive"
+                className="animate-shake border-red-200 dark:border-red-800"
+              >
                 {error}
               </Alert>
             )}
 
             {success && (
-              <Alert className="bg-green-50 text-green-800 border-green-200 animate-fade-in">
+              <Alert className="bg-green-50 dark:bg-green-950 text-green-800 dark:text-green-200 border-green-200 dark:border-green-800 animate-fade-in">
                 {success}
               </Alert>
             )}
@@ -397,7 +441,7 @@ export function AuthForm() {
                   <button
                     type="button"
                     onClick={() => setMode("register")}
-                    className="text-blue-600 hover:text-blue-700 hover:underline"
+                    className="text-[#2563eb] dark:text-[#60a5fa] hover:text-[#1d4ed8] dark:hover:text-[#3b82f6] hover:underline font-medium transition-colors"
                     disabled={isLoading}
                   >
                     Don't have an account? Register
@@ -542,7 +586,7 @@ export function AuthForm() {
                   <button
                     type="button"
                     onClick={() => setMode("login")}
-                    className="text-blue-600 hover:text-blue-700 hover:underline"
+                    className="text-[#2563eb] dark:text-[#60a5fa] hover:text-[#1d4ed8] dark:hover:text-[#3b82f6] hover:underline font-medium transition-colors"
                     disabled={isLoading}
                   >
                     Already have an account? Sign in
@@ -608,7 +652,7 @@ export function AuthForm() {
                   <button
                     type="button"
                     onClick={() => setMode("register")}
-                    className="text-blue-600 hover:text-blue-700 hover:underline"
+                    className="text-[#2563eb] dark:text-[#60a5fa] hover:text-[#1d4ed8] dark:hover:text-[#3b82f6] hover:underline font-medium transition-colors"
                     disabled={isLoading}
                   >
                     ← Back to registration
@@ -619,34 +663,42 @@ export function AuthForm() {
           </CardContent>
         </Card>
 
-        <div className="mt-6 text-center text-xs text-gray-600 dark:text-gray-400">
+        <div className="mt-6 text-center text-xs text-[#475569] dark:text-[#cbd5e1]">
           <p>
             By continuing, you agree to AssignmentGhar's{" "}
-            <a href="/privacy" className="underline hover:text-blue-600">
+            <a
+              href="/privacy"
+              className="underline hover:text-[#2563eb] dark:hover:text-[#60a5fa] transition-colors"
+            >
               Terms of Service
             </a>{" "}
             and{" "}
-            <a href="/privacy" className="underline hover:text-blue-600">
+            <a
+              href="/privacy"
+              className="underline hover:text-[#2563eb] dark:hover:text-[#60a5fa] transition-colors"
+            >
               Privacy Policy
             </a>
           </p>
         </div>
 
-        <div className="mt-4 p-4 bg-blue-50 dark:bg-gray-800 rounded-lg text-sm">
-          <p className="font-semibold mb-2">🔐 Default Admin Credentials:</p>
-          <p className="text-gray-700 dark:text-gray-300">
+        <div className="mt-4 p-4 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-[#1e293b] dark:to-[#1e293b] border border-[#e2e8f0] dark:border-[#334155] rounded-lg text-sm">
+          <p className="font-semibold mb-2 text-[#0f172a] dark:text-[#f1f5f9]">
+            🔐 Default Admin Credentials:
+          </p>
+          <p className="text-[#475569] dark:text-[#cbd5e1]">
             Email:{" "}
-            <code className="bg-white dark:bg-gray-900 px-2 py-1 rounded">
+            <code className="bg-white dark:bg-[#0f172a] px-2 py-1 rounded text-[#2563eb] dark:text-[#60a5fa] font-mono">
               admin@assignmentghar.com
             </code>
           </p>
-          <p className="text-gray-700 dark:text-gray-300">
+          <p className="text-[#475569] dark:text-[#cbd5e1]">
             Password:{" "}
-            <code className="bg-white dark:bg-gray-900 px-2 py-1 rounded">
+            <code className="bg-white dark:bg-[#0f172a] px-2 py-1 rounded text-[#7c3aed] dark:text-[#a78bfa] font-mono">
               Admin@123
             </code>
           </p>
-          <p className="text-xs text-gray-500 mt-2">
+          <p className="text-xs text-[#475569] dark:text-[#cbd5e1] mt-2">
             ⚠️ Change password after first login!
           </p>
         </div>
