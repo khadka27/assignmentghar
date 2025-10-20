@@ -233,7 +233,7 @@ export function Navbar() {
                             <Link
                               href="/earnings"
                               onClick={() => setIsDropdownOpen(false)}
-                              className="flex items-center px-4 py-2.5 text-sm text-gray-200 hover:bg-gray-700 transition-colors"
+                              className="flex items-center px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                             >
                               <span className="mr-3">💰</span>
                               Earnings
@@ -242,14 +242,14 @@ export function Navbar() {
                         </div>
 
                         {/* Logout */}
-                        <div className="border-t border-gray-600">
+                        <div className="border-t border-gray-200 dark:border-gray-700">
                           <button
                             onClick={() => {
                               setIsDropdownOpen(false);
                               handleLogout();
                             }}
                             disabled={isLoggingOut}
-                            className="w-full flex items-center px-4 py-2.5 text-sm text-gray-200 hover:bg-gray-700 transition-colors disabled:opacity-50"
+                            className="w-full flex items-center px-4 py-2.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors disabled:opacity-50"
                           >
                             <LogOut className="mr-3 h-4 w-4" />
                             {isLoggingOut ? "Signing out..." : "Sign out"}
@@ -265,14 +265,14 @@ export function Navbar() {
               <>
                 <Link
                   href="/login"
-                  className="hidden sm:inline-block px-5 py-2 text-sm text-gray-300 hover:text-white transition-colors"
+                  className="hidden sm:inline-block px-5 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                 >
                   Login
                 </Link>
 
                 <Link
                   href="/register"
-                  className="hidden sm:inline-block px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg transition-colors"
+                  className="hidden sm:inline-block px-5 py-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white text-sm rounded-lg transition-all shadow-md hover:shadow-lg"
                 >
                   Get Started
                 </Link>
@@ -282,7 +282,7 @@ export function Navbar() {
             {/* Mobile Menu Button */}
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="md:hidden p-2 text-gray-300 hover:bg-gray-700 rounded-lg transition-colors"
+              className="md:hidden p-2 text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
               aria-expanded={isOpen}
               aria-controls="mobile-menu"
             >
@@ -299,7 +299,7 @@ export function Navbar() {
         {isOpen && (
           <div
             id="mobile-menu"
-            className="md:hidden pb-4 pt-2 space-y-1 border-t border-gray-700"
+            className="md:hidden pb-4 pt-2 space-y-1 border-t border-gray-200 dark:border-gray-700"
           >
             {/* Navigation Links */}
             {links.map((link, index) => (
@@ -308,8 +308,8 @@ export function Navbar() {
                 href={link.href}
                 className={`block px-4 py-2.5 text-sm transition-colors ${
                   index === 0
-                    ? "text-blue-400 hover:bg-gray-700"
-                    : "text-gray-300 hover:bg-gray-700"
+                    ? "text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                    : "text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900/20"
                 }`}
                 onClick={() => setIsOpen(false)}
               >
@@ -320,24 +320,24 @@ export function Navbar() {
             {/* Authenticated Mobile Menu Items */}
             {isAuthenticated ? (
               <>
-                <div className="border-t border-gray-700 pt-2 mt-2">
+                <div className="border-t border-gray-200 dark:border-gray-700 pt-2 mt-2">
                   {/* User Info */}
-                  <div className="px-4 py-3">
+                  <div className="px-4 py-3 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950/20 dark:to-purple-950/20">
                     <div className="flex items-center gap-3">
-                      <Avatar className="h-10 w-10">
+                      <Avatar className="h-10 w-10 ring-2 ring-blue-500/30 dark:ring-purple-500/30">
                         <AvatarImage
                           src={session?.user?.image || undefined}
                           alt={session?.user?.name || "User"}
                         />
-                        <AvatarFallback className="bg-gradient-to-br from-blue-600 to-purple-600 text-white font-semibold text-sm">
+                        <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-500 text-white font-semibold text-sm">
                           {getUserInitials()}
                         </AvatarFallback>
                       </Avatar>
                       <div className="flex-1">
-                        <p className="text-sm font-medium text-white">
+                        <p className="text-sm font-medium text-gray-900 dark:text-white">
                           {session?.user?.name}
                         </p>
-                        <p className="text-xs text-gray-400">
+                        <p className="text-xs text-gray-600 dark:text-gray-400">
                           {session?.user?.email}
                         </p>
                       </div>
@@ -348,7 +348,7 @@ export function Navbar() {
                   {(isAdmin || isExpert) && (
                     <Link
                       href={isAdmin ? "/admin" : "/expert"}
-                      className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-300 hover:bg-gray-700 transition-colors"
+                      className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                       onClick={() => setIsOpen(false)}
                     >
                       <LayoutDashboard className="w-4 h-4" />
@@ -359,7 +359,7 @@ export function Navbar() {
                   {/* Settings */}
                   <Link
                     href="/settings"
-                    className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-300 hover:bg-gray-700 transition-colors"
+                    className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                     onClick={() => setIsOpen(false)}
                   >
                     <Settings className="w-4 h-4" />
@@ -373,7 +373,7 @@ export function Navbar() {
                       handleLogout();
                     }}
                     disabled={isLoggingOut}
-                    className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-gray-300 hover:bg-gray-700 transition-colors disabled:opacity-50"
+                    className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors disabled:opacity-50"
                   >
                     <LogOut className="w-4 h-4" />
                     <span>{isLoggingOut ? "Signing out..." : "Sign out"}</span>
@@ -383,10 +383,10 @@ export function Navbar() {
             ) : (
               // Guest Mobile Menu Items
               <>
-                <div className="border-t border-gray-700 pt-2 mt-2 space-y-1">
+                <div className="border-t border-gray-200 dark:border-gray-700 pt-2 mt-2 space-y-1">
                   <Link
                     href="/login"
-                    className="block px-4 py-2.5 text-sm text-gray-300 hover:bg-gray-700 transition-colors"
+                    className="block px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                     onClick={() => setIsOpen(false)}
                   >
                     Login
@@ -394,7 +394,7 @@ export function Navbar() {
 
                   <Link
                     href="/register"
-                    className="block px-4 py-2.5 mx-4 bg-blue-600 hover:bg-blue-700 text-white text-sm text-center rounded-lg transition-colors"
+                    className="block px-4 py-2.5 mx-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white text-sm text-center rounded-lg transition-all shadow-md"
                     onClick={() => setIsOpen(false)}
                   >
                     Get Started

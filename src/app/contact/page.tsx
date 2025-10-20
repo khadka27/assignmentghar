@@ -6,8 +6,7 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/components/ui/toast";
-import { ToastContainer } from "@/components/ui/toast";
+import { useToast } from "@/hooks/use-toast";
 import { Mail, Phone, MapPin } from "lucide-react";
 
 export default function ContactPage() {
@@ -18,8 +17,7 @@ export default function ContactPage() {
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitted, setSubmitted] = useState(false);
-  const { toasts, addToast } = useToast();
-  const [displayedToasts, setDisplayedToasts] = useState(toasts);
+  const { toast } = useToast();
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
@@ -34,11 +32,11 @@ export default function ContactPage() {
     e.preventDefault();
     if (!validateForm()) return;
 
-    addToast(
-      "Message sent successfully! We'll get back to you soon.",
-      "success"
-    );
-    setDisplayedToasts([...toasts]);
+    toast({
+      title: "Message sent successfully!",
+      description: "We'll get back to you soon.",
+    });
+
     setSubmitted(true);
     setFormData({ name: "", email: "", message: "" });
 
@@ -187,13 +185,6 @@ export default function ContactPage() {
           </p>
         </div>
       </div>
-
-      <ToastContainer
-        toasts={displayedToasts}
-        onRemove={(id) =>
-          setDisplayedToasts(displayedToasts.filter((t) => t.id !== id))
-        }
-      />
     </div>
   );
 }

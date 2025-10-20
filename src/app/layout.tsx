@@ -1,5 +1,6 @@
+"use client";
+
 import type React from "react";
-import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/navbar";
@@ -7,32 +8,23 @@ import { Footer } from "@/components/footer";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
 import { SessionProvider } from "next-auth/react";
+import { usePathname } from "next/navigation";
 
 const geistSans = Geist({ subsets: ["latin"] });
 const geistMono = Geist_Mono({ subsets: ["latin"] });
-
-export const metadata: Metadata = {
-  title: "AssignmentGhar - Assignment Help & Consultancy",
-  description:
-    "Get quick, reliable help with your college or university assignments. Chat directly, share files, and get support from expert consultants.",
-  keywords:
-    "assignment help, student consultancy, coursework assistance, academic support",
-  openGraph: {
-    title: "AssignmentGhar - Assignment Help",
-    description: "Expert assignment help for students",
-    type: "website",
-  },
-  robots: "index, follow",
-  alternates: {
-    canonical: "https://assignmentghar.com",
-  },
-};
 
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const pathname = usePathname();
+
+  // Hide navbar and footer on auth pages
+  const isAuthPage =
+    pathname === "/login" ||
+    pathname === "/register" ||
+    pathname === "/recover";
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -58,11 +50,14 @@ export default function RootLayout({
             <a href="#main-content" className="sr-only focus:not-sr-only">
               Skip to main content
             </a>
-            <Navbar />
-            <main id="main-content" className="min-h-screen">
+            {!isAuthPage && <Navbar />}
+            <main
+              id="main-content"
+              className={isAuthPage ? "" : "min-h-screen"}
+            >
               {children}
             </main>
-            <Footer />
+            {!isAuthPage && <Footer />}
             <Toaster />
           </ThemeProvider>
         </SessionProvider>
