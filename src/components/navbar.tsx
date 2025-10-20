@@ -32,6 +32,7 @@ import axios from "axios";
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const { theme, toggleTheme } = useTheme();
   const { data: session, status } = useSession();
@@ -126,7 +127,7 @@ export function Navbar() {
   };
 
   return (
-    <nav className="sticky top-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg border-b border-gray-200/50 dark:border-gray-700/50 transition-all duration-300">
+    <nav className="sticky top-0 z-50 bg-white/95 dark:bg-gray-900/95 backdrop-blur-lg border-b border-gray-200/50 dark:border-gray-700/50 transition-all duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
@@ -146,152 +147,134 @@ export function Navbar() {
 
           {/* Desktop Links */}
           <div className="hidden md:flex items-center gap-8">
-            {links.map((link) => (
+            {links.map((link, index) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-blue-500 dark:hover:text-blue-400 transition-all duration-300 relative group"
+                className={`text-sm font-medium transition-colors relative group ${
+                  index === 0
+                    ? "text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300"
+                    : "text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400"
+                }`}
               >
                 {link.label}
-                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-500 group-hover:w-full transition-all duration-300"></span>
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-purple-500 group-hover:w-full transition-all duration-300"></span>
               </Link>
             ))}
           </div>
 
           {/* Right Actions */}
-          <div className="flex items-center gap-4">
-            {/* Theme Toggle */}
-            <button
-              onClick={toggleTheme}
-              className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-all duration-300 transform hover:scale-110 hover:rotate-12"
-              aria-label="Toggle theme"
-            >
-              {theme === "dark" ? (
-                <Sun className="w-5 h-5 text-yellow-400" />
-              ) : (
-                <Moon className="w-5 h-5 text-blue-500" />
-              )}
-            </button>
-
+          <div className="flex items-center gap-3">
             {/* Authenticated User Actions */}
             {isAuthenticated ? (
               <>
-                {/* Chat Button for Students */}
-                {isStudent && (
-                  <Link
-                    href="/chat"
-                    className="hidden sm:inline-block px-6 py-2.5 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-xl hover:from-blue-600 hover:to-purple-600 transition-all duration-300 text-sm font-semibold transform hover:scale-105 hover:shadow-lg hover:shadow-blue-500/30"
+                {/* User Profile Dropdown - Your Blue/Purple Theme */}
+                <div className="relative">
+                  <button
+                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                    className="flex items-center gap-2 focus:outline-none"
                   >
-                    Start Chat
-                  </Link>
-                )}
+                    <Avatar className="h-10 w-10 ring-2 ring-blue-500/30 hover:ring-blue-500/60 dark:ring-purple-500/30 dark:hover:ring-purple-500/60 transition-all">
+                      <AvatarImage
+                        src={session?.user?.image || undefined}
+                        alt={session?.user?.name || "User"}
+                      />
+                      <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-500 text-white text-sm font-semibold">
+                        {getUserInitials()}
+                      </AvatarFallback>
+                    </Avatar>
+                  </button>
 
-                {/* User Profile Dropdown */}
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      className="relative h-10 w-10 rounded-full ring-2 ring-blue-500/20 hover:ring-blue-500/40 transition-all"
-                    >
-                      <Avatar className="h-10 w-10">
-                        <AvatarImage
-                          src={session?.user?.image || undefined}
-                          alt={session?.user?.name || "User"}
-                        />
-                        <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-500 text-white font-semibold">
-                          {getUserInitials()}
-                        </AvatarFallback>
-                      </Avatar>
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent className="w-56" align="end" forceMount>
-                    <DropdownMenuLabel className="font-normal">
-                      <div className="flex flex-col space-y-1">
-                        <p className="text-sm font-medium leading-none">
-                          {session?.user?.name}
-                        </p>
-                        <p className="text-xs leading-none text-muted-foreground">
-                          {session?.user?.email}
-                        </p>
-                        <p className="text-xs leading-none text-blue-500 font-semibold pt-1">
-                          {userRole}
-                        </p>
+                  {/* Dropdown Menu - Flowbite Style with Your Colors */}
+                  {isDropdownOpen && (
+                    <>
+                      {/* Backdrop */}
+                      <div
+                        className="fixed inset-0 z-30"
+                        onClick={() => setIsDropdownOpen(false)}
+                      />
+
+                      {/* Dropdown Content */}
+                      <div className="absolute right-0 mt-3 w-56 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl z-40 overflow-hidden">
+                        {/* User Info Header */}
+                        <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950/20 dark:to-purple-950/20">
+                          <p className="text-sm font-semibold text-gray-900 dark:text-white">
+                            {session?.user?.name}
+                          </p>
+                          <p className="text-xs text-gray-600 dark:text-gray-400 truncate">
+                            {session?.user?.email}
+                          </p>
+                        </div>
+
+                        {/* Menu Items */}
+                        <div className="py-1">
+                          {/* Dashboard Link for Admin/Expert */}
+                          {(isAdmin || isExpert) && (
+                            <Link
+                              href={isAdmin ? "/admin" : "/expert"}
+                              onClick={() => setIsDropdownOpen(false)}
+                              className="flex items-center px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                            >
+                              <LayoutDashboard className="mr-3 h-4 w-4" />
+                              Dashboard
+                            </Link>
+                          )}
+
+                          <Link
+                            href="/settings"
+                            onClick={() => setIsDropdownOpen(false)}
+                            className="flex items-center px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                          >
+                            <Settings className="mr-3 h-4 w-4" />
+                            Settings
+                          </Link>
+
+                          {isExpert && (
+                            <Link
+                              href="/earnings"
+                              onClick={() => setIsDropdownOpen(false)}
+                              className="flex items-center px-4 py-2.5 text-sm text-gray-200 hover:bg-gray-700 transition-colors"
+                            >
+                              <span className="mr-3">💰</span>
+                              Earnings
+                            </Link>
+                          )}
+                        </div>
+
+                        {/* Logout */}
+                        <div className="border-t border-gray-600">
+                          <button
+                            onClick={() => {
+                              setIsDropdownOpen(false);
+                              handleLogout();
+                            }}
+                            disabled={isLoggingOut}
+                            className="w-full flex items-center px-4 py-2.5 text-sm text-gray-200 hover:bg-gray-700 transition-colors disabled:opacity-50"
+                          >
+                            <LogOut className="mr-3 h-4 w-4" />
+                            {isLoggingOut ? "Signing out..." : "Sign out"}
+                          </button>
+                        </div>
                       </div>
-                    </DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-
-                    {/* Admin Dashboard Link */}
-                    {isAdmin && (
-                      <DropdownMenuItem asChild>
-                        <Link href="/admin" className="cursor-pointer">
-                          <Shield className="mr-2 h-4 w-4" />
-                          <span>Admin Dashboard</span>
-                        </Link>
-                      </DropdownMenuItem>
-                    )}
-
-                    {/* Expert Dashboard Link */}
-                    {isExpert && (
-                      <DropdownMenuItem asChild>
-                        <Link href="/expert" className="cursor-pointer">
-                          <LayoutDashboard className="mr-2 h-4 w-4" />
-                          <span>Expert Dashboard</span>
-                        </Link>
-                      </DropdownMenuItem>
-                    )}
-
-                    {/* Profile Link */}
-                    <DropdownMenuItem asChild>
-                      <Link href="/profile" className="cursor-pointer">
-                        <User className="mr-2 h-4 w-4" />
-                        <span>Profile</span>
-                      </Link>
-                    </DropdownMenuItem>
-
-                    {/* Settings Link */}
-                    <DropdownMenuItem asChild>
-                      <Link href="/settings" className="cursor-pointer">
-                        <Settings className="mr-2 h-4 w-4" />
-                        <span>Settings</span>
-                      </Link>
-                    </DropdownMenuItem>
-
-                    <DropdownMenuSeparator />
-
-                    {/* Logout Button */}
-                    <DropdownMenuItem
-                      onClick={handleLogout}
-                      disabled={isLoggingOut}
-                      className="cursor-pointer text-red-600 focus:text-red-600 focus:bg-red-50 dark:focus:bg-red-950"
-                    >
-                      <LogOut className="mr-2 h-4 w-4" />
-                      <span>{isLoggingOut ? "Logging out..." : "Logout"}</span>
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                    </>
+                  )}
+                </div>
               </>
             ) : (
               // Guest Actions (Not Logged In)
               <>
                 <Link
-                  href="/chat"
-                  className="hidden sm:inline-block px-6 py-2.5 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-xl hover:from-blue-600 hover:to-purple-600 transition-all duration-300 text-sm font-semibold transform hover:scale-105 hover:shadow-lg hover:shadow-blue-500/30"
-                >
-                  Start Chat
-                </Link>
-
-                <Link
                   href="/login"
-                  className="hidden sm:inline-block px-6 py-2.5 text-gray-700 dark:text-gray-300 hover:text-blue-500 dark:hover:text-blue-400 transition-all duration-300 text-sm font-semibold"
+                  className="hidden sm:inline-block px-5 py-2 text-sm text-gray-300 hover:text-white transition-colors"
                 >
                   Login
                 </Link>
 
                 <Link
                   href="/register"
-                  className="hidden sm:inline-block px-6 py-2.5 bg-gradient-to-r from-gray-900 to-gray-700 dark:from-gray-100 dark:to-gray-300 text-white dark:text-gray-900 rounded-xl hover:from-gray-800 hover:to-gray-600 dark:hover:from-gray-200 dark:hover:to-gray-400 transition-all duration-300 text-sm font-semibold transform hover:scale-105"
+                  className="hidden sm:inline-block px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg transition-colors"
                 >
-                  Register
+                  Get Started
                 </Link>
               </>
             )}
@@ -299,7 +282,7 @@ export function Navbar() {
             {/* Mobile Menu Button */}
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="md:hidden p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-all duration-300"
+              className="md:hidden p-2 text-gray-300 hover:bg-gray-700 rounded-lg transition-colors"
               aria-expanded={isOpen}
               aria-controls="mobile-menu"
             >
@@ -316,14 +299,18 @@ export function Navbar() {
         {isOpen && (
           <div
             id="mobile-menu"
-            className="md:hidden pb-4 space-y-2 animate-slide-down"
+            className="md:hidden pb-4 pt-2 space-y-1 border-t border-gray-700"
           >
             {/* Navigation Links */}
-            {links.map((link) => (
+            {links.map((link, index) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-all duration-300 transform hover:translate-x-2"
+                className={`block px-4 py-2.5 text-sm transition-colors ${
+                  index === 0
+                    ? "text-blue-400 hover:bg-gray-700"
+                    : "text-gray-300 hover:bg-gray-700"
+                }`}
                 onClick={() => setIsOpen(false)}
               >
                 {link.label}
@@ -333,99 +320,86 @@ export function Navbar() {
             {/* Authenticated Mobile Menu Items */}
             {isAuthenticated ? (
               <>
-                {/* Chat Button for Students */}
-                {isStudent && (
-                  <Link
-                    href="/chat"
-                    className="block px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-xl hover:from-blue-600 hover:to-purple-600 transition-all duration-300 font-semibold text-center transform hover:scale-105"
-                    onClick={() => setIsOpen(false)}
-                  >
-                    Start Chat
-                  </Link>
-                )}
-
-                {/* User Info */}
-                <div className="px-4 py-3 bg-gray-50 dark:bg-gray-800 rounded-xl">
-                  <div className="flex items-center gap-3">
-                    <Avatar className="h-10 w-10">
-                      <AvatarImage
-                        src={session?.user?.image || undefined}
-                        alt={session?.user?.name || "User"}
-                      />
-                      <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-500 text-white font-semibold">
-                        {getUserInitials()}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1">
-                      <p className="text-sm font-medium">
-                        {session?.user?.name}
-                      </p>
-                      <p className="text-xs text-blue-500 font-semibold">
-                        {userRole}
-                      </p>
+                <div className="border-t border-gray-700 pt-2 mt-2">
+                  {/* User Info */}
+                  <div className="px-4 py-3">
+                    <div className="flex items-center gap-3">
+                      <Avatar className="h-10 w-10">
+                        <AvatarImage
+                          src={session?.user?.image || undefined}
+                          alt={session?.user?.name || "User"}
+                        />
+                        <AvatarFallback className="bg-gradient-to-br from-blue-600 to-purple-600 text-white font-semibold text-sm">
+                          {getUserInitials()}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1">
+                        <p className="text-sm font-medium text-white">
+                          {session?.user?.name}
+                        </p>
+                        <p className="text-xs text-gray-400">
+                          {session?.user?.email}
+                        </p>
+                      </div>
                     </div>
                   </div>
+
+                  {/* Dashboard for Admin/Expert */}
+                  {(isAdmin || isExpert) && (
+                    <Link
+                      href={isAdmin ? "/admin" : "/expert"}
+                      className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-300 hover:bg-gray-700 transition-colors"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      <LayoutDashboard className="w-4 h-4" />
+                      <span>Dashboard</span>
+                    </Link>
+                  )}
+
+                  {/* Settings */}
+                  <Link
+                    href="/settings"
+                    className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-300 hover:bg-gray-700 transition-colors"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    <Settings className="w-4 h-4" />
+                    <span>Settings</span>
+                  </Link>
+
+                  {/* Logout */}
+                  <button
+                    onClick={() => {
+                      setIsOpen(false);
+                      handleLogout();
+                    }}
+                    disabled={isLoggingOut}
+                    className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-gray-300 hover:bg-gray-700 transition-colors disabled:opacity-50"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    <span>{isLoggingOut ? "Signing out..." : "Sign out"}</span>
+                  </button>
                 </div>
-
-                {/* Profile Link */}
-                <Link
-                  href="/profile"
-                  className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-all duration-300"
-                  onClick={() => setIsOpen(false)}
-                >
-                  <User className="w-4 h-4" />
-                  <span>Profile</span>
-                </Link>
-
-                {/* Settings Link */}
-                <Link
-                  href="/settings"
-                  className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-all duration-300"
-                  onClick={() => setIsOpen(false)}
-                >
-                  <Settings className="w-4 h-4" />
-                  <span>Settings</span>
-                </Link>
-
-                {/* Logout Button */}
-                <button
-                  onClick={() => {
-                    setIsOpen(false);
-                    handleLogout();
-                  }}
-                  disabled={isLoggingOut}
-                  className="w-full flex items-center gap-2 px-4 py-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-950 rounded-xl transition-all duration-300 disabled:opacity-50"
-                >
-                  <LogOut className="w-4 h-4" />
-                  <span>{isLoggingOut ? "Logging out..." : "Logout"}</span>
-                </button>
               </>
             ) : (
               // Guest Mobile Menu Items
               <>
-                <Link
-                  href="/chat"
-                  className="block px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-xl hover:from-blue-600 hover:to-purple-600 transition-all duration-300 font-semibold text-center transform hover:scale-105"
-                  onClick={() => setIsOpen(false)}
-                >
-                  Start Chat
-                </Link>
+                <div className="border-t border-gray-700 pt-2 mt-2 space-y-1">
+                  <Link
+                    href="/login"
+                    className="block px-4 py-2.5 text-sm text-gray-300 hover:bg-gray-700 transition-colors"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    Login
+                  </Link>
 
-                <Link
-                  href="/login"
-                  className="block px-4 py-2 text-center hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-all duration-300 font-semibold"
-                  onClick={() => setIsOpen(false)}
-                >
-                  Login
-                </Link>
-
-                <Link
-                  href="/register"
-                  className="block px-4 py-2 bg-gradient-to-r from-gray-900 to-gray-700 dark:from-gray-100 dark:to-gray-300 text-white dark:text-gray-900 rounded-xl hover:from-gray-800 hover:to-gray-600 dark:hover:from-gray-200 dark:hover:to-gray-400 transition-all duration-300 font-semibold text-center"
-                  onClick={() => setIsOpen(false)}
-                >
-                  Register
-                </Link>
+                  <Link
+                    href="/register"
+                    className="block px-4 py-2.5 mx-4 bg-blue-600 hover:bg-blue-700 text-white text-sm text-center rounded-lg transition-colors"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    Get Started
+                  </Link>
+                </div>
               </>
             )}
           </div>
