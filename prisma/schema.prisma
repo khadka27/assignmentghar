@@ -32,6 +32,14 @@ model User {
   assignments Assignment[]
   orders      Order[]
 
+  // Chat Relations
+  sentMessages     Message[]          @relation("SentMessages")
+  receivedMessages Message[]          @relation("ReceivedMessages")
+  conversations    ConversationUser[]
+  typingIndicators TypingIndicator[]
+  readReceipts     ReadReceipt[]
+  lastSeenUpdates  UserStatus[]
+
   @@map("users")
 }
 
@@ -136,4 +144,132 @@ enum UserRole {
   STUDENT
   ADMIN
   EXPERT
+}
+
+// =============================================
+// CHAT MODELS
+// =============================================
+
+// Conversation Model (One-to-One between Student and Expert)
+model Conversation {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  participants ConversationUser[]
+  messages     Message[]
+
+  @@map("conversations")
+}
+
+// Junction table for users in conversations
+model ConversationUser {
+  id             String   @id @default(cuid())
+  conversationId String
+  userId         String
+  joinedAt       DateTime @default(now())
+
+  // First time chat flag for welcome message
+  isFirstChat    Boolean @default(true)
+  hasSeenWelcome Boolean @default(false)
+
+  // Relations
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([conversationId, userId])
+  @@map("conversation_users")
+}
+
+// Message Model
+model Message {
+  id             String      @id @default(cuid())
+  content        String?
+  messageType    MessageType @default(TEXT)
+  conversationId String
+  senderId       String
+  receiverId     String
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  // Relations
+  conversation Conversation     @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender       User             @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver     User             @relation("ReceivedMessages", fields: [receiverId], references: [id], onDelete: Cascade)
+  attachments  FileAttachment[]
+  readReceipts ReadReceipt[]
+
+  @@index([conversationId])
+  @@index([senderId])
+  @@index([receiverId])
+  @@map("messages")
+}
+
+// File Attachment Model
+model FileAttachment {
+  id        String   @id @default(cuid())
+  messageId String
+  fileName  String
+  fileUrl   String
+  fileType  String // mime type: image/png, application/pdf, etc.
+  fileSize  Int // in bytes
+  createdAt DateTime @default(now())
+
+  // Relations
+  message Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
+
+  @@map("file_attachments")
+}
+
+// Read Receipt Model (for message read status)
+model ReadReceipt {
+  id        String   @id @default(cuid())
+  messageId String
+  userId    String
+  readAt    DateTime @default(now())
+
+  // Relations
+  message Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([messageId, userId])
+  @@map("read_receipts")
+}
+
+// Typing Indicator Model (temporary real-time state)
+model TypingIndicator {
+  id             String   @id @default(cuid())
+  conversationId String
+  userId         String
+  isTyping       Boolean  @default(false)
+  updatedAt      DateTime @updatedAt
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([conversationId, userId])
+  @@map("typing_indicators")
+}
+
+// User Status Model (online/offline, last seen)
+model UserStatus {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  isOnline  Boolean  @default(false)
+  lastSeen  DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_status")
+}
+
+// Enums for Chat
+enum MessageType {
+  TEXT
+  IMAGE
+  FILE
+  SYSTEM // For welcome messages
 }
