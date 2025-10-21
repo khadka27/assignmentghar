@@ -75,7 +75,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         success: true,
-        message: "Password reset successfully! You can now login with your new password.",
+        message:
+          "Password reset successfully! You can now login with your new password.",
       },
       { status: 200 }
     );

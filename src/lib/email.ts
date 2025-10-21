@@ -243,4 +243,139 @@ export async function sendWelcomeEmail(email: string, name: string) {
   }
 }
 
+// Send password reset email
+export async function sendPasswordResetEmail(
+  email: string,
+  otp: string,
+  name?: string
+) {
+  const mailOptions = {
+    from: process.env.EMAIL_FROM,
+    to: email,
+    subject: "Password Reset - AssignmentGhar",
+    html: `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <style>
+            body {
+              font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+              line-height: 1.6;
+              color: #333;
+              max-width: 600px;
+              margin: 0 auto;
+              padding: 20px;
+            }
+            .container {
+              background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+              padding: 40px;
+              border-radius: 10px;
+              box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            }
+            .content {
+              background: white;
+              padding: 30px;
+              border-radius: 8px;
+            }
+            .logo {
+              text-align: center;
+              font-size: 28px;
+              font-weight: bold;
+              color: #667eea;
+              margin-bottom: 20px;
+            }
+            .otp-box {
+              background: #f8f9fa;
+              border: 2px dashed #dc3545;
+              padding: 20px;
+              text-align: center;
+              border-radius: 8px;
+              margin: 25px 0;
+            }
+            .otp-code {
+              font-size: 32px;
+              font-weight: bold;
+              color: #dc3545;
+              letter-spacing: 8px;
+              font-family: 'Courier New', monospace;
+            }
+            .warning {
+              background: #fff3cd;
+              border-left: 4px solid #ffc107;
+              padding: 12px;
+              margin: 20px 0;
+              border-radius: 4px;
+              font-size: 14px;
+            }
+            .footer {
+              text-align: center;
+              color: #6c757d;
+              font-size: 12px;
+              margin-top: 30px;
+              padding-top: 20px;
+              border-top: 1px solid #e9ecef;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="content">
+              <div class="logo">🎓 AssignmentGhar</div>
+              <h2 style="color: #333;">Password Reset Request</h2>
+              <p>Hello ${name || "there"},</p>
+              <p>We received a request to reset your password. Please use the following code to reset your password:</p>
+              
+              <div class="otp-box">
+                <div style="font-size: 14px; color: #6c757d; margin-bottom: 10px;">Your Reset Code</div>
+                <div class="otp-code">${otp}</div>
+              </div>
+              
+              <div class="warning">
+                ⚠️ This code will expire in <strong>10 minutes</strong>. If you didn't request a password reset, please ignore this email and your password will remain unchanged.
+              </div>
+              
+              <p>For security reasons:</p>
+              <ul>
+                <li>Never share this code with anyone</li>
+                <li>AssignmentGhar staff will never ask for this code</li>
+                <li>This code is valid for one-time use only</li>
+              </ul>
+              
+              <p>If you didn't request this password reset, please contact our support team immediately.</p>
+              
+              <p>Best regards,<br><strong>AssignmentGhar Team</strong></p>
+              
+              <div class="footer">
+                <p>© ${new Date().getFullYear()} AssignmentGhar. All rights reserved.</p>
+                <p>This is an automated message, please do not reply to this email.</p>
+              </div>
+            </div>
+          </div>
+        </body>
+      </html>
+    `,
+    text: `
+Hello ${name || "there"},
+
+We received a request to reset your password. Your password reset code is: ${otp}
+
+This code will expire in 10 minutes.
+
+If you didn't request this password reset, please ignore this email.
+
+Best regards,
+AssignmentGhar Team
+    `,
+  };
+
+  try {
+    const info = await transporter.sendMail(mailOptions);
+    console.log("Password reset email sent:", info.messageId);
+    return { success: true, messageId: info.messageId };
+  } catch (error) {
+    console.error("Error sending password reset email:", error);
+    throw new Error("Failed to send password reset email");
+  }
+}
+
 export default transporter;

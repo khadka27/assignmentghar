@@ -9,10 +9,7 @@ export async function POST(request: NextRequest) {
 
     // Validation
     if (!email) {
-      return NextResponse.json(
-        { error: "Email is required" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Email is required" }, { status: 400 });
     }
 
     // Find user
@@ -25,7 +22,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           success: true,
-          message: "If an account exists with this email, a password reset code has been sent.",
+          message:
+            "If an account exists with this email, a password reset code has been sent.",
         },
         { status: 200 }
       );
@@ -58,7 +56,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         success: true,
-        message: "If an account exists with this email, a password reset code has been sent.",
+        message:
+          "If an account exists with this email, a password reset code has been sent.",
       },
       { status: 200 }
     );

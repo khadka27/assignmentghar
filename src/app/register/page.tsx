@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Eye, EyeOff, Mail, Lock, User } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock, User, ShieldCheck, Clock } from "lucide-react";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -19,6 +19,9 @@ export default function RegisterPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [step, setStep] = useState<"register" | "verify">("register");
+  const [otp, setOtp] = useState("");
+  const [resendTimer, setResendTimer] = useState(0);
 
   const [formData, setFormData] = useState({
     name: "",
