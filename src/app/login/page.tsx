@@ -9,7 +9,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Eye, EyeOff, Mail, Lock, User } from "lucide-react";
+import {
+  Eye,
+  EyeOff,
+  Mail,
+  Lock,
+  User,
+  ShieldCheck,
+  Clock,
+} from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -20,6 +28,10 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showOTPVerification, setShowOTPVerification] = useState(false);
+  const [otp, setOtp] = useState("");
+  const [resendTimer, setResendTimer] = useState(0);
+  const [unverifiedEmail, setUnverifiedEmail] = useState("");
 
   const [formData, setFormData] = useState({
     name: "",
@@ -35,6 +47,102 @@ export default function LoginPage() {
     }
   }, [status, session, router]);
 
+  // Resend timer countdown
+  useEffect(() => {
+    if (resendTimer > 0) {
+      const timer = setTimeout(() => setResendTimer(resendTimer - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [resendTimer]);
+
+  const handleSendOTP = async (email: string) => {
+    setIsLoading(true);
+    try {
+      const res = await fetch("/api/auth/resend-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        toast({
+          title: "Verification Code Sent!",
+          description: "Please check your email for the verification code.",
+        });
+        setShowOTPVerification(true);
+        setResendTimer(60);
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: data.error || "Failed to send verification code",
+        });
+      }
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Something went wrong. Please try again.",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleVerifyOTP = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    try {
+      const res = await fetch("/api/auth/verify-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: unverifiedEmail,
+          otp: otp,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        toast({
+          title: "Email Verified!",
+          description: "Your account has been verified. You can now login.",
+        });
+        setShowOTPVerification(false);
+        setOtp("");
+        setUnverifiedEmail("");
+        // Auto-fill the login form
+        setFormData({
+          ...formData,
+          email: unverifiedEmail,
+        });
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Verification Failed",
+          description: data.error || "Invalid verification code",
+        });
+      }
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Something went wrong. Please try again.",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleResendOTP = async () => {
+    if (resendTimer > 0) return;
+    await handleSendOTP(unverifiedEmail);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -49,11 +157,50 @@ export default function LoginPage() {
         });
 
         if (result?.error) {
-          toast({
-            variant: "destructive",
-            title: "Login Failed",
-            description: result.error,
-          });
+          // Parse error code from error message format: "CODE: message"
+          const errorParts = result.error.split(": ");
+          const errorCode = errorParts[0];
+          const errorMessage = errorParts.slice(1).join(": ") || result.error;
+
+          // Handle specific error codes
+          switch (errorCode) {
+            case "UNVERIFIED":
+              // Account exists but not verified - Send OTP inline
+              setUnverifiedEmail(formData.email);
+              toast({
+                title: "Email Not Verified",
+                description: "Sending verification code to your email...",
+              });
+              await handleSendOTP(formData.email);
+              // Alternative: Redirect to missing-verification page
+              // router.push(`/missing-verification?email=${encodeURIComponent(formData.email)}`);
+              break;
+
+            case "USER_NOT_FOUND":
+              toast({
+                variant: "destructive",
+                title: "User Not Found",
+                description:
+                  "No account found with this email. Please register first.",
+              });
+              break;
+
+            case "INVALID_CREDENTIALS":
+              toast({
+                variant: "destructive",
+                title: "Login Failed",
+                description: errorMessage || "Email or password incorrect",
+              });
+              break;
+
+            default:
+              // Fallback for any other errors
+              toast({
+                variant: "destructive",
+                title: "Login Failed",
+                description: errorMessage || "An error occurred during login",
+              });
+          }
         } else {
           toast({
             title: "Welcome back!",
@@ -468,6 +615,132 @@ export default function LoginPage() {
                 </p>
               </div>
             </form>
+
+            {/* OTP Verification Section */}
+            {showOTPVerification && (
+              <div className="mt-8 p-6 bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-950/30 dark:to-purple-950/30 rounded-2xl border-2 border-blue-200 dark:border-blue-800 animate-slide-down">
+                <div className="text-center space-y-4">
+                  {/* Icon */}
+                  <div className="flex justify-center">
+                    <div className="relative">
+                      <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full blur-xl opacity-50 animate-pulse"></div>
+                      <div className="relative bg-white dark:bg-gray-800 rounded-full p-4 shadow-xl">
+                        <ShieldCheck
+                          className="w-12 h-12 text-transparent bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text"
+                          style={{ fill: "url(#gradient)" }}
+                        />
+                        <svg width="0" height="0">
+                          <defs>
+                            <linearGradient
+                              id="gradient"
+                              x1="0%"
+                              y1="0%"
+                              x2="100%"
+                              y2="100%"
+                            >
+                              <stop offset="0%" stopColor="#3B82F6" />
+                              <stop offset="100%" stopColor="#9333EA" />
+                            </linearGradient>
+                          </defs>
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Title */}
+                  <div>
+                    <h3 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
+                      Verify Your Email
+                    </h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      We've sent a 6-digit verification code to
+                    </p>
+                    <p className="text-sm font-semibold text-blue-600 dark:text-blue-400 mt-1">
+                      {unverifiedEmail}
+                    </p>
+                  </div>
+
+                  {/* OTP Input */}
+                  <div className="space-y-2">
+                    <Label
+                      htmlFor="otp-input"
+                      className="text-gray-700 dark:text-gray-300 font-medium"
+                    >
+                      Verification Code
+                    </Label>
+                    <div className="relative">
+                      <Input
+                        id="otp-input"
+                        type="text"
+                        inputMode="numeric"
+                        maxLength={6}
+                        placeholder="000000"
+                        value={otp}
+                        onChange={(e) => {
+                          const value = e.target.value.replace(/\D/g, "");
+                          setOtp(value.slice(0, 6));
+                        }}
+                        className="h-14 text-center text-2xl font-bold tracking-widest bg-white dark:bg-gray-900 border-2 border-blue-300 dark:border-blue-700 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Verify Button */}
+                  <Button
+                    type="button"
+                    onClick={handleVerifyOTP}
+                    disabled={otp.length !== 6 || isLoading}
+                    className="w-full h-12 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isLoading ? (
+                      <div className="flex items-center gap-2">
+                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        <span>Verifying...</span>
+                      </div>
+                    ) : (
+                      "Verify Email"
+                    )}
+                  </Button>
+
+                  {/* Resend Button */}
+                  <div className="flex items-center justify-center gap-2 text-sm">
+                    <span className="text-gray-600 dark:text-gray-400">
+                      Didn't receive the code?
+                    </span>
+                    <button
+                      type="button"
+                      onClick={handleResendOTP}
+                      disabled={resendTimer > 0 || isLoading}
+                      className="font-semibold text-blue-600 hover:text-purple-600 dark:text-blue-400 dark:hover:text-purple-400 disabled:opacity-50 disabled:cursor-not-allowed underline transition-colors duration-300"
+                    >
+                      {resendTimer > 0 ? (
+                        <span className="flex items-center gap-1">
+                          <Clock className="w-4 h-4" />
+                          Resend in {resendTimer}s
+                        </span>
+                      ) : (
+                        "Resend Code"
+                      )}
+                    </button>
+                  </div>
+
+                  {/* Back to Login */}
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={() => {
+                      setShowOTPVerification(false);
+                      setOtp("");
+                      setUnverifiedEmail("");
+                      setResendTimer(0);
+                    }}
+                    className="w-full text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
+                  >
+                    Back to Login
+                  </Button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

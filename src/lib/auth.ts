@@ -19,34 +19,61 @@ export const authOptions: NextAuthConfig = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
+        /**
+         * Login Flow:
+         * 1. Find user by email
+         * 2. Check if password matches
+         * 3. Check if email is verified
+         *
+         * Error codes:
+         * - "USER_NOT_FOUND": Email doesn't exist
+         * - "INVALID_CREDENTIALS": Wrong password
+         * - "UNVERIFIED": Account exists but not verified
+         */
+
         if (!credentials?.email || !credentials?.password) {
-          throw new Error("Invalid credentials");
+          throw new Error(
+            "INVALID_CREDENTIALS: Email and password are required"
+          );
         }
+
+        // Normalize email
+        const normalizedEmail = credentials.email.trim().toLowerCase();
 
         const user = await prisma.user.findUnique({
           where: {
-            email: credentials.email as string,
+            email: normalizedEmail,
           },
         });
 
-        if (!user || !user.password) {
-          throw new Error("Invalid credentials");
+        // User not found
+        if (!user) {
+          throw new Error("USER_NOT_FOUND: User not found");
         }
 
-        // Check if user is verified
-        if (!user.isVerified) {
-          throw new Error("Please verify your email first");
+        // No password (OAuth user trying to login with credentials)
+        if (!user.password) {
+          throw new Error("INVALID_CREDENTIALS: Please use Google sign-in");
         }
 
+        // Verify password
         const isPasswordValid = await bcrypt.compare(
           credentials.password as string,
           user.password
         );
 
         if (!isPasswordValid) {
-          throw new Error("Invalid credentials");
+          throw new Error("INVALID_CREDENTIALS: Email or password incorrect");
         }
 
+        // Check if user is verified
+        if (!user.isVerified) {
+          throw new Error(
+            "UNVERIFIED: Account not verified. Please verify your email."
+          );
+        }
+
+        // Success
         return {
           id: user.id,
           email: user.email,
