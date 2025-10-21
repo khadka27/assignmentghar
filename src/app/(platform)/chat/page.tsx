@@ -39,6 +39,7 @@ interface Attachment {
 
 interface Message {
   id: string;
+  conversationId: string;
   content: string;
   messageType: string;
   createdAt: string;
@@ -95,22 +96,37 @@ export default function ChatPage() {
   }, [messages]);
 
   useEffect(() => {
-    if (!socket) return;
+    if (!socket || !selectedConversation) return;
 
-    // Listen for new messages
-    socket.on("new_message", (message: Message) => {
-      if (message.sender.id !== session?.user?.id) {
-        setMessages((prev) => [...prev, message]);
-        playNotificationSound();
-        toast({
-          title: `New message from ${message.sender.name}`,
-          description: message.content.substring(0, 50),
+    // Listen for new messages - for BOTH sender and receiver
+    const handleNewMessage = (message: Message) => {
+      console.log("📨 New message received:", message);
+
+      // Only add if it's for the current conversation
+      if (message.conversationId === selectedConversation.id) {
+        setMessages((prev) => {
+          // Check if message already exists to prevent duplicates
+          const exists = prev.some((m) => m.id === message.id);
+          if (exists) return prev;
+          return [...prev, message];
         });
+
+        // Show notification only if not from current user
+        if (message.sender.id !== session?.user?.id) {
+          playNotificationSound();
+          toast({
+            title: `New message from ${message.sender.name}`,
+            description: message.content.substring(0, 50),
+          });
+        }
       }
-    });
+    };
+
+    socket.on("new_message", handleNewMessage);
 
     // Listen for typing indicators
     socket.on("user_typing", ({ userId, isTyping: typing }) => {
+      console.log("⌨️ User typing:", userId, typing);
       if (userId !== session?.user?.id) {
         setIsTyping(typing);
       }
@@ -118,6 +134,7 @@ export default function ChatPage() {
 
     // Listen for user status changes
     socket.on("user_status_changed", ({ userId, isOnline }) => {
+      console.log("👤 User status changed:", userId, isOnline);
       // Update conversations list with online status
       setConversations((prev) =>
         prev.map((conv) => ({
@@ -131,6 +148,7 @@ export default function ChatPage() {
 
     // Listen for messages read receipts
     socket.on("messages_read", ({ conversationId, userId }) => {
+      console.log("✅ Messages read:", conversationId, userId);
       if (selectedConversation?.id === conversationId) {
         setMessages((prev) =>
           prev.map((msg) =>
@@ -150,6 +168,7 @@ export default function ChatPage() {
 
     // Listen for notifications
     socket.on("notification", ({ type, conversationId, message }) => {
+      console.log("🔔 Notification:", type, conversationId);
       playNotificationSound();
       toast({
         title: "New Message",
@@ -158,7 +177,7 @@ export default function ChatPage() {
     });
 
     return () => {
-      socket.off("new_message");
+      socket.off("new_message", handleNewMessage);
       socket.off("user_typing");
       socket.off("user_status_changed");
       socket.off("messages_read");
@@ -250,23 +269,37 @@ export default function ChatPage() {
     );
     if (!otherParticipant) return;
 
+    const tempMessage = messageInput;
+    setMessageInput(""); // Clear input immediately for better UX
+
     try {
       setIsSending(true);
+
+      // Emit via Socket.IO for real-time delivery
+      if (socket && isConnected) {
+        socket.emit("send_message", {
+          conversationId: selectedConversation.id,
+          senderId: session?.user?.id,
+          receiverId: otherParticipant.user.id,
+          content: tempMessage,
+          messageType: "TEXT",
+        });
+      }
+
+      // Also save to database via API (fallback if socket fails)
       const response = await axios.post(
         `/api/chat/conversations/${selectedConversation.id}/messages`,
         {
-          content: messageInput,
+          content: tempMessage,
           receiverId: otherParticipant.user.id,
         }
       );
 
-      const newMessage = response.data.message;
-      setMessages((prev) => [...prev, newMessage]);
-      setMessageInput("");
-
-      // Socket.IO will broadcast the message automatically from the server
-      // No need to emit here since the API creates the message
+      // Don't add to messages here - let the socket listener handle it
+      // This prevents duplicate messages
     } catch (error) {
+      // Restore message on error
+      setMessageInput(tempMessage);
       toast({
         variant: "destructive",
         title: "Error",
@@ -511,6 +544,24 @@ export default function ChatPage() {
                       "Online"
                     )}
                   </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div
+                    className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs ${
+                      isConnected
+                        ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
+                        : "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400"
+                    }`}
+                  >
+                    <div
+                      className={`w-2 h-2 rounded-full ${
+                        isConnected
+                          ? "bg-green-500 animate-pulse"
+                          : "bg-red-500"
+                      }`}
+                    ></div>
+                    {isConnected ? "Connected" : "Disconnected"}
+                  </div>
                 </div>
               </div>
             </div>
