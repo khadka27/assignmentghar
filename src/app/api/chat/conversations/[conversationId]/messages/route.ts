@@ -5,7 +5,7 @@ import { prisma } from "@/lib/prisma";
 // GET - Fetch messages for a specific conversation
 export async function GET(
   request: NextRequest,
-  { params }: { params: { conversationId: string } }
+  { params }: { params: Promise<{ conversationId: string }> }
 ) {
   try {
     const session = await auth();
@@ -14,7 +14,7 @@ export async function GET(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { conversationId } = params;
+    const { conversationId } = await params;
 
     // Verify user is part of this conversation
     const conversation = await prisma.conversation.findFirst({
@@ -85,7 +85,7 @@ export async function GET(
 // POST - Send a new message
 export async function POST(
   request: NextRequest,
-  { params }: { params: { conversationId: string } }
+  { params }: { params: Promise<{ conversationId: string }> }
 ) {
   try {
     const session = await auth();
@@ -94,7 +94,7 @@ export async function POST(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { conversationId } = params;
+    const { conversationId } = await params;
     const { content, receiverId, messageType = "TEXT" } = await request.json();
 
     if (!content || !receiverId) {

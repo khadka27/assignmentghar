@@ -157,25 +157,38 @@ export default function LoginPage() {
         });
 
         if (result?.error) {
+          // Debug: Log the actual error
+          console.log("Login error:", result.error);
+
           // Parse error code from error message format: "CODE: message"
           const errorParts = result.error.split(": ");
           const errorCode = errorParts[0];
           const errorMessage = errorParts.slice(1).join(": ") || result.error;
 
-          // Handle specific error codes
-          switch (errorCode) {
-            case "UNVERIFIED":
-              // Account exists but not verified - Send OTP inline
-              setUnverifiedEmail(formData.email);
-              toast({
-                title: "Email Not Verified",
-                description: "Sending verification code to your email...",
-              });
-              await handleSendOTP(formData.email);
-              // Alternative: Redirect to missing-verification page
-              // router.push(`/missing-verification?email=${encodeURIComponent(formData.email)}`);
-              break;
+          console.log("Parsed error code:", errorCode);
+          console.log("Parsed error message:", errorMessage);
 
+          // Handle specific error codes
+          // Also check if error contains "verify" or "unverified" (fallback)
+          if (
+            errorCode === "UNVERIFIED" ||
+            result.error.toLowerCase().includes("verify") ||
+            result.error.toLowerCase().includes("unverified")
+          ) {
+            // Account exists but not verified - Send OTP inline
+            console.log("UNVERIFIED detected - sending OTP");
+            setUnverifiedEmail(formData.email);
+            toast({
+              title: "Email Not Verified",
+              description: "Sending verification code to your email...",
+            });
+            await handleSendOTP(formData.email);
+            // Alternative: Redirect to missing-verification page
+            // router.push(`/missing-verification?email=${encodeURIComponent(formData.email)}`);
+            return; // Exit early
+          }
+
+          switch (errorCode) {
             case "USER_NOT_FOUND":
               toast({
                 variant: "destructive",

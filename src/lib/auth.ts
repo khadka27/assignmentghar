@@ -38,7 +38,11 @@ export const authOptions: NextAuthConfig = {
         }
 
         // Normalize email
-        const normalizedEmail = credentials.email.trim().toLowerCase();
+        const email =
+          typeof credentials.email === "string"
+            ? credentials.email
+            : String(credentials.email);
+        const normalizedEmail = email.trim().toLowerCase();
 
         const user = await prisma.user.findUnique({
           where: {
