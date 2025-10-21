@@ -8,6 +8,7 @@ import { Footer } from "@/components/footer";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
 import { SessionProvider } from "next-auth/react";
+import { SocketProvider } from "@/contexts/socket-context";
 import { usePathname } from "next/navigation";
 
 const geistSans = Geist({ subsets: ["latin"] });
@@ -46,20 +47,22 @@ export default function RootLayout({
         className={`${geistSans.className} bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors`}
       >
         <SessionProvider>
-          <ThemeProvider>
-            <a href="#main-content" className="sr-only focus:not-sr-only">
-              Skip to main content
-            </a>
-            {!isAuthPage && <Navbar />}
-            <main
-              id="main-content"
-              className={isAuthPage ? "" : "min-h-screen"}
-            >
-              {children}
-            </main>
-            {!isAuthPage && <Footer />}
-            <Toaster />
-          </ThemeProvider>
+          <SocketProvider>
+            <ThemeProvider>
+              <a href="#main-content" className="sr-only focus:not-sr-only">
+                Skip to main content
+              </a>
+              {!isAuthPage && <Navbar />}
+              <main
+                id="main-content"
+                className={isAuthPage ? "" : "min-h-screen"}
+              >
+                {children}
+              </main>
+              {!isAuthPage && <Footer />}
+              <Toaster />
+            </ThemeProvider>
+          </SocketProvider>
         </SessionProvider>
       </body>
     </html>
