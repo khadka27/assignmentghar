@@ -33,6 +33,26 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## 📚 Documentation
+
+Comprehensive documentation is available in the [`docs/`](./docs/) folder:
+
+### Quick Start
+
+- **[Quick Start Guide](./docs/QUICK_START.md)** - Get up and running quickly
+- **[Project Structure](./docs/PROJECT_STRUCTURE.md)** - Understand the codebase organization
+- **[Database Setup](./docs/DATABASE_SETUP.md)** - PostgreSQL and Prisma configuration
+
+### Features
+
+- **[Real-time Chat](./docs/REALTIME_CHAT_SETUP.md)** - Socket.IO chat implementation
+- **[Authentication](./docs/AUTH_API_DOCUMENTATION.md)** - Complete auth system with OTP
+- **[Email Verification](./docs/MISSING-VERIFICATION-FLOW.md)** - Email verification flow
+
+### More Documentation
+
+See the complete [Documentation Index](./docs/README.md) for all 18+ documentation files.
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:

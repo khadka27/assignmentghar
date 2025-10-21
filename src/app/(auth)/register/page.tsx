@@ -292,7 +292,7 @@ export default function RegisterPage() {
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl blur-xl opacity-50 group-hover:opacity-75 transition-opacity duration-300"></div>
                 <div className="relative bg-white dark:bg-gray-900 rounded-2xl p-4 shadow-xl">
                   <Image
-                    src="/logo.png"
+                    src="/Images/nav_logo.png"
                     alt="AssignmentGhar"
                     width={180}
                     height={50}
