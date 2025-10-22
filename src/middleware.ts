@@ -47,17 +47,10 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL("/", request.url));
     }
 
-    // Expert-only routes
-    if (pathname.startsWith("/expert") && userRole !== "EXPERT") {
-      return NextResponse.redirect(new URL("/", request.url));
-    }
-
     // Redirect from login page if already logged in
     if (pathname === "/login" || pathname === "/register") {
       if (userRole === "ADMIN") {
         return NextResponse.redirect(new URL("/admin", request.url));
-      } else if (userRole === "EXPERT") {
-        return NextResponse.redirect(new URL("/expert", request.url));
       } else {
         return NextResponse.redirect(new URL("/", request.url));
       }

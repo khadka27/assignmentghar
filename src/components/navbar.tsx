@@ -35,7 +35,6 @@ export function Navbar() {
   const isAuthenticated = status === "authenticated";
   const userRole = session?.user?.role;
   const isAdmin = userRole === "ADMIN";
-  const isExpert = userRole === "EXPERT";
 
   // Guest links (not logged in)
   const guestLinks = [
@@ -192,9 +191,9 @@ export function Navbar() {
                           Settings
                         </Link>
 
-                        {(isAdmin || isExpert) && (
+                        {isAdmin && (
                           <Link
-                            href={isAdmin ? "/admin" : "/expert"}
+                            href="/admin"
                             onClick={() => setIsDropdownOpen(false)}
                             className="flex items-center px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-900 hover:text-blue-600 dark:hover:text-blue-500 transition-colors"
                           >
@@ -312,9 +311,9 @@ export function Navbar() {
                   Settings
                 </Link>
 
-                {(isAdmin || isExpert) && (
+                {isAdmin && (
                   <Link
-                    href={isAdmin ? "/admin" : "/expert"}
+                    href="/admin"
                     className="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-900 rounded-lg transition-colors"
                     onClick={() => setIsOpen(false)}
                   >

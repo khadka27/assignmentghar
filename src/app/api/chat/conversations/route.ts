@@ -169,10 +169,10 @@ export async function POST(request: NextRequest) {
         data: {
           content: `Welcome ${
             currentUser.name || "Student"
-          }! 👋 Thank you for choosing AssignmentGhar. Our expert is here to help you with your academic needs. Feel free to share your questions, files, or assignment details. We're excited to support your learning journey!`,
+          }! 👋 Thank you for choosing AssignmentGhar. Our admin is here to help you with your academic needs. Feel free to share your questions, files, or assignment details. We're excited to support your learning journey!`,
           messageType: "SYSTEM",
           conversationId: conversation.id,
-          senderId: participantId, // Send from expert's side
+          senderId: participantId, // Send from admin's side
           receiverId: session.user.id,
         },
       });

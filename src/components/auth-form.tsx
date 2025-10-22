@@ -203,12 +203,6 @@ export function AuthForm() {
             title: "Welcome Admin! 👑",
             description: "Redirecting to admin dashboard...",
           });
-        } else if (userRole === "EXPERT") {
-          redirectPath = "/expert";
-          toast({
-            title: "Welcome Expert! 🎓",
-            description: "Redirecting to expert dashboard...",
-          });
         } else {
           redirectPath = searchParams.get("callbackUrl") || "/";
           toast({

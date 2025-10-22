@@ -146,14 +146,13 @@ enum OrderStatus {
 enum UserRole {
   STUDENT
   ADMIN
-  EXPERT
 }
 
 // =============================================
 // CHAT MODELS
 // =============================================
 
-// Conversation Model (One-to-One between Student and Expert)
+// Conversation Model (One-to-One between Student and Admin)
 model Conversation {
   id        String   @id @default(cuid())
   createdAt DateTime @default(now())

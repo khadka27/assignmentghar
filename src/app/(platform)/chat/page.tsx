@@ -75,8 +75,8 @@ export default function ChatPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
-  const [experts, setExperts] = useState<User[]>([]);
-  const [showExpertList, setShowExpertList] = useState(false);
+  const [admins, setAdmins] = useState<User[]>([]);
+  const [showAdminList, setShowAdminList] = useState(false);
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -87,7 +87,7 @@ export default function ChatPage() {
   useEffect(() => {
     if (session?.user?.id) {
       fetchConversations();
-      fetchExperts();
+      fetchAdmins();
     }
   }, [session]);
 
@@ -201,12 +201,12 @@ export default function ChatPage() {
     }
   };
 
-  const fetchExperts = async () => {
+  const fetchAdmins = async () => {
     try {
       const response = await axios.get("/api/chat/experts");
-      setExperts(response.data.experts);
+      setAdmins(response.data.admins);
     } catch (error) {
-      console.error("Failed to fetch experts:", error);
+      console.error("Failed to fetch admins:", error);
     }
   };
 
@@ -239,18 +239,18 @@ export default function ChatPage() {
     }
   };
 
-  const startNewConversation = async (expertId: string) => {
+  const startNewConversation = async (adminId: string) => {
     try {
       const response = await axios.post("/api/chat/conversations", {
-        participantId: expertId,
+        participantId: adminId,
       });
       const newConversation = response.data.conversation;
       setConversations((prev) => [newConversation, ...prev]);
       selectConversation(newConversation);
-      setShowExpertList(false);
+      setShowAdminList(false);
       toast({
         title: "Chat started!",
-        description: "You can now chat with the expert",
+        description: "You can now chat with the admin",
       });
     } catch (error) {
       toast({
@@ -407,7 +407,7 @@ export default function ChatPage() {
               Messages
             </h2>
             <Button
-              onClick={() => setShowExpertList(!showExpertList)}
+              onClick={() => setShowAdminList(!showAdminList)}
               className="bg-gradient-to-r from-blue-600 to-purple-600"
             >
               <Users className="w-4 h-4 mr-2" />
@@ -426,34 +426,34 @@ export default function ChatPage() {
           </div>
         </div>
 
-        {showExpertList && (
+        {showAdminList && (
           <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border-b border-gray-200 dark:border-gray-700">
             <h3 className="font-semibold mb-2 text-gray-900 dark:text-white">
-              Select an Expert
+              Select an Admin
             </h3>
             <div className="space-y-2 max-h-60 overflow-y-auto">
-              {experts.map((expert) => (
+              {admins.map((admin) => (
                 <button
-                  key={expert.id}
-                  onClick={() => startNewConversation(expert.id)}
+                  key={admin.id}
+                  onClick={() => startNewConversation(admin.id)}
                   className="w-full flex items-center gap-3 p-3 bg-white dark:bg-gray-800 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                 >
                   <Avatar>
-                    <AvatarImage src={expert.image} />
+                    <AvatarImage src={admin.image} />
                     <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-500 text-white">
-                      {expert.name?.[0] || "E"}
+                      {admin.name?.[0] || "A"}
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex-1 text-left">
                     <p className="font-medium text-gray-900 dark:text-white">
-                      {expert.name}
+                      {admin.name}
                     </p>
                     <p className="text-sm text-gray-500 dark:text-gray-400">
-                      {expert.email}
+                      {admin.email}
                     </p>
                   </div>
                   <Badge className="bg-green-100 text-green-700 dark:bg-green-900/30">
-                    Expert
+                    Admin
                   </Badge>
                 </button>
               ))}
