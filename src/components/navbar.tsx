@@ -15,17 +15,10 @@ import {
   LogOut,
   Settings,
   LayoutDashboard,
-  Shield,
+  MessageSquare,
+  FileText,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import axios from "axios";
@@ -43,65 +36,37 @@ export function Navbar() {
   const userRole = session?.user?.role;
   const isAdmin = userRole === "ADMIN";
   const isExpert = userRole === "EXPERT";
-  const isStudent = userRole === "STUDENT";
 
   // Guest links (not logged in)
   const guestLinks = [
     { href: "/", label: "Home" },
     { href: "/#services", label: "Services" },
-    { href: "/testimonials", label: "Testimonials" },
     { href: "/contact", label: "Contact" },
+    { href: "/testimonials", label: "Testimonials" },
+    { href: "/about", label: "About Us" },
   ];
 
-  // Student links
-  const studentLinks = [
+  // Authenticated user links
+  const authLinks = [
     { href: "/", label: "Home" },
-    { href: "/submit", label: "Submit Assignment" },
-    { href: "/testimonials", label: "Testimonials" },
-    { href: "/contact", label: "Contact" },
+    { href: "/submit", label: "Assignment" },
+    { href: "/chat", label: "Chat" },
+    { href: "/contact", label: "Support" },
+    { href: "/about", label: "About Us" },
   ];
 
-  // Admin links
-  const adminLinks = [
-    { href: "/", label: "Home" },
-    { href: "/admin", label: "Dashboard" },
-    { href: "/testimonials", label: "Testimonials" },
-    { href: "/contact", label: "Contact" },
-  ];
-
-  // Expert links
-  const expertLinks = [
-    { href: "/", label: "Home" },
-    { href: "/expert", label: "Dashboard" },
-    { href: "/testimonials", label: "Testimonials" },
-    { href: "/contact", label: "Contact" },
-  ];
-
-  // Determine which links to show based on role
-  const links = isAdmin
-    ? adminLinks
-    : isExpert
-    ? expertLinks
-    : isStudent
-    ? studentLinks
-    : guestLinks;
+  const links = isAuthenticated ? authLinks : guestLinks;
 
   // Handle logout
   const handleLogout = async () => {
     setIsLoggingOut(true);
     try {
-      // Call logout API
       await axios.post("/api/auth/logout");
-
-      // Sign out with NextAuth
       await signOut({ redirect: false });
-
       toast({
-        title: "Logged out successfully! 👋",
+        title: "Logged out successfully",
         description: "See you again soon!",
       });
-
-      // Redirect to home
       router.push("/");
       router.refresh();
     } catch (error) {
@@ -127,154 +92,151 @@ export function Navbar() {
   };
 
   return (
-    <nav className="sticky top-0 z-50 bg-white/95 dark:bg-gray-900/95 backdrop-blur-lg border-b border-gray-200/50 dark:border-gray-700/50 transition-all duration-300">
+    <nav className="sticky top-0 z-50 bg-white dark:bg-black border-b border-gray-200 dark:border-gray-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <Link
-            href="/"
-            className="flex items-center gap-2 transform transition-transform duration-300 hover:scale-105"
-          >
+          <Link href="/" className="flex items-center">
             <Image
               src="/Images/nav_logo.png"
-              alt="AssignmentGhar Logo"
-              width={180}
-              height={50}
+              alt="AssignmentGhar"
+              width={160}
+              height={40}
               priority
-              className="h-10 w-auto"
+              className="h-9 w-auto"
             />
           </Link>
 
           {/* Desktop Links */}
-          <div className="hidden md:flex items-center gap-8">
-            {links.map((link, index) => (
+          <div className="hidden md:flex items-center gap-6">
+            {links.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className={`text-sm font-medium transition-colors relative group ${
-                  index === 0
-                    ? "text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300"
-                    : "text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400"
-                }`}
+                className="text-sm font-medium text-gray-600 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-500 transition-colors"
               >
                 {link.label}
-                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-purple-500 group-hover:w-full transition-all duration-300"></span>
               </Link>
             ))}
           </div>
 
           {/* Right Actions */}
           <div className="flex items-center gap-3">
-            {/* Authenticated User Actions */}
+            {/* Theme Toggle */}
+            <button
+              onClick={toggleTheme}
+              className="p-2 text-gray-600 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-500 hover:bg-gray-50 dark:hover:bg-gray-900 rounded-lg transition-colors"
+              aria-label="Toggle theme"
+            >
+              {theme === "dark" ? (
+                <Sun className="w-5 h-5" />
+              ) : (
+                <Moon className="w-5 h-5" />
+              )}
+            </button>
+
+            {/* Authenticated User */}
             {isAuthenticated ? (
-              <>
-                {/* User Profile Dropdown - Your Blue/Purple Theme */}
-                <div className="relative">
-                  <button
-                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                    className="flex items-center gap-2 focus:outline-none"
-                  >
-                    <Avatar className="h-10 w-10 ring-2 ring-blue-500/30 hover:ring-blue-500/60 dark:ring-purple-500/30 dark:hover:ring-purple-500/60 transition-all">
-                      <AvatarImage
-                        src={session?.user?.image || undefined}
-                        alt={session?.user?.name || "User"}
-                      />
-                      <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-500 text-white text-sm font-semibold">
-                        {getUserInitials()}
-                      </AvatarFallback>
-                    </Avatar>
-                  </button>
+              <div className="relative">
+                <button
+                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                  className="flex items-center focus:outline-none"
+                >
+                  <Avatar className="h-9 w-9 border-2 border-gray-200 dark:border-gray-800 hover:border-blue-600 dark:hover:border-blue-500 transition-colors">
+                    <AvatarImage
+                      src={session?.user?.image || undefined}
+                      alt={session?.user?.name || "User"}
+                    />
+                    <AvatarFallback className="bg-blue-600 text-white text-sm font-medium">
+                      {getUserInitials()}
+                    </AvatarFallback>
+                  </Avatar>
+                </button>
 
-                  {/* Dropdown Menu - Flowbite Style with Your Colors */}
-                  {isDropdownOpen && (
-                    <>
-                      {/* Backdrop */}
-                      <div
-                        className="fixed inset-0 z-30"
-                        onClick={() => setIsDropdownOpen(false)}
-                      />
+                {/* Dropdown Menu */}
+                {isDropdownOpen && (
+                  <>
+                    <div
+                      className="fixed inset-0 z-30"
+                      onClick={() => setIsDropdownOpen(false)}
+                    />
 
-                      {/* Dropdown Content */}
-                      <div className="absolute right-0 mt-3 w-56 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl z-40 overflow-hidden">
-                        {/* User Info Header */}
-                        <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950/20 dark:to-purple-950/20">
-                          <p className="text-sm font-semibold text-gray-900 dark:text-white">
-                            {session?.user?.name}
-                          </p>
-                          <p className="text-xs text-gray-600 dark:text-gray-400 truncate">
-                            {session?.user?.email}
-                          </p>
-                        </div>
-
-                        {/* Menu Items */}
-                        <div className="py-1">
-                          {/* Dashboard Link for Admin/Expert */}
-                          {(isAdmin || isExpert) && (
-                            <Link
-                              href={isAdmin ? "/admin" : "/expert"}
-                              onClick={() => setIsDropdownOpen(false)}
-                              className="flex items-center px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                            >
-                              <LayoutDashboard className="mr-3 h-4 w-4" />
-                              Dashboard
-                            </Link>
-                          )}
-
-                          <Link
-                            href="/settings"
-                            onClick={() => setIsDropdownOpen(false)}
-                            className="flex items-center px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                          >
-                            <Settings className="mr-3 h-4 w-4" />
-                            Settings
-                          </Link>
-
-                          {isExpert && (
-                            <Link
-                              href="/earnings"
-                              onClick={() => setIsDropdownOpen(false)}
-                              className="flex items-center px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                            >
-                              <span className="mr-3">💰</span>
-                              Earnings
-                            </Link>
-                          )}
-                        </div>
-
-                        {/* Logout */}
-                        <div className="border-t border-gray-200 dark:border-gray-700">
-                          <button
-                            onClick={() => {
-                              setIsDropdownOpen(false);
-                              handleLogout();
-                            }}
-                            disabled={isLoggingOut}
-                            className="w-full flex items-center px-4 py-2.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors disabled:opacity-50"
-                          >
-                            <LogOut className="mr-3 h-4 w-4" />
-                            {isLoggingOut ? "Signing out..." : "Sign out"}
-                          </button>
-                        </div>
+                    <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-black border border-gray-200 dark:border-gray-800 rounded-lg shadow-sm z-40">
+                      {/* User Info */}
+                      <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-800">
+                        <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                          {session?.user?.name}
+                        </p>
+                        <p className="text-xs text-gray-500 dark:text-gray-500 truncate">
+                          {session?.user?.email}
+                        </p>
                       </div>
-                    </>
-                  )}
-                </div>
-              </>
+
+                      {/* Menu Items */}
+                      <div className="py-1">
+                        <Link
+                          href="/profile"
+                          onClick={() => setIsDropdownOpen(false)}
+                          className="flex items-center px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-900 hover:text-blue-600 dark:hover:text-blue-500 transition-colors"
+                        >
+                          <User className="mr-3 h-4 w-4" />
+                          Profile
+                        </Link>
+
+                        <Link
+                          href="/settings"
+                          onClick={() => setIsDropdownOpen(false)}
+                          className="flex items-center px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-900 hover:text-blue-600 dark:hover:text-blue-500 transition-colors"
+                        >
+                          <Settings className="mr-3 h-4 w-4" />
+                          Settings
+                        </Link>
+
+                        {(isAdmin || isExpert) && (
+                          <Link
+                            href={isAdmin ? "/admin" : "/expert"}
+                            onClick={() => setIsDropdownOpen(false)}
+                            className="flex items-center px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-900 hover:text-blue-600 dark:hover:text-blue-500 transition-colors"
+                          >
+                            <LayoutDashboard className="mr-3 h-4 w-4" />
+                            Dashboard
+                          </Link>
+                        )}
+                      </div>
+
+                      {/* Logout */}
+                      <div className="border-t border-gray-200 dark:border-gray-800 py-1">
+                        <button
+                          onClick={() => {
+                            setIsDropdownOpen(false);
+                            handleLogout();
+                          }}
+                          disabled={isLoggingOut}
+                          className="w-full flex items-center px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-900 hover:text-blue-600 dark:hover:text-blue-500 transition-colors disabled:opacity-50"
+                        >
+                          <LogOut className="mr-3 h-4 w-4" />
+                          {isLoggingOut ? "Signing out..." : "Sign out"}
+                        </button>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
             ) : (
-              // Guest Actions (Not Logged In)
+              // Guest Actions
               <>
                 <Link
                   href="/login"
-                  className="hidden sm:inline-block px-5 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                  className="hidden sm:inline-block px-4 py-2 text-sm font-medium text-gray-600 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-500 transition-colors"
                 >
                   Login
                 </Link>
 
                 <Link
                   href="/register"
-                  className="hidden sm:inline-block px-5 py-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white text-sm rounded-lg transition-all shadow-md hover:shadow-lg"
+                  className="hidden sm:inline-block px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors"
                 >
-                  Get Started
+                  Register
                 </Link>
               </>
             )}
@@ -282,9 +244,8 @@ export function Navbar() {
             {/* Mobile Menu Button */}
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="md:hidden p-2 text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
-              aria-expanded={isOpen}
-              aria-controls="mobile-menu"
+              className="md:hidden p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-900 rounded-lg transition-colors"
+              aria-label="Toggle menu"
             >
               {isOpen ? (
                 <X className="w-5 h-5" />
@@ -297,110 +258,101 @@ export function Navbar() {
 
         {/* Mobile Menu */}
         {isOpen && (
-          <div
-            id="mobile-menu"
-            className="md:hidden pb-4 pt-2 space-y-1 border-t border-gray-200 dark:border-gray-700"
-          >
-            {/* Navigation Links */}
-            {links.map((link, index) => (
+          <div className="md:hidden border-t border-gray-200 dark:border-gray-800 py-4 space-y-1">
+            {links.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className={`block px-4 py-2.5 text-sm transition-colors ${
-                  index === 0
-                    ? "text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20"
-                    : "text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900/20"
-                }`}
+                className="block px-4 py-2 text-sm font-medium text-gray-600 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-500 hover:bg-gray-50 dark:hover:bg-gray-900 rounded-lg transition-colors"
                 onClick={() => setIsOpen(false)}
               >
                 {link.label}
               </Link>
             ))}
 
-            {/* Authenticated Mobile Menu Items */}
             {isAuthenticated ? (
-              <>
-                <div className="border-t border-gray-200 dark:border-gray-700 pt-2 mt-2">
-                  {/* User Info */}
-                  <div className="px-4 py-3 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950/20 dark:to-purple-950/20">
-                    <div className="flex items-center gap-3">
-                      <Avatar className="h-10 w-10 ring-2 ring-blue-500/30 dark:ring-purple-500/30">
-                        <AvatarImage
-                          src={session?.user?.image || undefined}
-                          alt={session?.user?.name || "User"}
-                        />
-                        <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-500 text-white font-semibold text-sm">
-                          {getUserInitials()}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="flex-1">
-                        <p className="text-sm font-medium text-gray-900 dark:text-white">
-                          {session?.user?.name}
-                        </p>
-                        <p className="text-xs text-gray-600 dark:text-gray-400">
-                          {session?.user?.email}
-                        </p>
-                      </div>
+              <div className="border-t border-gray-200 dark:border-gray-800 pt-4 mt-4 space-y-1">
+                <div className="px-4 py-2 mb-2">
+                  <div className="flex items-center gap-3">
+                    <Avatar className="h-10 w-10 border-2 border-gray-200 dark:border-gray-800">
+                      <AvatarImage
+                        src={session?.user?.image || undefined}
+                        alt={session?.user?.name || "User"}
+                      />
+                      <AvatarFallback className="bg-blue-600 text-white font-medium">
+                        {getUserInitials()}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <p className="text-sm font-medium text-gray-900 dark:text-white">
+                        {session?.user?.name}
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        {session?.user?.email}
+                      </p>
                     </div>
                   </div>
+                </div>
 
-                  {/* Dashboard for Admin/Expert */}
-                  {(isAdmin || isExpert) && (
-                    <Link
-                      href={isAdmin ? "/admin" : "/expert"}
-                      className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                      onClick={() => setIsOpen(false)}
-                    >
-                      <LayoutDashboard className="w-4 h-4" />
-                      <span>Dashboard</span>
-                    </Link>
-                  )}
+                <Link
+                  href="/profile"
+                  className="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-900 rounded-lg transition-colors"
+                  onClick={() => setIsOpen(false)}
+                >
+                  <User className="w-4 h-4" />
+                  Profile
+                </Link>
 
-                  {/* Settings */}
+                <Link
+                  href="/settings"
+                  className="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-900 rounded-lg transition-colors"
+                  onClick={() => setIsOpen(false)}
+                >
+                  <Settings className="w-4 h-4" />
+                  Settings
+                </Link>
+
+                {(isAdmin || isExpert) && (
                   <Link
-                    href="/settings"
-                    className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                    href={isAdmin ? "/admin" : "/expert"}
+                    className="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-900 rounded-lg transition-colors"
                     onClick={() => setIsOpen(false)}
                   >
-                    <Settings className="w-4 h-4" />
-                    <span>Settings</span>
+                    <LayoutDashboard className="w-4 h-4" />
+                    Dashboard
                   </Link>
+                )}
 
-                  {/* Logout */}
-                  <button
-                    onClick={() => {
-                      setIsOpen(false);
-                      handleLogout();
-                    }}
-                    disabled={isLoggingOut}
-                    className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors disabled:opacity-50"
-                  >
-                    <LogOut className="w-4 h-4" />
-                    <span>{isLoggingOut ? "Signing out..." : "Sign out"}</span>
-                  </button>
-                </div>
-              </>
+                <button
+                  onClick={() => {
+                    setIsOpen(false);
+                    handleLogout();
+                  }}
+                  disabled={isLoggingOut}
+                  className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-900 rounded-lg transition-colors disabled:opacity-50"
+                >
+                  <LogOut className="w-4 h-4" />
+                  {isLoggingOut ? "Signing out..." : "Sign out"}
+                </button>
+              </div>
             ) : (
-              // Guest Mobile Menu Items
-              <>
-                <div className="border-t border-gray-200 dark:border-gray-700 pt-2 mt-2 space-y-1">
-                  <Link
-                    href="/login"
-                    className="block px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                    onClick={() => setIsOpen(false)}
-                  >
-                    Login
-                  </Link>
+              <div className="border-t border-gray-200 dark:border-gray-800 pt-4 mt-4 space-y-2">
+                <Link
+                  href="/login"
+                  className="block px-4 py-2 text-sm font-medium text-gray-600 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-500 hover:bg-gray-50 dark:hover:bg-gray-900 rounded-lg transition-colors"
+                  onClick={() => setIsOpen(false)}
+                >
+                  Login
+                </Link>
 
-                  <Link
-                    href="/register"
-                    className="block px-4 py-2.5 mx-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white text-sm text-center rounded-lg transition-all shadow-md"
-                    onClick={() => setIsOpen(false)}
-                  >
-                    Get Started
-                  </Link>
-                </div>
-              </>
+                <Link
+                  href="/register"
+                  className="block mx-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium text-center rounded-lg transition-colors"
+                  onClick={() => setIsOpen(false)}
+                >
+                  Register
+                </Link>
+              </div>
             )}
           </div>
         )}

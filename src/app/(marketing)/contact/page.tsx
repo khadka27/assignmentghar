@@ -105,13 +105,14 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-950 py-12 px-4">
-      <div className="max-w-6xl mx-auto">
+    <div className="min-h-screen bg-white dark:bg-black py-12 px-4">
+      <div className="max-w-4xl mx-auto">
+        {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-3xl md:text-4xl font-bold mb-4">
-            We Value Student Support
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-3">
+            Contact Us
           </h1>
-          <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
+          <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
             Have questions or need assistance? Get in touch with our support
             team.
           </p>
@@ -120,67 +121,103 @@ export default function ContactPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Contact Form */}
           <div className="lg:col-span-2">
-            <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-8">
-              <h2 className="text-2xl font-bold mb-6">Send us a Message</h2>
+            <div className="bg-white dark:bg-black border border-gray-200 dark:border-gray-800 rounded-lg p-8">
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
+                Send us a Message
+              </h2>
 
               {submitted ? (
-                <div className="bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-lg p-6 text-center">
-                  <p className="text-emerald-900 dark:text-emerald-100 text-lg font-semibold mb-2">
-                    ✓ Thank you for your message!
+                <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg p-6">
+                  <p className="text-gray-900 dark:text-white font-medium mb-2">
+                    Message sent successfully!
                   </p>
-                  <p className="text-emerald-800 dark:text-emerald-200">
-                    We've sent a confirmation email to{" "}
-                    {formData.email || "your inbox"}. We'll get back to you
-                    within 24-48 hours.
+                  <p className="text-gray-600 dark:text-gray-400 text-sm">
+                    We've sent a confirmation email to your inbox. We'll get
+                    back to you within 24-48 hours.
                   </p>
                 </div>
               ) : (
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  <Input
-                    label="Full Name"
-                    placeholder="John Doe"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    error={errors.name}
-                    disabled={isSubmitting}
-                  />
+                <form onSubmit={handleSubmit} className="space-y-5">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
+                      Full Name
+                    </label>
+                    <Input
+                      placeholder="John Doe"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleChange}
+                      disabled={isSubmitting}
+                      className="h-11 bg-gray-50 dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
+                    />
+                    {errors.name && (
+                      <p className="text-sm text-red-600 dark:text-red-400 mt-1">
+                        {errors.name}
+                      </p>
+                    )}
+                  </div>
 
-                  <Input
-                    label="Email Address"
-                    type="email"
-                    placeholder="you@example.com"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    error={errors.email}
-                    disabled={isSubmitting}
-                  />
+                  <div>
+                    <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
+                      Email Address
+                    </label>
+                    <Input
+                      type="email"
+                      placeholder="you@example.com"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      disabled={isSubmitting}
+                      className="h-11 bg-gray-50 dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
+                    />
+                    {errors.email && (
+                      <p className="text-sm text-red-600 dark:text-red-400 mt-1">
+                        {errors.email}
+                      </p>
+                    )}
+                  </div>
 
-                  <Input
-                    label="Subject (Optional)"
-                    placeholder="What is this about?"
-                    name="subject"
-                    value={formData.subject}
-                    onChange={handleChange}
-                    disabled={isSubmitting}
-                  />
+                  <div>
+                    <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
+                      Subject <span className="text-gray-500">(Optional)</span>
+                    </label>
+                    <Input
+                      placeholder="What is this about?"
+                      name="subject"
+                      value={formData.subject}
+                      onChange={handleChange}
+                      disabled={isSubmitting}
+                      className="h-11 bg-gray-50 dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
+                    />
+                  </div>
 
-                  <Textarea
-                    label="Message"
-                    placeholder="Tell us how we can help... (minimum 10 characters)"
-                    name="message"
-                    value={formData.message}
-                    onChange={handleChange}
-                    error={errors.message}
-                    rows={6}
-                    disabled={isSubmitting}
-                  />
+                  <div>
+                    <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
+                      Message
+                    </label>
+                    <Textarea
+                      placeholder="Tell us how we can help... (minimum 10 characters)"
+                      name="message"
+                      value={formData.message}
+                      onChange={handleChange}
+                      rows={6}
+                      disabled={isSubmitting}
+                      className="bg-gray-50 dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white focus:border-blue-600 focus:ring-1 focus:ring-blue-600 resize-none"
+                    />
+                    {errors.message && (
+                      <p className="text-sm text-red-600 dark:text-red-400 mt-1">
+                        {errors.message}
+                      </p>
+                    )}
+                    <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
+                      {formData.message.length}/5000 characters
+                    </p>
+                  </div>
 
                   <Button
                     type="submit"
-                    className="w-full"
                     disabled={isSubmitting}
+                    className="w-full h-11 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {isSubmitting ? (
                       <>
@@ -196,42 +233,49 @@ export default function ContactPage() {
             </div>
           </div>
 
-          {/* Contact Info */}
+          {/* Contact Info Sidebar */}
           <div className="space-y-6">
-            <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-6">
-              <h3 className="text-lg font-semibold mb-6">
+            {/* Contact Information */}
+            <div className="bg-white dark:bg-black border border-gray-200 dark:border-gray-800 rounded-lg p-6">
+              <h3 className="text-base font-bold text-gray-900 dark:text-white mb-5">
                 Contact Information
               </h3>
 
               <div className="space-y-4">
-                <div className="flex items-start gap-4">
-                  <Mail className="w-5 h-5 text-emerald-600 flex-shrink-0 mt-1" />
+                <div className="flex items-start gap-3">
+                  <Mail className="w-5 h-5 text-gray-400 flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="font-medium">Email</p>
+                    <p className="text-sm font-medium text-gray-900 dark:text-white mb-1">
+                      Email
+                    </p>
                     <a
                       href="mailto:assignmentghar1@gmail.com"
-                      className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
+                      className="text-sm text-blue-600 dark:text-blue-500 hover:underline"
                     >
                       assignmentghar1@gmail.com
                     </a>
                   </div>
                 </div>
 
-                <div className="flex items-start gap-4">
-                  <Phone className="w-5 h-5 text-emerald-600 flex-shrink-0 mt-1" />
+                <div className="flex items-start gap-3">
+                  <Phone className="w-5 h-5 text-gray-400 flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="font-medium">Phone</p>
-                    <p className="text-sm text-slate-600 dark:text-slate-400">
+                    <p className="text-sm font-medium text-gray-900 dark:text-white mb-1">
+                      Phone
+                    </p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
                       Available via email
                     </p>
                   </div>
                 </div>
 
-                <div className="flex items-start gap-4">
-                  <MapPin className="w-5 h-5 text-emerald-600 flex-shrink-0 mt-1" />
+                <div className="flex items-start gap-3">
+                  <MapPin className="w-5 h-5 text-gray-400 flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="font-medium">Response Time</p>
-                    <p className="text-sm text-slate-600 dark:text-slate-400">
+                    <p className="text-sm font-medium text-gray-900 dark:text-white mb-1">
+                      Response Time
+                    </p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
                       Within 24-48 hours
                     </p>
                   </div>
@@ -239,35 +283,20 @@ export default function ContactPage() {
               </div>
             </div>
 
-            {/* Social Links */}
-            <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-6">
-              <h3 className="text-lg font-semibold mb-4">Follow Us</h3>
-              <div className="flex gap-3">
-                {["Facebook", "Twitter", "LinkedIn"].map((social) => (
-                  <button
-                    key={social}
-                    className="flex-1 py-2 px-3 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-lg text-sm font-medium transition-colors"
-                  >
-                    {social}
-                  </button>
-                ))}
+            {/* Note */}
+            <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg p-6">
+              <div className="flex items-start gap-3">
+                <Mail className="w-5 h-5 text-blue-600 dark:text-blue-500 flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-sm font-medium text-gray-900 dark:text-white mb-1">
+                    Email Confirmation
+                  </p>
+                  <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
+                    You'll receive a confirmation email after submitting. Check
+                    your spam folder if you don't see it.
+                  </p>
+                </div>
               </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="mt-12 p-6 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
-          <div className="flex items-start gap-3">
-            <Mail className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
-            <div>
-              <p className="font-semibold text-blue-900 dark:text-blue-100 mb-2">
-                📧 Email Confirmation
-              </p>
-              <p className="text-sm text-blue-800 dark:text-blue-200">
-                After submitting your message, you'll receive a confirmation
-                email. Please check your spam folder if you don't see it in your
-                inbox within a few minutes.
-              </p>
             </div>
           </div>
         </div>
