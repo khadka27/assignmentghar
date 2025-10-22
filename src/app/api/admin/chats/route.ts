@@ -21,12 +21,25 @@ export async function GET() {
     }
 
     // Fetch all chat messages
-    const chats = await prisma.chat.findMany({
+    const messages = await prisma.message.findMany({
       include: {
-        user: {
+        sender: {
           select: {
+            id: true,
             name: true,
             email: true,
+          },
+        },
+        receiver: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+        conversation: {
+          select: {
+            id: true,
           },
         },
       },
@@ -35,7 +48,7 @@ export async function GET() {
       },
     });
 
-    return NextResponse.json(chats);
+    return NextResponse.json({ messages });
   } catch (error) {
     console.error("Admin chats error:", error);
     return NextResponse.json(
@@ -67,10 +80,11 @@ export async function DELETE(request: Request) {
     const { chatId } = body;
 
     if (!chatId) {
-      return NextResponse.json({ error: "Missing chat ID" }, { status: 400 });
+      return NextResponse.json({ error: "Missing message ID" }, { status: 400 });
     }
 
-    await prisma.chat.delete({
+    // Delete the message
+    await prisma.message.delete({
       where: { id: chatId },
     });
 

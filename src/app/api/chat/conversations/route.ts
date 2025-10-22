@@ -75,12 +75,54 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    console.log(
+      `Creating conversation. Session user: ${session.user.id} (${session.user.email})`
+    );
+
     const { participantId } = await request.json();
+
+    console.log(`Participant ID: ${participantId}`);
 
     if (!participantId) {
       return NextResponse.json(
         { error: "Participant ID is required" },
         { status: 400 }
+      );
+    }
+
+    // Validate that the current user exists
+    const currentUser = await prisma.user.findUnique({
+      where: { id: session.user.id },
+    });
+
+    if (!currentUser) {
+      console.error(`Current user not found. Session ID: ${session.user.id}`);
+      return NextResponse.json(
+        {
+          error: "Current user not found in database",
+          details: "Please log out and log back in",
+          sessionUserId: session.user.id,
+        },
+        { status: 404 }
+      );
+    }
+
+    // Validate that the participant user exists
+    const participantUser = await prisma.user.findUnique({
+      where: { id: participantId },
+    });
+
+    if (!participantUser) {
+      console.error(
+        `Participant user not found. Participant ID: ${participantId}`
+      );
+      return NextResponse.json(
+        {
+          error: "Participant user not found",
+          details: "The selected user may have been deleted",
+          participantId: participantId,
+        },
+        { status: 404 }
       );
     }
 
@@ -160,27 +202,23 @@ export async function POST(request: NextRequest) {
     });
 
     // Send welcome message from system
-    const currentUser = await prisma.user.findUnique({
-      where: { id: session.user.id },
+    await prisma.message.create({
+      data: {
+        content: `Welcome ${
+          currentUser.name || "Student"
+        }! 👋 Thank you for choosing AssignmentGhar. Our admin is here to help you with your academic needs. Feel free to share your questions, files, or assignment details. We're excited to support your learning journey!`,
+        messageType: "SYSTEM",
+        conversationId: conversation.id,
+        senderId: participantId, // Send from admin's side
+        receiverId: session.user.id,
+      },
     });
-
-    if (currentUser) {
-      await prisma.message.create({
-        data: {
-          content: `Welcome ${
-            currentUser.name || "Student"
-          }! 👋 Thank you for choosing AssignmentGhar. Our admin is here to help you with your academic needs. Feel free to share your questions, files, or assignment details. We're excited to support your learning journey!`,
-          messageType: "SYSTEM",
-          conversationId: conversation.id,
-          senderId: participantId, // Send from admin's side
-          receiverId: session.user.id,
-        },
-      });
-    }
 
     return NextResponse.json({ conversation }, { status: 201 });
   } catch (error) {
     console.error("Error creating conversation:", error);
+    console.error("Session user ID:", session?.user?.id);
+    console.error("Participant ID:", participantId);
     return NextResponse.json(
       { error: "Failed to create conversation" },
       { status: 500 }

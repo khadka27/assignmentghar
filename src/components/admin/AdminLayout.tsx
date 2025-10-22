@@ -42,7 +42,7 @@ const navItems = [
   },
   {
     title: "Chat with Students",
-    href: "/chat",
+    href: "/admin/chat-students",
     icon: MessageSquare,
   },
   {

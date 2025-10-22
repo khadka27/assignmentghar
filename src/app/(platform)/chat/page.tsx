@@ -242,6 +242,16 @@ export default function ChatPage() {
 
   const startNewConversation = async (userId: string) => {
     try {
+      console.log("Starting conversation with user:", userId);
+      if (!userId) {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Invalid user selected",
+        });
+        return;
+      }
+
       const response = await axios.post("/api/chat/conversations", {
         participantId: userId,
       });
@@ -253,11 +263,19 @@ export default function ChatPage() {
         title: "Chat started!",
         description: "You can now start chatting",
       });
-    } catch (error) {
+    } catch (error: any) {
+      console.error("Failed to start conversation:", error);
+      console.error("Error response:", error.response?.data);
+      const errorData = error.response?.data;
+      const errorMessage = errorData?.error || "Failed to start conversation";
+      const errorDetails = errorData?.details || "";
+
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Failed to start conversation",
+        description: errorDetails
+          ? `${errorMessage}: ${errorDetails}`
+          : errorMessage,
       });
     }
   };
@@ -480,7 +498,7 @@ export default function ChatPage() {
                 No conversations yet
               </p>
               <Button
-                onClick={() => setShowExpertList(true)}
+                onClick={() => setShowUserList(true)}
                 className="bg-gradient-to-r from-blue-600 to-purple-600"
               >
                 Start Your First Chat
@@ -489,7 +507,7 @@ export default function ChatPage() {
           ) : (
             conversations.map((conversation) => {
               const other = getOtherParticipant(conversation);
-              const lastMessage = conversation.messages[0];
+              const lastMessage = conversation.messages?.[0];
 
               return (
                 <button
@@ -722,10 +740,10 @@ export default function ChatPage() {
             </h3>
             <p className="text-gray-500 dark:text-gray-400 mb-6 max-w-md">
               Select a conversation from the sidebar to start chatting, or
-              create a new conversation with an expert.
+              create a new conversation with an admin.
             </p>
             <Button
-              onClick={() => setShowExpertList(true)}
+              onClick={() => setShowUserList(true)}
               className="bg-gradient-to-r from-blue-600 to-purple-600"
             >
               <Users className="w-4 h-4 mr-2" />

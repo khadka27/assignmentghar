@@ -32,11 +32,22 @@ import {
 
 interface ChatMessage {
   id: string;
-  message: string;
+  content: string | null;
+  messageType: string;
+  conversationId: string;
   createdAt: string;
-  user: {
+  sender: {
+    id: string;
     name: string | null;
     email: string;
+  };
+  receiver: {
+    id: string;
+    name: string | null;
+    email: string;
+  };
+  conversation: {
+    id: string;
   };
 }
 
@@ -56,7 +67,7 @@ export default function ChatManagement() {
       const response = await fetch("/api/admin/chats");
       if (response.ok) {
         const data = await response.json();
-        setChats(data);
+        setChats(data.messages || []);
       }
     } catch (error) {
       console.error("Failed to fetch chats:", error);
@@ -98,9 +109,11 @@ export default function ChatManagement() {
 
   const filteredChats = chats.filter(
     (chat) =>
-      chat.message.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      chat.user.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      chat.user.email.toLowerCase().includes(searchQuery.toLowerCase())
+      chat.content?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      chat.sender.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      chat.sender.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      chat.receiver.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      chat.receiver.email.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   if (loading) {
@@ -171,7 +184,11 @@ export default function ChatManagement() {
                 Active Users
               </p>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                {new Set(chats.map((c) => c.user.email)).size}
+                {
+                  new Set(
+                    chats.flatMap((c) => [c.sender.email, c.receiver.email])
+                  ).size
+                }
               </p>
             </div>
           </div>
@@ -184,7 +201,8 @@ export default function ChatManagement() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>User</TableHead>
+                <TableHead>From</TableHead>
+                <TableHead>To</TableHead>
                 <TableHead>Message</TableHead>
                 <TableHead>Date</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
@@ -196,21 +214,38 @@ export default function ChatManagement() {
                   <TableCell>
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-semibold">
-                        {chat.user.name?.charAt(0) || chat.user.email.charAt(0)}
+                        {chat.sender.name?.charAt(0) ||
+                          chat.sender.email.charAt(0)}
                       </div>
                       <div>
                         <p className="font-medium text-gray-900 dark:text-white">
-                          {chat.user.name || "No name"}
+                          {chat.sender.name || "No name"}
                         </p>
                         <p className="text-sm text-gray-500">
-                          {chat.user.email}
+                          {chat.sender.email}
+                        </p>
+                      </div>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-purple-600 rounded-full flex items-center justify-center text-white font-semibold">
+                        {chat.receiver.name?.charAt(0) ||
+                          chat.receiver.email.charAt(0)}
+                      </div>
+                      <div>
+                        <p className="font-medium text-gray-900 dark:text-white">
+                          {chat.receiver.name || "No name"}
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          {chat.receiver.email}
                         </p>
                       </div>
                     </div>
                   </TableCell>
                   <TableCell>
                     <p className="max-w-md truncate text-gray-700 dark:text-gray-300">
-                      {chat.message}
+                      {chat.content || "(No content)"}
                     </p>
                   </TableCell>
                   <TableCell>
@@ -252,25 +287,45 @@ export default function ChatManagement() {
           <DialogHeader>
             <DialogTitle>Chat Message Details</DialogTitle>
             <DialogDescription>
-              From {selectedChat?.user.name || selectedChat?.user.email}
+              From {selectedChat?.sender.name || selectedChat?.sender.email} to{" "}
+              {selectedChat?.receiver.name || selectedChat?.receiver.email}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div>
               <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-                User
+                Sender
               </p>
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-semibold">
-                  {selectedChat?.user.name?.charAt(0) ||
-                    selectedChat?.user.email.charAt(0)}
+                  {selectedChat?.sender.name?.charAt(0) ||
+                    selectedChat?.sender.email.charAt(0)}
                 </div>
                 <div>
                   <p className="font-medium text-gray-900 dark:text-white">
-                    {selectedChat?.user.name || "No name"}
+                    {selectedChat?.sender.name || "No name"}
                   </p>
                   <p className="text-sm text-gray-500">
-                    {selectedChat?.user.email}
+                    {selectedChat?.sender.email}
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                Receiver
+              </p>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-purple-600 rounded-full flex items-center justify-center text-white font-semibold">
+                  {selectedChat?.receiver.name?.charAt(0) ||
+                    selectedChat?.receiver.email.charAt(0)}
+                </div>
+                <div>
+                  <p className="font-medium text-gray-900 dark:text-white">
+                    {selectedChat?.receiver.name || "No name"}
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    {selectedChat?.receiver.email}
                   </p>
                 </div>
               </div>
@@ -280,7 +335,7 @@ export default function ChatManagement() {
                 Message
               </p>
               <p className="text-gray-900 dark:text-white">
-                {selectedChat?.message}
+                {selectedChat?.content || "(No content)"}
               </p>
             </div>
             <div>

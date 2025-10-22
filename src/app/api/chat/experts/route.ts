@@ -45,6 +45,11 @@ export async function GET(request: NextRequest) {
       });
     }
 
+    console.log(
+      `Found ${users.length} users for role ${userRole}:`,
+      users.map((u) => ({ id: u.id, name: u.name, role: u.role }))
+    );
+
     return NextResponse.json({ users }, { status: 200 });
   } catch (error) {
     console.error("Error fetching users:", error);
