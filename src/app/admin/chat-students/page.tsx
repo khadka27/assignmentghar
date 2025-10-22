@@ -230,7 +230,10 @@ export default function AdminChatWithStudentsPage() {
     }
   };
 
-  const startNewConversation = async (userId: string, chatItem: ChatListItem) => {
+  const startNewConversation = async (
+    userId: string,
+    chatItem: ChatListItem
+  ) => {
     try {
       console.log("Starting conversation with student:", userId);
       if (!userId) {
@@ -246,22 +249,20 @@ export default function AdminChatWithStudentsPage() {
         participantId: userId,
       });
       const newConversation = response.data.conversation;
-      
+
       // Update the chat item with the new conversation
       const updatedChatItem = {
         ...chatItem,
         conversation: newConversation,
       };
-      
+
       setChatList((prev) =>
-        prev.map((item) =>
-          item.user.id === userId ? updatedChatItem : item
-        )
+        prev.map((item) => (item.user.id === userId ? updatedChatItem : item))
       );
-      
+
       setSelectedChat(updatedChatItem);
       fetchMessages(newConversation.id);
-      
+
       if (socket && session?.user?.id) {
         socket.emit("join_conversation", {
           conversationId: newConversation.id,
@@ -286,7 +287,8 @@ export default function AdminChatWithStudentsPage() {
   };
 
   const sendMessage = async () => {
-    if (!messageInput.trim() || !selectedChat?.conversation || isSending) return;
+    if (!messageInput.trim() || !selectedChat?.conversation || isSending)
+      return;
 
     const tempMessage = messageInput;
     setMessageInput("");
@@ -434,95 +436,51 @@ export default function AdminChatWithStudentsPage() {
           {/* Students List Sidebar */}
           <div className="w-80 border-r border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 flex flex-col">
             <div className="p-4 border-b border-gray-200 dark:border-gray-700">
-              <Button
-                onClick={() => setShowStudentList(!showStudentList)}
-                className="w-full bg-gradient-to-r from-blue-600 to-purple-600"
-              >
-                <Users className="w-4 h-4 mr-2" />
-                New Conversation
-              </Button>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+                Students
+              </h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                Click to chat
+              </p>
             </div>
 
-            {showStudentList && (
-              <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border-b border-gray-200 dark:border-gray-700">
-                <h3 className="font-semibold mb-2 text-gray-900 dark:text-white">
-                  Select a Student
-                </h3>
-                <div className="space-y-2 max-h-60 overflow-y-auto">
-                  {availableStudents.map((student) => (
-                    <button
-                      key={student.id}
-                      onClick={() => startNewConversation(student.id)}
-                      className="w-full flex items-center gap-3 p-3 bg-white dark:bg-gray-800 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-                    >
-                      <Avatar>
-                        <AvatarImage src={student.image} />
-                        <AvatarFallback className="bg-gradient-to-br from-green-500 to-emerald-500 text-white">
-                          {student.name?.[0] || "S"}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="flex-1 text-left">
-                        <p className="font-medium text-gray-900 dark:text-white">
-                          {student.name}
-                        </p>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">
-                          {student.email}
-                        </p>
-                      </div>
-                      <Badge className="bg-green-100 text-green-700 dark:bg-green-900/30">
-                        Student
-                      </Badge>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Conversations List */}
+            {/* Students List */}
             <div className="flex-1 overflow-y-auto">
-              {isLoading && conversations.length === 0 ? (
+              {isLoading && chatList.length === 0 ? (
                 <div className="flex items-center justify-center h-full">
                   <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
                 </div>
-              ) : conversations.length === 0 ? (
+              ) : chatList.length === 0 ? (
                 <div className="flex flex-col items-center justify-center h-full p-8 text-center">
                   <MessageSquare className="w-16 h-16 text-gray-300 dark:text-gray-600 mb-4" />
-                  <p className="text-gray-500 dark:text-gray-400 mb-4">
-                    No conversations yet
+                  <p className="text-gray-500 dark:text-gray-400">
+                    No students available
                   </p>
-                  <Button
-                    onClick={() => setShowStudentList(true)}
-                    variant="outline"
-                  >
-                    Start First Chat
-                  </Button>
                 </div>
               ) : (
-                conversations.map((conversation) => {
-                  const other = getOtherParticipant(conversation);
-                  const lastMessage = conversation.messages?.[0];
+                chatList.map((chatItem) => {
+                  const lastMessage = chatItem.lastMessage;
+                  const isSelected = selectedChat?.user.id === chatItem.user.id;
 
                   return (
                     <button
-                      key={conversation.id}
-                      onClick={() => selectConversation(conversation)}
+                      key={chatItem.user.id}
+                      onClick={() => selectChat(chatItem)}
                       className={`w-full p-4 border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors ${
-                        selectedConversation?.id === conversation.id
-                          ? "bg-blue-50 dark:bg-blue-900/20"
-                          : ""
+                        isSelected ? "bg-blue-50 dark:bg-blue-900/20" : ""
                       }`}
                     >
                       <div className="flex items-center gap-3">
                         <Avatar className="w-12 h-12">
-                          <AvatarImage src={other?.image} />
+                          <AvatarImage src={chatItem.user.image} />
                           <AvatarFallback className="bg-gradient-to-br from-green-500 to-emerald-500 text-white">
-                            {other?.name?.[0] || "S"}
+                            {chatItem.user.name?.[0] || "S"}
                           </AvatarFallback>
                         </Avatar>
                         <div className="flex-1 text-left overflow-hidden">
                           <div className="flex items-center justify-between mb-1">
                             <p className="font-semibold text-gray-900 dark:text-white truncate">
-                              {other?.name || "Unknown Student"}
+                              {chatItem.user.name}
                             </p>
                             {lastMessage && (
                               <span className="text-xs text-gray-500 dark:text-gray-400">
@@ -530,9 +488,13 @@ export default function AdminChatWithStudentsPage() {
                               </span>
                             )}
                           </div>
-                          {lastMessage && (
+                          {lastMessage ? (
                             <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
                               {lastMessage.content}
+                            </p>
+                          ) : (
+                            <p className="text-sm text-gray-400 dark:text-gray-500 italic">
+                              Click to start chatting
                             </p>
                           )}
                         </div>
@@ -546,24 +508,20 @@ export default function AdminChatWithStudentsPage() {
 
           {/* Chat Area */}
           <div className="flex-1 flex flex-col bg-white dark:bg-gray-800">
-            {selectedConversation ? (
+            {selectedChat ? (
               <>
                 {/* Chat Header */}
                 <div className="p-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
                   <div className="flex items-center gap-3">
                     <Avatar className="w-10 h-10">
-                      <AvatarImage
-                        src={getOtherParticipant(selectedConversation)?.image}
-                      />
+                      <AvatarImage src={selectedChat.user.image} />
                       <AvatarFallback className="bg-gradient-to-br from-green-500 to-emerald-500 text-white">
-                        {getOtherParticipant(selectedConversation)?.name?.[0] ||
-                          "S"}
+                        {selectedChat.user.name?.[0] || "S"}
                       </AvatarFallback>
                     </Avatar>
                     <div className="flex-1">
                       <h3 className="font-semibold text-gray-900 dark:text-white">
-                        {getOtherParticipant(selectedConversation)?.name ||
-                          "Unknown Student"}
+                        {selectedChat.user.name}
                       </h3>
                       <p className="text-sm text-gray-500 dark:text-gray-400">
                         {isTyping ? (
@@ -722,17 +680,9 @@ export default function AdminChatWithStudentsPage() {
                 <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
                   Select a Student to Chat
                 </h3>
-                <p className="text-gray-500 dark:text-gray-400 mb-6 max-w-md">
-                  Choose a conversation from the sidebar or start a new one with
-                  a student
+                <p className="text-gray-500 dark:text-gray-400 max-w-md">
+                  Click on any student from the sidebar to start chatting
                 </p>
-                <Button
-                  onClick={() => setShowStudentList(true)}
-                  className="bg-gradient-to-r from-blue-600 to-purple-600"
-                >
-                  <Users className="w-4 h-4 mr-2" />
-                  Start New Chat
-                </Button>
               </div>
             )}
           </div>

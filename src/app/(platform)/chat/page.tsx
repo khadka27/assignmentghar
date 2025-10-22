@@ -29,6 +29,12 @@ interface User {
   role: string;
 }
 
+interface ChatListItem {
+  user: User;
+  conversation: Conversation | null;
+  lastMessage: Message | null;
+}
+
 interface Attachment {
   id: string;
   fileName: string;
@@ -67,16 +73,13 @@ export default function ChatPage() {
   const { socket, isConnected } = useSocket();
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const [conversations, setConversations] = useState<Conversation[]>([]);
-  const [selectedConversation, setSelectedConversation] =
-    useState<Conversation | null>(null);
+  const [chatList, setChatList] = useState<ChatListItem[]>([]);
+  const [selectedChat, setSelectedChat] = useState<ChatListItem | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [messageInput, setMessageInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
-  const [availableUsers, setAvailableUsers] = useState<User[]>([]);
-  const [showUserList, setShowUserList] = useState(false);
   const userRole = session?.user?.role;
 
   useEffect(() => {
@@ -87,8 +90,7 @@ export default function ChatPage() {
 
   useEffect(() => {
     if (session?.user?.id) {
-      fetchConversations();
-      fetchAvailableUsers();
+      fetchChatList();
     }
   }, [session]);
 
@@ -97,14 +99,14 @@ export default function ChatPage() {
   }, [messages]);
 
   useEffect(() => {
-    if (!socket || !selectedConversation) return;
+    if (!socket || !selectedChat?.conversation) return;
 
     // Listen for new messages - for BOTH sender and receiver
     const handleNewMessage = (message: Message) => {
       console.log("📨 New message received:", message);
 
       // Only add if it's for the current conversation
-      if (message.conversationId === selectedConversation.id) {
+      if (message.conversationId === selectedChat.conversation!.id) {
         setMessages((prev) => {
           // Check if message already exists to prevent duplicates
           const exists = prev.some((m) => m.id === message.id);
@@ -136,21 +138,20 @@ export default function ChatPage() {
     // Listen for user status changes
     socket.on("user_status_changed", ({ userId, isOnline }) => {
       console.log("👤 User status changed:", userId, isOnline);
-      // Update conversations list with online status
-      setConversations((prev) =>
-        prev.map((conv) => ({
-          ...conv,
-          participants: conv.participants.map((p) =>
-            p.user.id === userId ? { ...p, user: { ...p.user, isOnline } } : p
-          ),
-        }))
+      // Update chat list with online status
+      setChatList((prev) =>
+        prev.map((chat) =>
+          chat.user.id === userId
+            ? { ...chat, user: { ...chat.user, isOnline } }
+            : chat
+        )
       );
     });
 
     // Listen for messages read receipts
     socket.on("messages_read", ({ conversationId, userId }) => {
       console.log("✅ Messages read:", conversationId, userId);
-      if (selectedConversation?.id === conversationId) {
+      if (selectedChat.conversation?.id === conversationId) {
         setMessages((prev) =>
           prev.map((msg) =>
             msg.readReceipts?.some((r: any) => r.userId === userId)
@@ -184,30 +185,21 @@ export default function ChatPage() {
       socket.off("messages_read");
       socket.off("notification");
     };
-  }, [socket, selectedConversation, session, toast]);
+  }, [socket, selectedChat, session, toast]);
 
-  const fetchConversations = async () => {
+  const fetchChatList = async () => {
     try {
       setIsLoading(true);
-      const response = await axios.get("/api/chat/conversations");
-      setConversations(response.data.conversations);
+      const response = await axios.get("/api/chat/list");
+      setChatList(response.data.chatList);
     } catch (error) {
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Failed to load conversations",
+        description: "Failed to load chat list",
       });
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  const fetchAvailableUsers = async () => {
-    try {
-      const response = await axios.get("/api/chat/experts");
-      setAvailableUsers(response.data.users);
-    } catch (error) {
-      console.error("Failed to fetch users:", error);
     }
   };
 
@@ -229,18 +221,27 @@ export default function ChatPage() {
     }
   };
 
-  const selectConversation = (conversation: Conversation) => {
-    setSelectedConversation(conversation);
-    fetchMessages(conversation.id);
-    if (socket && session?.user?.id) {
-      socket.emit("join_conversation", {
-        conversationId: conversation.id,
-        userId: session.user.id,
-      });
+  const selectChat = async (chatItem: ChatListItem) => {
+    // If conversation exists, load it
+    if (chatItem.conversation) {
+      setSelectedChat(chatItem);
+      fetchMessages(chatItem.conversation.id);
+      if (socket && session?.user?.id) {
+        socket.emit("join_conversation", {
+          conversationId: chatItem.conversation.id,
+          userId: session.user.id,
+        });
+      }
+    } else {
+      // Create new conversation
+      await startNewConversation(chatItem.user.id, chatItem);
     }
   };
 
-  const startNewConversation = async (userId: string) => {
+  const startNewConversation = async (
+    userId: string,
+    chatItem: ChatListItem
+  ) => {
     try {
       console.log("Starting conversation with user:", userId);
       if (!userId) {
@@ -256,13 +257,26 @@ export default function ChatPage() {
         participantId: userId,
       });
       const newConversation = response.data.conversation;
-      setConversations((prev) => [newConversation, ...prev]);
-      selectConversation(newConversation);
-      setShowUserList(false);
-      toast({
-        title: "Chat started!",
-        description: "You can now start chatting",
-      });
+
+      // Update the chat item with the new conversation
+      const updatedChatItem = {
+        ...chatItem,
+        conversation: newConversation,
+      };
+
+      setChatList((prev) =>
+        prev.map((item) => (item.user.id === userId ? updatedChatItem : item))
+      );
+
+      setSelectedChat(updatedChatItem);
+      fetchMessages(newConversation.id);
+
+      if (socket && session?.user?.id) {
+        socket.emit("join_conversation", {
+          conversationId: newConversation.id,
+          userId: session.user.id,
+        });
+      }
     } catch (error: any) {
       console.error("Failed to start conversation:", error);
       console.error("Error response:", error.response?.data);
@@ -281,12 +295,8 @@ export default function ChatPage() {
   };
 
   const sendMessage = async () => {
-    if (!messageInput.trim() || !selectedConversation || isSending) return;
-
-    const otherParticipant = selectedConversation.participants.find(
-      (p) => p.user.id !== session?.user?.id
-    );
-    if (!otherParticipant) return;
+    if (!messageInput.trim() || !selectedChat?.conversation || isSending)
+      return;
 
     const tempMessage = messageInput;
     setMessageInput(""); // Clear input immediately for better UX
@@ -297,20 +307,20 @@ export default function ChatPage() {
       // Emit via Socket.IO for real-time delivery
       if (socket && isConnected) {
         socket.emit("send_message", {
-          conversationId: selectedConversation.id,
+          conversationId: selectedChat.conversation.id,
           senderId: session?.user?.id,
-          receiverId: otherParticipant.user.id,
+          receiverId: selectedChat.user.id,
           content: tempMessage,
           messageType: "TEXT",
         });
       }
 
       // Also save to database via API (fallback if socket fails)
-      const response = await axios.post(
-        `/api/chat/conversations/${selectedConversation.id}/messages`,
+      await axios.post(
+        `/api/chat/conversations/${selectedChat.conversation.id}/messages`,
         {
           content: tempMessage,
-          receiverId: otherParticipant.user.id,
+          receiverId: selectedChat.user.id,
         }
       );
 
@@ -333,20 +343,15 @@ export default function ChatPage() {
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     const file = event.target.files?.[0];
-    if (!file || !selectedConversation) return;
-
-    const otherParticipant = selectedConversation.participants.find(
-      (p) => p.user.id !== session?.user?.id
-    );
-    if (!otherParticipant) return;
+    if (!file || !selectedChat?.conversation) return;
 
     try {
       const formData = new FormData();
       formData.append("file", file);
-      formData.append("receiverId", otherParticipant.user.id);
+      formData.append("receiverId", selectedChat.user.id);
 
       const response = await axios.post(
-        `/api/chat/conversations/${selectedConversation.id}/upload`,
+        `/api/chat/conversations/${selectedChat.conversation.id}/upload`,
         formData,
         { headers: { "Content-Type": "multipart/form-data" } }
       );
@@ -370,16 +375,16 @@ export default function ChatPage() {
   };
 
   const handleTyping = () => {
-    if (socket && selectedConversation) {
+    if (socket && selectedChat?.conversation) {
       socket.emit("typing", {
-        conversationId: selectedConversation.id,
+        conversationId: selectedChat.conversation.id,
         userId: session?.user?.id,
         isTyping: true,
       });
 
       setTimeout(() => {
         socket.emit("typing", {
-          conversationId: selectedConversation.id,
+          conversationId: selectedChat.conversation!.id,
           userId: session?.user?.id,
           isTyping: false,
         });
@@ -402,12 +407,6 @@ export default function ChatPage() {
     }
   };
 
-  const getOtherParticipant = (conversation: Conversation) => {
-    return conversation.participants.find(
-      (p) => p.user.id !== session?.user?.id
-    )?.user;
-  };
-
   if (status === "loading") {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -425,13 +424,6 @@ export default function ChatPage() {
               <MessageSquare className="w-6 h-6 text-blue-600" />
               Messages
             </h2>
-            <Button
-              onClick={() => setShowUserList(!showUserList)}
-              className="bg-gradient-to-r from-blue-600 to-purple-600"
-            >
-              <Users className="w-4 h-4 mr-2" />
-              New
-            </Button>
           </div>
           <div className="flex items-center gap-2 text-sm">
             <div
@@ -445,91 +437,44 @@ export default function ChatPage() {
           </div>
         </div>
 
-        {showUserList && (
-          <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border-b border-gray-200 dark:border-gray-700">
-            <h3 className="font-semibold mb-2 text-gray-900 dark:text-white">
-              {userRole === "ADMIN" ? "Select a Student" : "Select an Admin"}
-            </h3>
-            <div className="space-y-2 max-h-60 overflow-y-auto">
-              {availableUsers.map((user) => (
-                <button
-                  key={user.id}
-                  onClick={() => startNewConversation(user.id)}
-                  className="w-full flex items-center gap-3 p-3 bg-white dark:bg-gray-800 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-                >
-                  <Avatar>
-                    <AvatarImage src={user.image} />
-                    <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-500 text-white">
-                      {user.name?.[0] || "U"}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1 text-left">
-                    <p className="font-medium text-gray-900 dark:text-white">
-                      {user.name}
-                    </p>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">
-                      {user.email}
-                    </p>
-                  </div>
-                  <Badge
-                    className={
-                      user.role === "ADMIN"
-                        ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30"
-                        : "bg-green-100 text-green-700 dark:bg-green-900/30"
-                    }
-                  >
-                    {user.role === "ADMIN" ? "Admin" : "Student"}
-                  </Badge>
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-
         <div className="flex-1 overflow-y-auto">
-          {isLoading && conversations.length === 0 ? (
+          {isLoading && chatList.length === 0 ? (
             <div className="flex items-center justify-center h-full">
               <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
             </div>
-          ) : conversations.length === 0 ? (
+          ) : chatList.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full p-8 text-center">
               <MessageSquare className="w-16 h-16 text-gray-300 dark:text-gray-600 mb-4" />
               <p className="text-gray-500 dark:text-gray-400 mb-4">
-                No conversations yet
+                {userRole === "ADMIN"
+                  ? "No students available"
+                  : "No admins available"}
               </p>
-              <Button
-                onClick={() => setShowUserList(true)}
-                className="bg-gradient-to-r from-blue-600 to-purple-600"
-              >
-                Start Your First Chat
-              </Button>
             </div>
           ) : (
-            conversations.map((conversation) => {
-              const other = getOtherParticipant(conversation);
-              const lastMessage = conversation.messages?.[0];
+            chatList.map((chatItem) => {
+              const lastMessage = chatItem.lastMessage;
+              const isSelected = selectedChat?.user.id === chatItem.user.id;
 
               return (
                 <button
-                  key={conversation.id}
-                  onClick={() => selectConversation(conversation)}
+                  key={chatItem.user.id}
+                  onClick={() => selectChat(chatItem)}
                   className={`w-full p-4 border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors ${
-                    selectedConversation?.id === conversation.id
-                      ? "bg-blue-50 dark:bg-blue-900/20"
-                      : ""
+                    isSelected ? "bg-blue-50 dark:bg-blue-900/20" : ""
                   }`}
                 >
                   <div className="flex items-center gap-3">
                     <Avatar className="w-12 h-12">
-                      <AvatarImage src={other?.image} />
+                      <AvatarImage src={chatItem.user.image} />
                       <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-500 text-white">
-                        {other?.name?.[0] || "U"}
+                        {chatItem.user.name?.[0] || "U"}
                       </AvatarFallback>
                     </Avatar>
                     <div className="flex-1 text-left overflow-hidden">
                       <div className="flex items-center justify-between mb-1">
                         <p className="font-semibold text-gray-900 dark:text-white truncate">
-                          {other?.name || "Unknown User"}
+                          {chatItem.user.name}
                         </p>
                         {lastMessage && (
                           <span className="text-xs text-gray-500 dark:text-gray-400">
@@ -537,9 +482,13 @@ export default function ChatPage() {
                           </span>
                         )}
                       </div>
-                      {lastMessage && (
+                      {lastMessage ? (
                         <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
                           {lastMessage.content}
+                        </p>
+                      ) : (
+                        <p className="text-sm text-gray-400 dark:text-gray-500 italic">
+                          Click to start chatting
                         </p>
                       )}
                     </div>
@@ -552,23 +501,19 @@ export default function ChatPage() {
       </div>
 
       <div className="flex-1 flex flex-col bg-white dark:bg-gray-800">
-        {selectedConversation ? (
+        {selectedChat ? (
           <>
             <div className="p-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
               <div className="flex items-center gap-3">
                 <Avatar className="w-10 h-10">
-                  <AvatarImage
-                    src={getOtherParticipant(selectedConversation)?.image}
-                  />
+                  <AvatarImage src={selectedChat.user.image} />
                   <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-500 text-white">
-                    {getOtherParticipant(selectedConversation)?.name?.[0] ||
-                      "U"}
+                    {selectedChat.user.name?.[0] || "U"}
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex-1">
                   <h3 className="font-semibold text-gray-900 dark:text-white">
-                    {getOtherParticipant(selectedConversation)?.name ||
-                      "Unknown User"}
+                    {selectedChat.user.name}
                   </h3>
                   <p className="text-sm text-gray-500 dark:text-gray-400">
                     {isTyping ? (
