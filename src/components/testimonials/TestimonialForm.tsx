@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,6 +11,7 @@ import { Star, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 export function TestimonialForm() {
+  const { data: session, status } = useSession();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     displayName: "",
@@ -19,6 +21,7 @@ export function TestimonialForm() {
   });
 
   const [hoveredRating, setHoveredRating] = useState(0);
+  const isLoggedIn = status === "authenticated" && session?.user;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,7 +42,12 @@ export function TestimonialForm() {
       return;
     }
 
-    if (!formData.isAnonymous && formData.displayName.trim().length === 0) {
+    // Only validate displayName if user is NOT logged in and NOT anonymous
+    if (
+      !isLoggedIn &&
+      !formData.isAnonymous &&
+      formData.displayName.trim().length === 0
+    ) {
       toast.error("Please enter your name or choose to submit anonymously");
       return;
     }
@@ -51,7 +59,10 @@ export function TestimonialForm() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          displayName: formData.displayName.trim() || undefined,
+          // Only send displayName if user is NOT logged in
+          displayName: !isLoggedIn
+            ? formData.displayName.trim() || undefined
+            : undefined,
           isAnonymous: formData.isAnonymous,
           rating: formData.rating,
           message: formData.message.trim(),
@@ -102,6 +113,18 @@ export function TestimonialForm() {
         </p>
       </div>
 
+      {/* Show user info if logged in */}
+      {isLoggedIn && !formData.isAnonymous && (
+        <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
+          <p className="text-sm text-blue-800 dark:text-blue-300">
+            Submitting as:{" "}
+            <span className="font-semibold">
+              {session?.user?.name || session?.user?.email}
+            </span>
+          </p>
+        </div>
+      )}
+
       {/* Anonymous Toggle */}
       <div className="flex items-center space-x-2">
         <Checkbox
@@ -122,8 +145,8 @@ export function TestimonialForm() {
         </Label>
       </div>
 
-      {/* Name Input (hidden if anonymous) */}
-      {!formData.isAnonymous && (
+      {/* Name Input (only show if NOT logged in AND NOT anonymous) */}
+      {!isLoggedIn && !formData.isAnonymous && (
         <div className="space-y-2">
           <Label
             htmlFor="displayName"
@@ -219,7 +242,10 @@ export function TestimonialForm() {
           isSubmitting ||
           formData.rating === 0 ||
           !isMessageValid ||
-          (!formData.isAnonymous && formData.displayName.trim().length === 0)
+          // Only check displayName if NOT logged in and NOT anonymous
+          (!isLoggedIn &&
+            !formData.isAnonymous &&
+            formData.displayName.trim().length === 0)
         }
         className="w-full bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50 disabled:cursor-not-allowed"
       >

@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { auth } from "@/lib/auth";
 
 /**
  * POST /api/testimonials/submit
  *
  * Submit a new testimonial/review.
+ * If user is logged in, uses their name from database.
+ * If not logged in, can submit anonymously or with custom name.
  *
  * Input: { displayName?, isAnonymous, rating, message }
  *
@@ -21,7 +22,7 @@ export async function POST(request: NextRequest) {
     const { displayName, isAnonymous, rating, message } = body;
 
     // Get current user session (optional - can be logged in or not)
-    const session = await getServerSession(authOptions);
+    const session = await auth();
 
     // Validation
     if (typeof isAnonymous !== "boolean") {
@@ -64,22 +65,38 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // If not anonymous, displayName is required
-    if (!isAnonymous && !displayName?.trim()) {
-      return NextResponse.json(
-        {
-          code: "MISSING_NAME",
-          message: "Display name is required when not submitting anonymously",
-        },
-        { status: 400 }
-      );
+    // Determine display name based on authentication and anonymous status
+    let finalDisplayName: string | null = null;
+
+    if (!isAnonymous) {
+      if (session?.user) {
+        // If logged in, use the user's name from the database
+        const user = await prisma.user.findUnique({
+          where: { id: session.user.id },
+          select: { name: true },
+        });
+        finalDisplayName = user?.name || null;
+      } else {
+        // If not logged in, require displayName
+        if (!displayName?.trim()) {
+          return NextResponse.json(
+            {
+              code: "MISSING_NAME",
+              message:
+                "Display name is required when not logged in and not submitting anonymously",
+            },
+            { status: 400 }
+          );
+        }
+        finalDisplayName = displayName.trim();
+      }
     }
 
     // Create testimonial
     const testimonial = await prisma.testimonial.create({
       data: {
         userId: session?.user?.id || null,
-        displayName: isAnonymous ? null : displayName?.trim(),
+        displayName: finalDisplayName,
         isAnonymous,
         rating,
         message: message.trim(),

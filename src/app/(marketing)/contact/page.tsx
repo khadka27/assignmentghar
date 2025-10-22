@@ -7,42 +7,89 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Mail, Phone, MapPin } from "lucide-react";
+import { Mail, Phone, MapPin, Loader2 } from "lucide-react";
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
+    subject: "",
     message: "",
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const { toast } = useToast();
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
-    if (!formData.name) newErrors.name = "Name is required";
-    if (!formData.email) newErrors.email = "Email is required";
-    if (!formData.message) newErrors.message = "Message is required";
+    if (!formData.name || formData.name.trim().length < 2) {
+      newErrors.name = "Name must be at least 2 characters long";
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!formData.email || !emailRegex.test(formData.email)) {
+      newErrors.email = "Please provide a valid email address";
+    }
+
+    if (!formData.message || formData.message.trim().length < 10) {
+      newErrors.message = "Message must be at least 10 characters long";
+    }
+
+    if (formData.message.trim().length > 5000) {
+      newErrors.message = "Message must be less than 5000 characters";
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validateForm()) return;
 
-    toast({
-      title: "Message sent successfully!",
-      description: "We'll get back to you soon.",
-    });
+    setIsSubmitting(true);
 
-    setSubmitted(true);
-    setFormData({ name: "", email: "", message: "" });
+    try {
+      const res = await fetch("/api/contact/send", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: formData.name.trim(),
+          email: formData.email.trim(),
+          subject: formData.subject.trim() || undefined,
+          message: formData.message.trim(),
+        }),
+      });
 
-    setTimeout(() => {
-      setSubmitted(false);
-    }, 3000);
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || "Failed to send message");
+      }
+
+      toast({
+        title: "Message sent successfully!",
+        description: data.message || "We'll get back to you soon.",
+      });
+
+      setSubmitted(true);
+      setFormData({ name: "", email: "", subject: "", message: "" });
+
+      setTimeout(() => {
+        setSubmitted(false);
+      }, 5000);
+    } catch (error: any) {
+      toast({
+        title: "Failed to send message",
+        description:
+          error.message ||
+          "Please try again later or contact us directly at assignmentghar1@gmail.com",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleChange = (
@@ -78,8 +125,13 @@ export default function ContactPage() {
 
               {submitted ? (
                 <div className="bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-lg p-6 text-center">
-                  <p className="text-emerald-900 dark:text-emerald-100">
-                    ✓ Thank you for your message. We'll get back to you soon!
+                  <p className="text-emerald-900 dark:text-emerald-100 text-lg font-semibold mb-2">
+                    ✓ Thank you for your message!
+                  </p>
+                  <p className="text-emerald-800 dark:text-emerald-200">
+                    We've sent a confirmation email to{" "}
+                    {formData.email || "your inbox"}. We'll get back to you
+                    within 24-48 hours.
                   </p>
                 </div>
               ) : (
@@ -91,6 +143,7 @@ export default function ContactPage() {
                     value={formData.name}
                     onChange={handleChange}
                     error={errors.name}
+                    disabled={isSubmitting}
                   />
 
                   <Input
@@ -101,20 +154,42 @@ export default function ContactPage() {
                     value={formData.email}
                     onChange={handleChange}
                     error={errors.email}
+                    disabled={isSubmitting}
+                  />
+
+                  <Input
+                    label="Subject (Optional)"
+                    placeholder="What is this about?"
+                    name="subject"
+                    value={formData.subject}
+                    onChange={handleChange}
+                    disabled={isSubmitting}
                   />
 
                   <Textarea
                     label="Message"
-                    placeholder="Tell us how we can help..."
+                    placeholder="Tell us how we can help... (minimum 10 characters)"
                     name="message"
                     value={formData.message}
                     onChange={handleChange}
                     error={errors.message}
-                    rows={5}
+                    rows={6}
+                    disabled={isSubmitting}
                   />
 
-                  <Button type="submit" className="w-full">
-                    Send Message
+                  <Button
+                    type="submit"
+                    className="w-full"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Sending...
+                      </>
+                    ) : (
+                      "Send Message"
+                    )}
                   </Button>
                 </form>
               )}
@@ -133,9 +208,12 @@ export default function ContactPage() {
                   <Mail className="w-5 h-5 text-emerald-600 flex-shrink-0 mt-1" />
                   <div>
                     <p className="font-medium">Email</p>
-                    <p className="text-sm text-slate-600 dark:text-slate-400">
-                      support@assignmentghar.com
-                    </p>
+                    <a
+                      href="mailto:assignmentghar1@gmail.com"
+                      className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
+                    >
+                      assignmentghar1@gmail.com
+                    </a>
                   </div>
                 </div>
 
@@ -144,7 +222,7 @@ export default function ContactPage() {
                   <div>
                     <p className="font-medium">Phone</p>
                     <p className="text-sm text-slate-600 dark:text-slate-400">
-                      +1 (555) 123-4567
+                      Available via email
                     </p>
                   </div>
                 </div>
@@ -152,9 +230,9 @@ export default function ContactPage() {
                 <div className="flex items-start gap-4">
                   <MapPin className="w-5 h-5 text-emerald-600 flex-shrink-0 mt-1" />
                   <div>
-                    <p className="font-medium">Address</p>
+                    <p className="font-medium">Response Time</p>
                     <p className="text-sm text-slate-600 dark:text-slate-400">
-                      123 Education Street, Learning City, LC 12345
+                      Within 24-48 hours
                     </p>
                   </div>
                 </div>
@@ -178,11 +256,20 @@ export default function ContactPage() {
           </div>
         </div>
 
-        <div className="mt-12 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
-          <p className="text-sm text-blue-900 dark:text-blue-100">
-            <strong>Demo:</strong> Contact form is fully functional with
-            client-side validation. Messages are simulated.
-          </p>
+        <div className="mt-12 p-6 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+          <div className="flex items-start gap-3">
+            <Mail className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
+            <div>
+              <p className="font-semibold text-blue-900 dark:text-blue-100 mb-2">
+                📧 Email Confirmation
+              </p>
+              <p className="text-sm text-blue-800 dark:text-blue-200">
+                After submitting your message, you'll receive a confirmation
+                email. Please check your spam folder if you don't see it in your
+                inbox within a few minutes.
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </div>

@@ -22,7 +22,9 @@ import {
   Loader2,
   ArrowRight,
   ArrowLeft,
+  AlertCircle,
 } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -32,14 +34,13 @@ export default function RegisterPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [currentStep, setCurrentStep] = useState<1 | 2 | 3>(1); // Step 1: Basic Info, Step 2: Password, Step 3: OTP
+  const [currentStep, setCurrentStep] = useState<1 | 2 | 3>(1);
   const [otp, setOtp] = useState("");
   const [resendTimer, setResendTimer] = useState(0);
   const [passwordStrength, setPasswordStrength] = useState<
     "weak" | "medium" | "strong" | null
   >(null);
 
-  // Real-time validation states
   const [emailStatus, setEmailStatus] = useState<
     "idle" | "checking" | "available" | "taken" | "invalid"
   >("idle");
@@ -56,7 +57,6 @@ export default function RegisterPage() {
     confirmPassword: "",
   });
 
-  // Calculate password strength
   const calculatePasswordStrength = (password: string) => {
     if (password.length === 0) return null;
     if (password.length < 8) return "weak";
@@ -77,7 +77,6 @@ export default function RegisterPage() {
     return "weak";
   };
 
-  // Real-time email availability check
   useEffect(() => {
     const email = formData.email.trim().toLowerCase();
     if (!email || email.length < 3) {
@@ -113,7 +112,6 @@ export default function RegisterPage() {
     };
   }, [formData.email]);
 
-  // Real-time username availability check
   useEffect(() => {
     const username = formData.username.trim();
     if (!username || username.length < 3) {
@@ -148,14 +146,12 @@ export default function RegisterPage() {
     };
   }, [formData.username]);
 
-  // Redirect if already logged in
   useEffect(() => {
     if (status === "authenticated" && session?.user) {
       router.push("/");
     }
   }, [status, session, router]);
 
-  // Resend timer countdown
   useEffect(() => {
     if (resendTimer > 0) {
       const timer = setTimeout(() => setResendTimer(resendTimer - 1), 1000);
@@ -163,7 +159,6 @@ export default function RegisterPage() {
     }
   }, [resendTimer]);
 
-  // Validate Step 1 (Basic Info)
   const validateStep1 = () => {
     if (!formData.name.trim()) {
       toast({
@@ -206,7 +201,6 @@ export default function RegisterPage() {
     return true;
   };
 
-  // Validate Step 2 (Password)
   const validateStep2 = () => {
     if (formData.password.length < 8) {
       toast({
@@ -258,10 +252,9 @@ export default function RegisterPage() {
           description:
             "We've sent a 6-digit verification code to your email. Please check your inbox (and spam folder).",
         });
-        setCurrentStep(3); // Move to OTP verification
-        setResendTimer(60); // Start 60 second countdown
+        setCurrentStep(3);
+        setResendTimer(60);
       } else {
-        // Enhanced error messages based on error code
         let errorMessage = data.message || "Something went wrong";
         let errorTitle = "Registration Failed";
 
@@ -287,7 +280,6 @@ export default function RegisterPage() {
           title: errorTitle,
           description: errorMessage,
         });
-        // Go back to step 1 if email/username issue
         if (data.code === "EMAIL_TAKEN" || data.code === "USERNAME_TAKEN") {
           setCurrentStep(1);
         }
@@ -364,8 +356,8 @@ export default function RegisterPage() {
           title: "OTP Resent!",
           description: "Please check your email for the new verification code.",
         });
-        setResendTimer(60); // Restart countdown
-        setOtp(""); // Clear current OTP
+        setResendTimer(60);
+        setOtp("");
       } else {
         toast({
           variant: "destructive",
@@ -399,743 +391,677 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-blue-950 dark:to-purple-950 p-4">
-      <div className="w-full max-w-6xl grid lg:grid-cols-2 gap-8 items-center">
-        {/* Left Side - Illustration */}
-        <div className="hidden lg:flex flex-col items-center justify-center p-12 bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-950/50 dark:to-purple-950/50 rounded-3xl shadow-2xl backdrop-blur-sm border border-blue-200/50 dark:border-blue-800/50 transition-all duration-500 hover:shadow-blue-500/20 hover:scale-[1.02]">
-          {/* Illustration */}
-          <div className="relative w-full max-w-md mb-8 animate-float">
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full blur-3xl opacity-20 animate-pulse"></div>
-            <div className="relative bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-8 shadow-xl">
-              {/* Mathematical symbols floating around */}
-              <div className="absolute -top-6 -left-6 text-4xl animate-bounce">
-                📚
-              </div>
-              <div className="absolute -top-4 -right-4 text-3xl animate-bounce delay-100">
-                ✏️
-              </div>
-              <div className="absolute -bottom-4 -left-4 text-3xl animate-bounce delay-200">
-                📝
-              </div>
-              <div className="absolute -bottom-6 -right-6 text-4xl animate-bounce delay-300">
-                🎓
-              </div>
-
-              {/* Central illustration */}
-              <div className="flex flex-col items-center justify-center space-y-6">
-                <div className="w-48 h-48 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center shadow-2xl animate-pulse-slow">
-                  <User className="w-24 h-24 text-white" />
+    <div className="min-h-screen bg-white dark:bg-black">
+      <div className="container mx-auto px-4 py-8 lg:py-0">
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="w-full max-w-[1200px] grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+            {/* Left Side - Hero Section */}
+            <div className="hidden lg:block space-y-8">
+              <div className="space-y-4">
+                <div className="inline-block">
+                  <h1 className="text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-2">
+                    Join Us Today
+                  </h1>
+                  <div className="h-1.5 bg-blue-600 rounded-full w-32"></div>
                 </div>
-
-                {/* Floating papers/assignments */}
-                <div className="grid grid-cols-3 gap-4 w-full">
-                  {[1, 2, 3].map((i) => (
-                    <div
-                      key={i}
-                      className="bg-white dark:bg-gray-700 rounded-lg p-4 shadow-lg transform hover:scale-110 transition-transform duration-300"
-                      style={{ animationDelay: `${i * 0.2}s` }}
-                    >
-                      <div className="h-2 bg-gradient-to-r from-blue-400 to-purple-400 rounded mb-2"></div>
-                      <div className="h-2 bg-gray-200 dark:bg-gray-600 rounded mb-1"></div>
-                      <div className="h-2 bg-gray-200 dark:bg-gray-600 rounded w-2/3"></div>
-                    </div>
-                  ))}
-                </div>
+                <p className="text-lg text-gray-600 dark:text-gray-400 max-w-md">
+                  Create your account and start managing your assignments
+                  efficiently
+                </p>
               </div>
-            </div>
-          </div>
 
-          {/* Title and Description */}
-          <div className="text-center space-y-4 animate-fade-in">
-            <h2 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              Assignment Hub
-            </h2>
-            <p className="text-gray-700 dark:text-gray-300 text-lg max-w-md">
-              Join thousands of students achieving academic excellence with our
-              platform
-            </p>
-
-            {/* Carousel indicators */}
-            <div className="flex items-center justify-center gap-2 pt-4">
-              {[1, 2, 3, 4].map((dot) => (
-                <div
-                  key={dot}
-                  className={`h-2 rounded-full transition-all duration-300 ${
-                    dot === 2
-                      ? "w-8 bg-gradient-to-r from-blue-500 to-purple-500"
-                      : "w-2 bg-gray-400"
-                  }`}
-                ></div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Right Side - Auth Form */}
-        <div className="w-full max-w-md mx-auto">
-          <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl border border-gray-200 dark:border-gray-700 p-8 transition-all duration-500 hover:shadow-blue-500/20">
-            {/* Logo */}
-            <div className="flex justify-center mb-8 animate-fade-in">
-              <div className="relative group">
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl blur-xl opacity-50 group-hover:opacity-75 transition-opacity duration-300"></div>
-                <div className="relative bg-white dark:bg-gray-900 rounded-2xl p-4 shadow-xl">
-                  <Image
-                    src="/Images/nav_logo.png"
-                    alt="AssignmentGhar"
-                    width={180}
-                    height={50}
-                    className="object-contain"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Progress Indicator */}
-            {currentStep !== 3 && (
-              <div className="mb-6">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Step {currentStep} of 2
-                  </span>
-                  <span className="text-xs text-gray-500">
-                    {currentStep === 1 ? "Basic Info" : "Set Password"}
-                  </span>
-                </div>
-                <div className="flex gap-2">
+              {/* Feature Cards */}
+              <div className="space-y-4">
+                {[
+                  {
+                    icon: "📚",
+                    title: "Easy Management",
+                    desc: "Organize all assignments in one place",
+                  },
+                  {
+                    icon: "⚡",
+                    title: "Quick Access",
+                    desc: "Access your work from anywhere, anytime",
+                  },
+                  {
+                    icon: "🎯",
+                    title: "Track Progress",
+                    desc: "Monitor your academic journey",
+                  },
+                ].map((feature, idx) => (
                   <div
-                    className={`h-2 flex-1 rounded-full transition-all duration-300 ${
-                      currentStep >= 1
-                        ? "bg-gradient-to-r from-blue-500 to-purple-500"
-                        : "bg-gray-300"
-                    }`}
-                  ></div>
-                  <div
-                    className={`h-2 flex-1 rounded-full transition-all duration-300 ${
-                      currentStep >= 2
-                        ? "bg-gradient-to-r from-blue-500 to-purple-500"
-                        : "bg-gray-300"
-                    }`}
-                  ></div>
-                </div>
-              </div>
-            )}
-
-            {/* Form */}
-            {currentStep === 1 ? (
-              <div className="space-y-6">
-                {/* Name field */}
-                <div className="space-y-2 animate-slide-down">
-                  <Label
-                    htmlFor="name"
-                    className="text-gray-700 dark:text-gray-300 font-medium"
+                    key={idx}
+                    className="flex items-start gap-4 p-4 rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 transition-all hover:border-blue-600 dark:hover:border-blue-600"
                   >
-                    Full Name
-                  </Label>
-                  <div className="relative group">
-                    <User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 group-focus-within:text-blue-500 transition-colors duration-300" />
-                    <Input
-                      id="name"
-                      type="text"
-                      placeholder="John Doe"
-                      value={formData.name}
-                      onChange={(e) =>
-                        setFormData({ ...formData, name: e.target.value })
-                      }
-                      className="pl-10 h-12 bg-gray-50 dark:bg-gray-900/50 border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-300"
-                      required
-                    />
-                  </div>
-                </div>
-
-                {/* Username field */}
-                <div
-                  className="space-y-2 animate-slide-down"
-                  style={{ animationDelay: "0.1s" }}
-                >
-                  <Label
-                    htmlFor="username"
-                    className="text-gray-700 dark:text-gray-300 font-medium"
-                  >
-                    Username
-                  </Label>
-                  <div className="relative group">
-                    <User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 group-focus-within:text-blue-500 transition-colors duration-300" />
-                    <Input
-                      id="username"
-                      type="text"
-                      placeholder="johndoe123"
-                      value={formData.username}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          username: e.target.value.trim().toLowerCase(),
-                        })
-                      }
-                      className={`pl-10 pr-10 h-12 bg-gray-50 dark:bg-gray-900/50 border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-300 ${
-                        usernameStatus === "available"
-                          ? "border-green-500"
-                          : usernameStatus === "taken" ||
-                            usernameStatus === "invalid"
-                          ? "border-red-500"
-                          : ""
-                      }`}
-                      required
-                      minLength={3}
-                    />
-                    {formData.username.length >= 3 && (
-                      <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                        {usernameStatus === "checking" ? (
-                          <Loader2 className="h-5 w-5 text-gray-400 animate-spin" />
-                        ) : usernameStatus === "available" ? (
-                          <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
-                            <Check className="h-3 w-3 text-white" />
-                          </div>
-                        ) : usernameStatus === "taken" ||
-                          usernameStatus === "invalid" ? (
-                          <div className="w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
-                            <X className="h-3 w-3 text-white" />
-                          </div>
-                        ) : null}
-                      </div>
-                    )}
-                  </div>
-                  {usernameStatus === "taken" && (
-                    <p className="text-xs text-red-500 mt-1">
-                      Username already taken
-                    </p>
-                  )}
-                  {usernameStatus === "invalid" && (
-                    <p className="text-xs text-red-500 mt-1">
-                      Only letters, numbers, _ and - allowed (min 3 characters)
-                    </p>
-                  )}
-                  {usernameStatus === "available" && (
-                    <p className="text-xs text-green-500 mt-1">
-                      Username is available
-                    </p>
-                  )}
-                </div>
-
-                {/* Email field */}
-                <div
-                  className="space-y-2 animate-slide-down"
-                  style={{ animationDelay: "0.2s" }}
-                >
-                  <Label
-                    htmlFor="email"
-                    className="text-gray-700 dark:text-gray-300 font-medium"
-                  >
-                    Email
-                  </Label>
-                  <div className="relative group">
-                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 group-focus-within:text-blue-500 transition-colors duration-300" />
-                    <Input
-                      id="email"
-                      type="email"
-                      placeholder="john@example.com"
-                      value={formData.email}
-                      onChange={(e) => {
-                        setFormData({ ...formData, email: e.target.value });
-                      }}
-                      className={`pl-10 pr-10 h-12 bg-gray-50 dark:bg-gray-900/50 border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-300 ${
-                        emailStatus === "available"
-                          ? "border-green-500"
-                          : emailStatus === "taken" || emailStatus === "invalid"
-                          ? "border-red-500"
-                          : ""
-                      }`}
-                      required
-                    />
-                    {formData.email.length > 0 && (
-                      <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                        {emailStatus === "checking" ? (
-                          <Loader2 className="h-5 w-5 text-gray-400 animate-spin" />
-                        ) : emailStatus === "available" ? (
-                          <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
-                            <Check className="h-3 w-3 text-white" />
-                          </div>
-                        ) : emailStatus === "taken" ||
-                          emailStatus === "invalid" ? (
-                          <div className="w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
-                            <X className="h-3 w-3 text-white" />
-                          </div>
-                        ) : null}
-                      </div>
-                    )}
-                  </div>
-                  {emailStatus === "taken" && (
-                    <p className="text-xs text-red-500 mt-1">
-                      Email already registered
-                    </p>
-                  )}
-                  {emailStatus === "invalid" && (
-                    <p className="text-xs text-red-500 mt-1">
-                      Please enter a valid email address
-                    </p>
-                  )}
-                  {emailStatus === "available" && (
-                    <p className="text-xs text-green-500 mt-1">
-                      Email is available
-                    </p>
-                  )}
-                </div>
-
-                {/* Gender field */}
-                <div
-                  className="space-y-2 animate-slide-down"
-                  style={{ animationDelay: "0.3s" }}
-                >
-                  <Label
-                    htmlFor="gender"
-                    className="text-gray-700 dark:text-gray-300 font-medium"
-                  >
-                    Gender
-                  </Label>
-                  <select
-                    id="gender"
-                    value={formData.gender}
-                    onChange={(e) =>
-                      setFormData({ ...formData, gender: e.target.value })
-                    }
-                    className="w-full h-12 px-4 bg-gray-50 dark:bg-gray-900/50 border border-gray-300 dark:border-gray-600 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-300 text-gray-900 dark:text-white"
-                    required
-                  >
-                    <option value="">Select your gender</option>
-                    <option value="male">Male</option>
-                    <option value="female">Female</option>
-                    <option value="other">Other</option>
-                    <option value="prefer-not-to-say">Prefer not to say</option>
-                  </select>
-                </div>
-
-                {/* Next Button - Step 1 */}
-                <Button
-                  type="button"
-                  onClick={handleNextStep}
-                  disabled={
-                    !formData.name ||
-                    !formData.gender ||
-                    usernameStatus !== "available" ||
-                    emailStatus !== "available"
-                  }
-                  className="w-full h-12 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed animate-slide-down"
-                  style={{ animationDelay: "0.4s" }}
-                >
-                  <span className="flex items-center gap-2">
-                    Next: Set Password <ArrowRight className="h-5 w-5" />
-                  </span>
-                </Button>
-
-                {/* Link to Login */}
-                <div
-                  className="text-center pt-4 animate-slide-down"
-                  style={{ animationDelay: "0.5s" }}
-                >
-                  <p className="text-gray-600 dark:text-gray-400">
-                    Already have an account?{" "}
-                    <Link
-                      href="/login"
-                      className="text-blue-600 hover:text-purple-600 dark:text-blue-400 dark:hover:text-purple-400 font-semibold transition-colors duration-300 hover:underline"
-                    >
-                      Sign in
-                    </Link>
-                  </p>
-                </div>
-              </div>
-            ) : currentStep === 2 ? (
-              <div className="space-y-6">
-                {/* Summary of Step 1 */}
-                <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 space-y-2 animate-fade-in">
-                  <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Account Details:
-                  </p>
-                  <div className="text-xs text-gray-600 dark:text-gray-400 space-y-1">
-                    <p>
-                      <strong>Name:</strong> {formData.name}
-                    </p>
-                    <p>
-                      <strong>Username:</strong> @{formData.username}
-                    </p>
-                    <p>
-                      <strong>Email:</strong> {formData.email}
-                    </p>
-                    <p>
-                      <strong>Gender:</strong>{" "}
-                      {formData.gender.charAt(0).toUpperCase() +
-                        formData.gender.slice(1).replace("-", " ")}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Password field */}
-                <div className="space-y-2 animate-slide-down">
-                  <Label
-                    htmlFor="password"
-                    className="text-gray-700 dark:text-gray-300 font-medium"
-                  >
-                    Password
-                  </Label>
-                  <div className="relative group">
-                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 group-focus-within:text-blue-500 transition-colors duration-300" />
-                    <Input
-                      id="password"
-                      type={showPassword ? "text" : "password"}
-                      placeholder="••••••••••"
-                      value={formData.password}
-                      onChange={(e) => {
-                        const password = e.target.value;
-                        setFormData({ ...formData, password });
-                        setPasswordStrength(
-                          calculatePasswordStrength(password)
-                        );
-                      }}
-                      className="pl-10 pr-10 h-12 bg-gray-50 dark:bg-gray-900/50 border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-300"
-                      required
-                      minLength={8}
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-blue-500 transition-colors duration-300"
-                    >
-                      {showPassword ? (
-                        <EyeOff className="h-5 w-5" />
-                      ) : (
-                        <Eye className="h-5 w-5" />
-                      )}
-                    </button>
-                  </div>
-
-                  {/* Password Strength Indicator */}
-                  {formData.password.length > 0 && (
-                    <div className="space-y-1">
-                      <div className="flex gap-1 h-1">
-                        <div
-                          className={`flex-1 rounded-full transition-all duration-300 ${
-                            passwordStrength === "weak"
-                              ? "bg-red-500"
-                              : passwordStrength === "medium"
-                              ? "bg-yellow-500"
-                              : passwordStrength === "strong"
-                              ? "bg-green-500"
-                              : "bg-gray-300"
-                          }`}
-                        ></div>
-                        <div
-                          className={`flex-1 rounded-full transition-all duration-300 ${
-                            passwordStrength === "medium" ||
-                            passwordStrength === "strong"
-                              ? passwordStrength === "medium"
-                                ? "bg-yellow-500"
-                                : "bg-green-500"
-                              : "bg-gray-300"
-                          }`}
-                        ></div>
-                        <div
-                          className={`flex-1 rounded-full transition-all duration-300 ${
-                            passwordStrength === "strong"
-                              ? "bg-green-500"
-                              : "bg-gray-300"
-                          }`}
-                        ></div>
-                      </div>
-                      <p
-                        className={`text-xs font-medium ${
-                          passwordStrength === "weak"
-                            ? "text-red-500"
-                            : passwordStrength === "medium"
-                            ? "text-yellow-500"
-                            : passwordStrength === "strong"
-                            ? "text-green-500"
-                            : "text-gray-500"
-                        }`}
-                      >
-                        {passwordStrength === "weak" && "Weak password"}
-                        {passwordStrength === "medium" &&
-                          "Medium strength password"}
-                        {passwordStrength === "strong" && "Strong password! ✓"}
+                    <div className="text-3xl">{feature.icon}</div>
+                    <div>
+                      <h3 className="font-semibold text-gray-900 dark:text-white mb-1">
+                        {feature.title}
+                      </h3>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                        {feature.desc}
                       </p>
-                      {passwordStrength === "weak" && (
-                        <p className="text-xs text-gray-500 dark:text-gray-400">
-                          Use 8+ characters with uppercase, numbers & symbols
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Right Side - Register Form */}
+            <div className="w-full max-w-md mx-auto lg:mx-0">
+              {/* Logo - Mobile Only */}
+              <div className="lg:hidden mb-8 text-center">
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+                  Assignment Hub
+                </h1>
+                <div className="h-1 bg-blue-600 rounded-full w-16 mx-auto"></div>
+              </div>
+
+              <div className="bg-white dark:bg-gray-950 rounded-2xl border border-gray-200 dark:border-gray-800 p-8 shadow-sm">
+                {/* Header */}
+                <div className="mb-8">
+                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                    {currentStep === 3 ? "Verify Email" : "Create Account"}
+                  </h2>
+                  <p className="text-gray-600 dark:text-gray-400">
+                    {currentStep === 3
+                      ? "Enter the code sent to your email"
+                      : "Fill in your details to get started"}
+                  </p>
+                </div>
+
+                {/* Progress Indicator */}
+                {currentStep !== 3 && (
+                  <div className="mb-6">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Step {currentStep} of 2
+                      </span>
+                      <span className="text-xs text-gray-500">
+                        {currentStep === 1 ? "Basic Info" : "Set Password"}
+                      </span>
+                    </div>
+                    <div className="flex gap-2">
+                      <div
+                        className={`h-1.5 flex-1 rounded-full transition-all ${
+                          currentStep >= 1
+                            ? "bg-blue-600"
+                            : "bg-gray-300 dark:bg-gray-700"
+                        }`}
+                      ></div>
+                      <div
+                        className={`h-1.5 flex-1 rounded-full transition-all ${
+                          currentStep >= 2
+                            ? "bg-blue-600"
+                            : "bg-gray-300 dark:bg-gray-700"
+                        }`}
+                      ></div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Step 1: Basic Info */}
+                {currentStep === 1 && (
+                  <div className="space-y-5">
+                    {/* Name */}
+                    <div className="space-y-2">
+                      <Label
+                        htmlFor="name"
+                        className="text-sm font-medium text-gray-900 dark:text-white"
+                      >
+                        Full Name
+                      </Label>
+                      <div className="relative">
+                        <User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                        <Input
+                          id="name"
+                          type="text"
+                          placeholder="Enter your full name"
+                          value={formData.name}
+                          onChange={(e) =>
+                            setFormData({ ...formData, name: e.target.value })
+                          }
+                          className="pl-10 h-11 bg-gray-50 dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white placeholder:text-gray-500 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    {/* Username */}
+                    <div className="space-y-2">
+                      <Label
+                        htmlFor="username"
+                        className="text-sm font-medium text-gray-900 dark:text-white"
+                      >
+                        Username
+                      </Label>
+                      <div className="relative">
+                        <User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                        <Input
+                          id="username"
+                          type="text"
+                          placeholder="Choose a username"
+                          value={formData.username}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              username: e.target.value.trim().toLowerCase(),
+                            })
+                          }
+                          className={`pl-10 pr-10 h-11 bg-gray-50 dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white placeholder:text-gray-500 focus:border-blue-600 focus:ring-1 focus:ring-blue-600 ${
+                            usernameStatus === "available"
+                              ? "border-green-600"
+                              : usernameStatus === "taken" ||
+                                usernameStatus === "invalid"
+                              ? "border-red-600"
+                              : ""
+                          }`}
+                          required
+                          minLength={3}
+                        />
+                        {formData.username.length >= 3 && (
+                          <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                            {usernameStatus === "checking" ? (
+                              <Loader2 className="h-5 w-5 text-gray-400 animate-spin" />
+                            ) : usernameStatus === "available" ? (
+                              <Check className="h-5 w-5 text-green-600" />
+                            ) : usernameStatus === "taken" ||
+                              usernameStatus === "invalid" ? (
+                              <X className="h-5 w-5 text-red-600" />
+                            ) : null}
+                          </div>
+                        )}
+                      </div>
+                      {usernameStatus === "taken" && (
+                        <p className="text-xs text-red-600 flex items-center gap-1">
+                          <AlertCircle className="h-3 w-3" />
+                          Username already taken
+                        </p>
+                      )}
+                      {usernameStatus === "invalid" && (
+                        <p className="text-xs text-red-600 flex items-center gap-1">
+                          <AlertCircle className="h-3 w-3" />
+                          Only letters, numbers, _ and - allowed (min 3 chars)
+                        </p>
+                      )}
+                      {usernameStatus === "available" && (
+                        <p className="text-xs text-green-600 flex items-center gap-1">
+                          <Check className="h-3 w-3" />
+                          Username is available
                         </p>
                       )}
                     </div>
-                  )}
-                </div>
 
-                {/* Confirm Password */}
-                <div
-                  className="space-y-2 animate-slide-down"
-                  style={{ animationDelay: "0.1s" }}
-                >
-                  <Label
-                    htmlFor="confirmPassword"
-                    className="text-gray-700 dark:text-gray-300 font-medium"
-                  >
-                    Confirm Password
-                  </Label>
-                  <div className="relative group">
-                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 group-focus-within:text-blue-500 transition-colors duration-300" />
-                    <Input
-                      id="confirmPassword"
-                      type={showConfirmPassword ? "text" : "password"}
-                      placeholder="••••••••••"
-                      value={formData.confirmPassword}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          confirmPassword: e.target.value,
-                        })
-                      }
-                      className={`pl-10 pr-10 h-12 bg-gray-50 dark:bg-gray-900/50 border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-300 ${
-                        formData.confirmPassword &&
-                        formData.password !== formData.confirmPassword
-                          ? "border-red-500"
-                          : formData.confirmPassword &&
-                            formData.password === formData.confirmPassword
-                          ? "border-green-500"
-                          : ""
-                      }`}
-                      required
-                    />
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setShowConfirmPassword(!showConfirmPassword)
-                      }
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-blue-500 transition-colors duration-300"
-                    >
-                      {showConfirmPassword ? (
-                        <EyeOff className="h-5 w-5" />
-                      ) : (
-                        <Eye className="h-5 w-5" />
+                    {/* Email */}
+                    <div className="space-y-2">
+                      <Label
+                        htmlFor="email"
+                        className="text-sm font-medium text-gray-900 dark:text-white"
+                      >
+                        Email Address
+                      </Label>
+                      <div className="relative">
+                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                        <Input
+                          id="email"
+                          type="email"
+                          placeholder="Enter your email"
+                          value={formData.email}
+                          onChange={(e) => {
+                            setFormData({ ...formData, email: e.target.value });
+                          }}
+                          className={`pl-10 pr-10 h-11 bg-gray-50 dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white placeholder:text-gray-500 focus:border-blue-600 focus:ring-1 focus:ring-blue-600 ${
+                            emailStatus === "available"
+                              ? "border-green-600"
+                              : emailStatus === "taken" ||
+                                emailStatus === "invalid"
+                              ? "border-red-600"
+                              : ""
+                          }`}
+                          required
+                        />
+                        {formData.email.length > 0 && (
+                          <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                            {emailStatus === "checking" ? (
+                              <Loader2 className="h-5 w-5 text-gray-400 animate-spin" />
+                            ) : emailStatus === "available" ? (
+                              <Check className="h-5 w-5 text-green-600" />
+                            ) : emailStatus === "taken" ||
+                              emailStatus === "invalid" ? (
+                              <X className="h-5 w-5 text-red-600" />
+                            ) : null}
+                          </div>
+                        )}
+                      </div>
+                      {emailStatus === "taken" && (
+                        <p className="text-xs text-red-600 flex items-center gap-1">
+                          <AlertCircle className="h-3 w-3" />
+                          Email already registered
+                        </p>
                       )}
-                    </button>
-                  </div>
-                  {formData.confirmPassword &&
-                    formData.password !== formData.confirmPassword && (
-                      <p className="text-xs text-red-500 mt-1">
-                        Passwords don't match
-                      </p>
-                    )}
-                  {formData.confirmPassword &&
-                    formData.password === formData.confirmPassword && (
-                      <p className="text-xs text-green-500 mt-1">
-                        Passwords match ✓
-                      </p>
-                    )}
-                </div>
-
-                {/* Back and Submit Buttons */}
-                <div className="flex gap-3">
-                  <Button
-                    type="button"
-                    onClick={() => setCurrentStep(1)}
-                    variant="outline"
-                    className="h-12 px-6 border-2 border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800"
-                  >
-                    <ArrowLeft className="h-5 w-5 mr-2" />
-                    Back
-                  </Button>
-                  <Button
-                    type="button"
-                    onClick={handleNextStep}
-                    disabled={
-                      isLoading ||
-                      !formData.password ||
-                      formData.password !== formData.confirmPassword ||
-                      passwordStrength === "weak"
-                    }
-                    className="flex-1 h-12 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {isLoading ? (
-                      <div className="flex items-center gap-2">
-                        <Loader2 className="h-5 w-5 animate-spin" />
-                        <span>Creating account...</span>
-                      </div>
-                    ) : (
-                      <span>Create Account</span>
-                    )}
-                  </Button>
-                </div>
-              </div>
-            ) : (
-              <div className="space-y-6">
-                {/* OTP Info */}
-                <div className="text-center space-y-2 animate-fade-in">
-                  <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full mb-4">
-                    <ShieldCheck className="w-8 h-8 text-white" />
-                  </div>
-                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
-                    Verify Your Email
-                  </h3>
-                  <p className="text-gray-600 dark:text-gray-400">
-                    We've sent a 6-digit code to
-                    <br />
-                    <span className="font-semibold text-blue-600 dark:text-blue-400">
-                      {formData.email}
-                    </span>
-                  </p>
-                </div>
-
-                {/* OTP Input */}
-                <div className="space-y-2 animate-slide-down">
-                  <Label
-                    htmlFor="otp"
-                    className="text-gray-700 dark:text-gray-300 font-medium"
-                  >
-                    Verification Code
-                  </Label>
-                  <div className="relative group">
-                    <Input
-                      id="otp"
-                      type="text"
-                      placeholder="Enter 6-digit code"
-                      value={otp}
-                      onChange={(e) =>
-                        setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))
-                      }
-                      className="h-14 text-center text-2xl font-bold tracking-widest bg-gray-50 dark:bg-gray-900/50 border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-300"
-                      required
-                      maxLength={6}
-                      pattern="\d{6}"
-                    />
-                  </div>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 text-center">
-                    Code expires in 10 minutes
-                  </p>
-                </div>
-
-                {/* Verify Button */}
-                <Button
-                  type="submit"
-                  disabled={isLoading || otp.length !== 6}
-                  className="w-full h-12 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {isLoading ? (
-                    <div className="flex items-center gap-2">
-                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                      <span>Verifying...</span>
+                      {emailStatus === "invalid" && (
+                        <p className="text-xs text-red-600 flex items-center gap-1">
+                          <AlertCircle className="h-3 w-3" />
+                          Please enter a valid email address
+                        </p>
+                      )}
+                      {emailStatus === "available" && (
+                        <p className="text-xs text-green-600 flex items-center gap-1">
+                          <Check className="h-3 w-3" />
+                          Email is available
+                        </p>
+                      )}
                     </div>
-                  ) : (
-                    <span>Verify Email</span>
-                  )}
-                </Button>
 
-                {/* Resend OTP */}
-                <div className="text-center space-y-3">
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
-                    Didn't receive the code?
-                  </p>
-                  <Button
-                    type="button"
-                    onClick={handleResendOTP}
-                    disabled={resendTimer > 0 || isLoading}
-                    variant="ghost"
-                    className="text-blue-600 hover:text-purple-600 dark:text-blue-400 dark:hover:text-purple-400 font-semibold disabled:opacity-50"
-                  >
-                    {resendTimer > 0 ? (
-                      <div className="flex items-center gap-2">
-                        <Clock className="w-4 h-4" />
-                        <span>Resend in {resendTimer}s</span>
+                    {/* Gender */}
+                    <div className="space-y-2">
+                      <Label
+                        htmlFor="gender"
+                        className="text-sm font-medium text-gray-900 dark:text-white"
+                      >
+                        Gender
+                      </Label>
+                      <select
+                        id="gender"
+                        value={formData.gender}
+                        onChange={(e) =>
+                          setFormData({ ...formData, gender: e.target.value })
+                        }
+                        className="w-full h-11 px-4 bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-lg focus:border-blue-600 focus:ring-1 focus:ring-blue-600 text-gray-900 dark:text-white"
+                        required
+                      >
+                        <option value="">Select your gender</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                        <option value="other">Other</option>
+                        <option value="prefer-not-to-say">
+                          Prefer not to say
+                        </option>
+                      </select>
+                    </div>
+
+                    {/* Next Button */}
+                    <Button
+                      type="button"
+                      onClick={handleNextStep}
+                      disabled={
+                        !formData.name ||
+                        !formData.gender ||
+                        usernameStatus !== "available" ||
+                        emailStatus !== "available"
+                      }
+                      className="w-full h-11 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    >
+                      <span className="flex items-center justify-center gap-2">
+                        Next: Set Password <ArrowRight className="h-5 w-5" />
+                      </span>
+                    </Button>
+
+                    {/* Google Sign In */}
+                    <div className="relative my-6">
+                      <div className="absolute inset-0 flex items-center">
+                        <div className="w-full border-t border-gray-200 dark:border-gray-800"></div>
                       </div>
-                    ) : (
-                      <span>Resend OTP</span>
-                    )}
-                  </Button>
-                </div>
+                      <div className="relative flex justify-center text-xs">
+                        <span className="px-3 bg-white dark:bg-gray-950 text-gray-500">
+                          OR CONTINUE WITH
+                        </span>
+                      </div>
+                    </div>
 
-                {/* Back to Register */}
-                <div className="text-center pt-4">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setCurrentStep(1);
-                      setOtp("");
-                    }}
-                    className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition-colors duration-300 text-sm"
-                  >
-                    ← Change email address
-                  </button>
-                </div>
+                    <Button
+                      type="button"
+                      onClick={handleGoogleSignIn}
+                      disabled={isLoading}
+                      variant="outline"
+                      className="w-full h-11 border-gray-300 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-900 text-gray-900 dark:text-white font-medium rounded-lg"
+                    >
+                      <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
+                        <path
+                          fill="#4285F4"
+                          d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                        />
+                        <path
+                          fill="#34A853"
+                          d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                        />
+                        <path
+                          fill="#FBBC05"
+                          d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+                        />
+                        <path
+                          fill="#EA4335"
+                          d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                        />
+                      </svg>
+                      Continue with Google
+                    </Button>
+
+                    {/* Login Link */}
+                    <p className="text-center text-sm text-gray-600 dark:text-gray-400 pt-4">
+                      Already have an account?{" "}
+                      <Link
+                        href="/login"
+                        className="text-blue-600 hover:text-blue-700 dark:text-blue-500 dark:hover:text-blue-400 font-semibold"
+                      >
+                        Sign In
+                      </Link>
+                    </p>
+                  </div>
+                )}
+
+                {/* Step 2: Password */}
+                {currentStep === 2 && (
+                  <div className="space-y-5">
+                    {/* Summary */}
+                    <Alert className="bg-blue-50 dark:bg-blue-950/30 border-blue-200 dark:border-blue-900">
+                      <AlertDescription className="text-sm text-gray-700 dark:text-gray-300">
+                        <p className="font-medium mb-2">Account Details:</p>
+                        <div className="space-y-1 text-xs">
+                          <p>
+                            <strong>Name:</strong> {formData.name}
+                          </p>
+                          <p>
+                            <strong>Username:</strong> @{formData.username}
+                          </p>
+                          <p>
+                            <strong>Email:</strong> {formData.email}
+                          </p>
+                        </div>
+                      </AlertDescription>
+                    </Alert>
+
+                    {/* Password */}
+                    <div className="space-y-2">
+                      <Label
+                        htmlFor="password"
+                        className="text-sm font-medium text-gray-900 dark:text-white"
+                      >
+                        Password
+                      </Label>
+                      <div className="relative">
+                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                        <Input
+                          id="password"
+                          type={showPassword ? "text" : "password"}
+                          placeholder="Create a strong password"
+                          value={formData.password}
+                          onChange={(e) => {
+                            const password = e.target.value;
+                            setFormData({ ...formData, password });
+                            setPasswordStrength(
+                              calculatePasswordStrength(password)
+                            );
+                          }}
+                          className="pl-10 pr-10 h-11 bg-gray-50 dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white placeholder:text-gray-500 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
+                          required
+                          minLength={8}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                        >
+                          {showPassword ? (
+                            <EyeOff className="h-5 w-5" />
+                          ) : (
+                            <Eye className="h-5 w-5" />
+                          )}
+                        </button>
+                      </div>
+
+                      {/* Password Strength */}
+                      {formData.password.length > 0 && (
+                        <div className="space-y-1">
+                          <div className="flex gap-1 h-1">
+                            <div
+                              className={`flex-1 rounded-full transition-all ${
+                                passwordStrength === "weak"
+                                  ? "bg-red-600"
+                                  : passwordStrength === "medium"
+                                  ? "bg-yellow-500"
+                                  : passwordStrength === "strong"
+                                  ? "bg-green-600"
+                                  : "bg-gray-300"
+                              }`}
+                            ></div>
+                            <div
+                              className={`flex-1 rounded-full transition-all ${
+                                passwordStrength === "medium" ||
+                                passwordStrength === "strong"
+                                  ? passwordStrength === "medium"
+                                    ? "bg-yellow-500"
+                                    : "bg-green-600"
+                                  : "bg-gray-300"
+                              }`}
+                            ></div>
+                            <div
+                              className={`flex-1 rounded-full transition-all ${
+                                passwordStrength === "strong"
+                                  ? "bg-green-600"
+                                  : "bg-gray-300"
+                              }`}
+                            ></div>
+                          </div>
+                          <p
+                            className={`text-xs font-medium ${
+                              passwordStrength === "weak"
+                                ? "text-red-600"
+                                : passwordStrength === "medium"
+                                ? "text-yellow-600"
+                                : passwordStrength === "strong"
+                                ? "text-green-600"
+                                : "text-gray-500"
+                            }`}
+                          >
+                            {passwordStrength === "weak" && "Weak password"}
+                            {passwordStrength === "medium" && "Medium strength"}
+                            {passwordStrength === "strong" &&
+                              "Strong password ✓"}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Confirm Password */}
+                    <div className="space-y-2">
+                      <Label
+                        htmlFor="confirmPassword"
+                        className="text-sm font-medium text-gray-900 dark:text-white"
+                      >
+                        Confirm Password
+                      </Label>
+                      <div className="relative">
+                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                        <Input
+                          id="confirmPassword"
+                          type={showConfirmPassword ? "text" : "password"}
+                          placeholder="Re-enter your password"
+                          value={formData.confirmPassword}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              confirmPassword: e.target.value,
+                            })
+                          }
+                          className={`pl-10 pr-10 h-11 bg-gray-50 dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white placeholder:text-gray-500 focus:border-blue-600 focus:ring-1 focus:ring-blue-600 ${
+                            formData.confirmPassword &&
+                            formData.password !== formData.confirmPassword
+                              ? "border-red-600"
+                              : formData.confirmPassword &&
+                                formData.password === formData.confirmPassword
+                              ? "border-green-600"
+                              : ""
+                          }`}
+                          required
+                        />
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setShowConfirmPassword(!showConfirmPassword)
+                          }
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                        >
+                          {showConfirmPassword ? (
+                            <EyeOff className="h-5 w-5" />
+                          ) : (
+                            <Eye className="h-5 w-5" />
+                          )}
+                        </button>
+                      </div>
+                      {formData.confirmPassword &&
+                        formData.password !== formData.confirmPassword && (
+                          <p className="text-xs text-red-600 flex items-center gap-1">
+                            <AlertCircle className="h-3 w-3" />
+                            Passwords don't match
+                          </p>
+                        )}
+                      {formData.confirmPassword &&
+                        formData.password === formData.confirmPassword && (
+                          <p className="text-xs text-green-600 flex items-center gap-1">
+                            <Check className="h-3 w-3" />
+                            Passwords match
+                          </p>
+                        )}
+                    </div>
+
+                    {/* Buttons */}
+                    <div className="flex gap-3">
+                      <Button
+                        type="button"
+                        onClick={() => setCurrentStep(1)}
+                        variant="outline"
+                        className="h-11 px-6 border-gray-300 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-900"
+                      >
+                        <ArrowLeft className="h-5 w-5 mr-2" />
+                        Back
+                      </Button>
+                      <Button
+                        type="button"
+                        onClick={handleNextStep}
+                        disabled={
+                          isLoading ||
+                          !formData.password ||
+                          formData.password !== formData.confirmPassword ||
+                          passwordStrength === "weak"
+                        }
+                        className="flex-1 h-11 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        {isLoading ? (
+                          <div className="flex items-center gap-2">
+                            <Loader2 className="h-5 w-5 animate-spin" />
+                            Creating...
+                          </div>
+                        ) : (
+                          "Create Account"
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Step 3: OTP Verification */}
+                {currentStep === 3 && (
+                  <form onSubmit={handleVerifyOTP} className="space-y-6">
+                    {/* OTP Info */}
+                    <div className="text-center space-y-3">
+                      <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-100 dark:bg-blue-950 rounded-full mb-2">
+                        <ShieldCheck className="w-8 h-8 text-blue-600" />
+                      </div>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                        We've sent a 6-digit code to
+                        <br />
+                        <span className="font-semibold text-gray-900 dark:text-white">
+                          {formData.email}
+                        </span>
+                      </p>
+                    </div>
+
+                    {/* OTP Input */}
+                    <div className="space-y-2">
+                      <Label
+                        htmlFor="otp"
+                        className="text-sm font-medium text-gray-900 dark:text-white"
+                      >
+                        Verification Code
+                      </Label>
+                      <Input
+                        id="otp"
+                        type="text"
+                        placeholder="000000"
+                        value={otp}
+                        onChange={(e) =>
+                          setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))
+                        }
+                        className="h-14 text-center text-2xl font-bold tracking-widest bg-gray-50 dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
+                        required
+                        maxLength={6}
+                        pattern="\d{6}"
+                      />
+                      <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
+                        Code expires in 10 minutes
+                      </p>
+                    </div>
+
+                    {/* Verify Button */}
+                    <Button
+                      type="submit"
+                      disabled={isLoading || otp.length !== 6}
+                      className="w-full h-11 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {isLoading ? (
+                        <div className="flex items-center gap-2">
+                          <Loader2 className="h-5 w-5 animate-spin" />
+                          Verifying...
+                        </div>
+                      ) : (
+                        "Verify Email"
+                      )}
+                    </Button>
+
+                    {/* Resend OTP */}
+                    <div className="text-center space-y-3">
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                        Didn't receive the code?
+                      </p>
+                      <Button
+                        type="button"
+                        onClick={handleResendOTP}
+                        disabled={resendTimer > 0 || isLoading}
+                        variant="ghost"
+                        className="text-blue-600 hover:text-blue-700 dark:text-blue-500 dark:hover:text-blue-400 font-medium disabled:opacity-50"
+                      >
+                        {resendTimer > 0 ? (
+                          <div className="flex items-center gap-2">
+                            <Clock className="w-4 h-4" />
+                            Resend in {resendTimer}s
+                          </div>
+                        ) : (
+                          "Resend Code"
+                        )}
+                      </Button>
+                    </div>
+
+                    {/* Back Link */}
+                    <div className="text-center pt-4">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setCurrentStep(1);
+                          setOtp("");
+                        }}
+                        className="text-sm text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition-colors"
+                      >
+                        ← Change email address
+                      </button>
+                    </div>
+                  </form>
+                )}
               </div>
-            )}
+            </div>
           </div>
         </div>
       </div>
-
-      <style jsx global>{`
-        @keyframes float {
-          0%,
-          100% {
-            transform: translateY(0px);
-          }
-          50% {
-            transform: translateY(-20px);
-          }
-        }
-
-        @keyframes pulse-slow {
-          0%,
-          100% {
-            opacity: 1;
-            transform: scale(1);
-          }
-          50% {
-            opacity: 0.8;
-            transform: scale(1.05);
-          }
-        }
-
-        @keyframes fade-in {
-          from {
-            opacity: 0;
-          }
-          to {
-            opacity: 1;
-          }
-        }
-
-        @keyframes slide-down {
-          from {
-            opacity: 0;
-            transform: translateY(-20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        .animate-float {
-          animation: float 6s ease-in-out infinite;
-        }
-
-        .animate-pulse-slow {
-          animation: pulse-slow 3s ease-in-out infinite;
-        }
-
-        .animate-fade-in {
-          animation: fade-in 1s ease-out;
-        }
-
-        .animate-slide-down {
-          animation: slide-down 0.6s ease-out forwards;
-        }
-
-        .delay-100 {
-          animation-delay: 0.1s;
-        }
-
-        .delay-200 {
-          animation-delay: 0.2s;
-        }
-
-        .delay-300 {
-          animation-delay: 0.3s;
-        }
-      `}</style>
     </div>
   );
 }
