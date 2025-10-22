@@ -683,17 +683,13 @@ export default function ChatPage() {
             <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
               Welcome to Chat
             </h3>
-            <p className="text-gray-500 dark:text-gray-400 mb-6 max-w-md">
-              Select a conversation from the sidebar to start chatting, or
-              create a new conversation with an admin.
+            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+              Welcome to Chat
+            </h3>
+            <p className="text-gray-500 dark:text-gray-400 max-w-md">
+              Select {userRole === "ADMIN" ? "a student" : "an admin"} from the
+              sidebar to start chatting
             </p>
-            <Button
-              onClick={() => setShowUserList(true)}
-              className="bg-gradient-to-r from-blue-600 to-purple-600"
-            >
-              <Users className="w-4 h-4 mr-2" />
-              Start New Chat
-            </Button>
           </div>
         )}
       </div>

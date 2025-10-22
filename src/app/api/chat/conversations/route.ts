@@ -68,8 +68,11 @@ export async function GET(request: NextRequest) {
 
 // POST - Create a new conversation
 export async function POST(request: NextRequest) {
+  let session;
+  let participantId;
+  
   try {
-    const session = await auth();
+    session = await auth();
 
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
