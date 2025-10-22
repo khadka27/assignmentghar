@@ -21,6 +21,16 @@ export async function middleware(request: NextRequest) {
     "/sitemap.xml",
   ];
 
+  // Admin-only routes - completely separate from student site
+  const adminRoutes = ["/admin"];
+  const isAdminRoute = adminRoutes.some((route) => pathname.startsWith(route));
+
+  // Student-only routes - admins should not access these
+  const studentRoutes = ["/chat", "/submit"];
+  const isStudentRoute = studentRoutes.some((route) =>
+    pathname.startsWith(route)
+  );
+
   // Check if current path is public
   const isPublicRoute = publicRoutes.some((route) =>
     pathname.startsWith(route)
@@ -38,12 +48,17 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
-  // If logged in, check role-based access
+  // If logged in, enforce strict role-based separation
   if (session?.user) {
     const userRole = session.user.role;
 
-    // Admin-only routes
-    if (pathname.startsWith("/admin") && userRole !== "ADMIN") {
+    // ADMIN trying to access student routes → block
+    if (userRole === "ADMIN" && isStudentRoute) {
+      return NextResponse.redirect(new URL("/admin", request.url));
+    }
+
+    // STUDENT trying to access admin routes → block
+    if (userRole === "STUDENT" && isAdminRoute) {
       return NextResponse.redirect(new URL("/", request.url));
     }
 

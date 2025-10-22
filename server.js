@@ -49,12 +49,17 @@ app.prepare().then(() => {
             onlineUsers.set(userId, socket.id);
             console.log(`👤 User ${userId} is now online`);
 
-            // Update user status in database
-            prisma.userStatus
-                .upsert({
-                    where: { userId },
-                    update: { isOnline: true, lastSeen: new Date() },
-                    create: { userId, isOnline: true, lastSeen: new Date() },
+            // Update user status in database (only if user exists)
+            prisma.user
+                .findUnique({ where: { id: userId } })
+                .then((user) => {
+                    if (user) {
+                        return prisma.userStatus.upsert({
+                            where: { userId },
+                            update: { isOnline: true, lastSeen: new Date() },
+                            create: { userId, isOnline: true, lastSeen: new Date() },
+                        });
+                    }
                 })
                 .catch((err) => console.error("Error updating user status:", err));
 
@@ -252,14 +257,17 @@ app.prepare().then(() => {
                 if (socketId === socket.id) {
                     onlineUsers.delete(userId);
 
-                    // Update user status in database
-                    await prisma.userStatus
-                        .upsert({
-                            where: { userId },
-                            update: { isOnline: false, lastSeen: new Date() },
-                            create: { userId, isOnline: false, lastSeen: new Date() },
-                        })
-                        .catch((err) => console.error("Error updating user status:", err));
+                    // Update user status in database (only if user exists)
+                    const user = await prisma.user.findUnique({ where: { id: userId } });
+                    if (user) {
+                        await prisma.userStatus
+                            .upsert({
+                                where: { userId },
+                                update: { isOnline: false, lastSeen: new Date() },
+                                create: { userId, isOnline: false, lastSeen: new Date() },
+                            })
+                            .catch((err) => console.error("Error updating user status:", err));
+                    }
 
                     // Broadcast user offline status
                     io.emit("user_status_changed", { userId, isOnline: false });

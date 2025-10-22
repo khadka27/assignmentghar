@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useSession, signOut } from "next-auth/react";
 import {
   LayoutDashboard,
   Users,
@@ -13,8 +14,16 @@ import {
   Menu,
   X,
   LogOut,
+  Bell,
+  Search,
+  Moon,
+  Sun,
+  User,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useTheme } from "@/hooks/use-theme";
+import { useToast } from "@/hooks/use-toast";
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -32,6 +41,11 @@ const navItems = [
     icon: Users,
   },
   {
+    title: "Chat with Students",
+    href: "/chat",
+    icon: MessageSquare,
+  },
+  {
     title: "Testimonials",
     href: "/admin/testimonials",
     icon: Star,
@@ -42,7 +56,7 @@ const navItems = [
     icon: FileText,
   },
   {
-    title: "Chat Management",
+    title: "Chats Management",
     href: "/admin/chats",
     icon: MessageSquare,
   },
@@ -56,24 +70,83 @@ const navItems = [
 export default function AdminLayout({ children }: AdminLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const pathname = usePathname();
+  const { data: session } = useSession();
+  const { theme, toggleTheme } = useTheme();
+  const { toast } = useToast();
+
+  const handleLogout = async () => {
+    try {
+      await signOut({ callbackUrl: "/login" });
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to logout",
+      });
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      {/* Mobile menu button */}
-      <div className="lg:hidden fixed top-4 left-4 z-50">
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={() => setSidebarOpen(!sidebarOpen)}
-          className="bg-white dark:bg-gray-800"
-        >
-          {sidebarOpen ? (
-            <X className="h-6 w-6" />
-          ) : (
-            <Menu className="h-6 w-6" />
-          )}
-        </Button>
-      </div>
+      {/* Admin Top Navbar */}
+      <header className="fixed top-0 left-0 right-0 z-50 bg-white dark:bg-gray-950 border-b border-gray-200 dark:border-gray-800 lg:pl-64">
+        <div className="flex items-center justify-between h-16 px-4 lg:px-8">
+          {/* Mobile menu button */}
+          <div className="flex items-center gap-4">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+              className="lg:hidden"
+            >
+              <Menu className="h-5 w-5" />
+            </Button>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white hidden lg:block">
+              Admin Dashboard
+            </h2>
+          </div>
+
+          {/* Right side actions */}
+          <div className="flex items-center gap-3">
+            {/* Theme toggle */}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggleTheme}
+              className="rounded-full"
+            >
+              {theme === "dark" ? (
+                <Sun className="h-5 w-5" />
+              ) : (
+                <Moon className="h-5 w-5" />
+              )}
+            </Button>
+
+            {/* Notifications */}
+            <Button variant="ghost" size="icon" className="rounded-full">
+              <Bell className="h-5 w-5" />
+            </Button>
+
+            {/* User profile */}
+            <div className="flex items-center gap-3 pl-3 border-l border-gray-200 dark:border-gray-800">
+              <Avatar className="h-8 w-8">
+                <AvatarImage src={session?.user?.image || undefined} />
+                <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-500 text-white text-sm">
+                  {session?.user?.name?.[0] || "A"}
+                </AvatarFallback>
+              </Avatar>
+              <div className="hidden md:block">
+                <p className="text-sm font-medium text-gray-900 dark:text-white">
+                  {session?.user?.name || "Admin"}
+                </p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  Administrator
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
 
       {/* Sidebar */}
       <aside
@@ -118,15 +191,14 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
           {/* Logout */}
           <div className="p-4 border-t border-gray-200 dark:border-gray-800">
-            <Link href="/api/auth/signout">
-              <Button
-                variant="outline"
-                className="w-full justify-start gap-3 border-gray-300 dark:border-gray-700"
-              >
-                <LogOut className="w-5 h-5" />
-                Logout
-              </Button>
-            </Link>
+            <Button
+              onClick={handleLogout}
+              variant="outline"
+              className="w-full justify-start gap-3 border-gray-300 dark:border-gray-700 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400 hover:border-red-300 dark:hover:border-red-700"
+            >
+              <LogOut className="w-5 h-5" />
+              Logout
+            </Button>
           </div>
         </div>
       </aside>
@@ -139,8 +211,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         />
       )}
 
-      {/* Main content */}
-      <main className="lg:ml-64 min-h-screen">
+      {/* Main content - with top padding for navbar */}
+      <main className="lg:ml-64 pt-16 min-h-screen">
         <div className="p-4 lg:p-8">{children}</div>
       </main>
     </div>

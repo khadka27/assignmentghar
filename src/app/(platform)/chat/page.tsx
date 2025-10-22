@@ -75,8 +75,9 @@ export default function ChatPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
-  const [admins, setAdmins] = useState<User[]>([]);
-  const [showAdminList, setShowAdminList] = useState(false);
+  const [availableUsers, setAvailableUsers] = useState<User[]>([]);
+  const [showUserList, setShowUserList] = useState(false);
+  const userRole = session?.user?.role;
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -87,7 +88,7 @@ export default function ChatPage() {
   useEffect(() => {
     if (session?.user?.id) {
       fetchConversations();
-      fetchAdmins();
+      fetchAvailableUsers();
     }
   }, [session]);
 
@@ -201,12 +202,12 @@ export default function ChatPage() {
     }
   };
 
-  const fetchAdmins = async () => {
+  const fetchAvailableUsers = async () => {
     try {
       const response = await axios.get("/api/chat/experts");
-      setAdmins(response.data.admins);
+      setAvailableUsers(response.data.users);
     } catch (error) {
-      console.error("Failed to fetch admins:", error);
+      console.error("Failed to fetch users:", error);
     }
   };
 
@@ -239,18 +240,18 @@ export default function ChatPage() {
     }
   };
 
-  const startNewConversation = async (adminId: string) => {
+  const startNewConversation = async (userId: string) => {
     try {
       const response = await axios.post("/api/chat/conversations", {
-        participantId: adminId,
+        participantId: userId,
       });
       const newConversation = response.data.conversation;
       setConversations((prev) => [newConversation, ...prev]);
       selectConversation(newConversation);
-      setShowAdminList(false);
+      setShowUserList(false);
       toast({
         title: "Chat started!",
-        description: "You can now chat with the admin",
+        description: "You can now start chatting",
       });
     } catch (error) {
       toast({
@@ -407,7 +408,7 @@ export default function ChatPage() {
               Messages
             </h2>
             <Button
-              onClick={() => setShowAdminList(!showAdminList)}
+              onClick={() => setShowUserList(!showUserList)}
               className="bg-gradient-to-r from-blue-600 to-purple-600"
             >
               <Users className="w-4 h-4 mr-2" />
@@ -426,34 +427,40 @@ export default function ChatPage() {
           </div>
         </div>
 
-        {showAdminList && (
+        {showUserList && (
           <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border-b border-gray-200 dark:border-gray-700">
             <h3 className="font-semibold mb-2 text-gray-900 dark:text-white">
-              Select an Admin
+              {userRole === "ADMIN" ? "Select a Student" : "Select an Admin"}
             </h3>
             <div className="space-y-2 max-h-60 overflow-y-auto">
-              {admins.map((admin) => (
+              {availableUsers.map((user) => (
                 <button
-                  key={admin.id}
-                  onClick={() => startNewConversation(admin.id)}
+                  key={user.id}
+                  onClick={() => startNewConversation(user.id)}
                   className="w-full flex items-center gap-3 p-3 bg-white dark:bg-gray-800 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                 >
                   <Avatar>
-                    <AvatarImage src={admin.image} />
+                    <AvatarImage src={user.image} />
                     <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-500 text-white">
-                      {admin.name?.[0] || "A"}
+                      {user.name?.[0] || "U"}
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex-1 text-left">
                     <p className="font-medium text-gray-900 dark:text-white">
-                      {admin.name}
+                      {user.name}
                     </p>
                     <p className="text-sm text-gray-500 dark:text-gray-400">
-                      {admin.email}
+                      {user.email}
                     </p>
                   </div>
-                  <Badge className="bg-green-100 text-green-700 dark:bg-green-900/30">
-                    Admin
+                  <Badge
+                    className={
+                      user.role === "ADMIN"
+                        ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30"
+                        : "bg-green-100 text-green-700 dark:bg-green-900/30"
+                    }
+                  >
+                    {user.role === "ADMIN" ? "Admin" : "Student"}
                   </Badge>
                 </button>
               ))}

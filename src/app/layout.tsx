@@ -21,11 +21,16 @@ export default function RootLayout({
 }) {
   const pathname = usePathname();
 
-  // Hide navbar and footer on auth pages
+  // Hide navbar and footer on auth pages and admin pages
   const isAuthPage =
     pathname === "/login" ||
     pathname === "/register" ||
     pathname === "/recover";
+
+  const isAdminPage = pathname?.startsWith("/admin");
+
+  const showNavAndFooter = !isAuthPage && !isAdminPage;
+
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -52,14 +57,14 @@ export default function RootLayout({
               <a href="#main-content" className="sr-only focus:not-sr-only">
                 Skip to main content
               </a>
-              {!isAuthPage && <Navbar />}
+              {showNavAndFooter && <Navbar />}
               <main
                 id="main-content"
-                className={isAuthPage ? "" : "min-h-screen"}
+                className={showNavAndFooter ? "min-h-screen" : ""}
               >
                 {children}
               </main>
-              {!isAuthPage && <Footer />}
+              {showNavAndFooter && <Footer />}
               <Toaster />
             </ThemeProvider>
           </SocketProvider>

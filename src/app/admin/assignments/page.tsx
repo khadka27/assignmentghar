@@ -1,17 +1,15 @@
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
-import AdminLayout from "@/components/admin/AdminLayout";
 import AssignmentsManagement from "@/components/admin/AssignmentsManagement";
 
-export default async function AdminAssignmentsPage() {
+export default async function AssignmentsPage() {
   const session = await auth();
 
   if (!session || !session.user) {
     redirect("/login");
   }
 
-  // Check if user is admin
   const user = await prisma.user.findUnique({
     where: { email: session.user.email! },
     select: { role: true },
@@ -22,8 +20,16 @@ export default async function AdminAssignmentsPage() {
   }
 
   return (
-    <AdminLayout>
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+          Assignments Management
+        </h1>
+        <p className="text-gray-600 dark:text-gray-400 mt-1">
+          View and manage all student assignments
+        </p>
+      </div>
       <AssignmentsManagement />
-    </AdminLayout>
+    </div>
   );
 }
