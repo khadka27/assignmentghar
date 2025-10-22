@@ -1,10 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
-export async function POST(request: NextRequest) {
+/**
+ * GET /api/auth/check-email?email=...
+ *
+ * Checks if an email is already registered.
+ *
+ * Response:
+ * - 200: { available: true/false, message?: string }
+ * - 400: { available: false, error: "..." }
+ */
+export async function GET(request: NextRequest) {
   try {
-    const body = await request.json();
-    const { email } = body;
+    const { searchParams } = new URL(request.url);
+    const email = searchParams.get("email")?.trim().toLowerCase();
 
     if (!email) {
       return NextResponse.json(
@@ -25,6 +34,7 @@ export async function POST(request: NextRequest) {
     // Check if email exists
     const existingUser = await prisma.user.findUnique({
       where: { email },
+      select: { id: true },
     });
 
     if (existingUser) {

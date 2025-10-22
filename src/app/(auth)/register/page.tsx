@@ -17,6 +17,11 @@ import {
   User,
   ShieldCheck,
   Clock,
+  Check,
+  X,
+  Loader2,
+  ArrowRight,
+  ArrowLeft,
 } from "lucide-react";
 
 export default function RegisterPage() {
@@ -27,16 +32,121 @@ export default function RegisterPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [step, setStep] = useState<"register" | "verify">("register");
+  const [currentStep, setCurrentStep] = useState<1 | 2 | 3>(1); // Step 1: Basic Info, Step 2: Password, Step 3: OTP
   const [otp, setOtp] = useState("");
   const [resendTimer, setResendTimer] = useState(0);
+  const [passwordStrength, setPasswordStrength] = useState<
+    "weak" | "medium" | "strong" | null
+  >(null);
+
+  // Real-time validation states
+  const [emailStatus, setEmailStatus] = useState<
+    "idle" | "checking" | "available" | "taken" | "invalid"
+  >("idle");
+  const [usernameStatus, setUsernameStatus] = useState<
+    "idle" | "checking" | "available" | "taken" | "invalid"
+  >("idle");
 
   const [formData, setFormData] = useState({
     name: "",
+    username: "",
     email: "",
+    gender: "",
     password: "",
     confirmPassword: "",
   });
+
+  // Calculate password strength
+  const calculatePasswordStrength = (password: string) => {
+    if (password.length === 0) return null;
+    if (password.length < 8) return "weak";
+
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasLowerCase = /[a-z]/.test(password);
+    const hasNumbers = /\d/.test(password);
+    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+
+    const score =
+      (hasUpperCase ? 1 : 0) +
+      (hasLowerCase ? 1 : 0) +
+      (hasNumbers ? 1 : 0) +
+      (hasSpecialChar ? 1 : 0);
+
+    if (password.length >= 12 && score >= 3) return "strong";
+    if (password.length >= 8 && score >= 2) return "medium";
+    return "weak";
+  };
+
+  // Real-time email availability check
+  useEffect(() => {
+    const email = formData.email.trim().toLowerCase();
+    if (!email || email.length < 3) {
+      setEmailStatus("idle");
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setEmailStatus("invalid");
+      return;
+    }
+
+    let cancelled = false;
+    setEmailStatus("checking");
+
+    const timer = setTimeout(async () => {
+      try {
+        const res = await fetch(
+          `/api/auth/check-email?email=${encodeURIComponent(email)}`
+        );
+        if (cancelled) return;
+        const data = await res.json();
+        setEmailStatus(data.available ? "available" : "taken");
+      } catch {
+        if (!cancelled) setEmailStatus("idle");
+      }
+    }, 500);
+
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
+  }, [formData.email]);
+
+  // Real-time username availability check
+  useEffect(() => {
+    const username = formData.username.trim();
+    if (!username || username.length < 3) {
+      setUsernameStatus("idle");
+      return;
+    }
+
+    if (!/^[a-zA-Z0-9_-]+$/.test(username)) {
+      setUsernameStatus("invalid");
+      return;
+    }
+
+    let cancelled = false;
+    setUsernameStatus("checking");
+
+    const timer = setTimeout(async () => {
+      try {
+        const res = await fetch(
+          `/api/auth/check-username?username=${encodeURIComponent(username)}`
+        );
+        if (cancelled) return;
+        const data = await res.json();
+        setUsernameStatus(data.available ? "available" : "taken");
+      } catch {
+        if (!cancelled) setUsernameStatus("idle");
+      }
+    }, 500);
+
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
+  }, [formData.username]);
 
   // Redirect if already logged in
   useEffect(() => {
@@ -53,36 +163,88 @@ export default function RegisterPage() {
     }
   }, [resendTimer]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  // Validate Step 1 (Basic Info)
+  const validateStep1 = () => {
+    if (!formData.name.trim()) {
+      toast({
+        variant: "destructive",
+        title: "Name Required",
+        description: "Please enter your full name",
+      });
+      return false;
+    }
+    if (usernameStatus !== "available") {
+      toast({
+        variant: "destructive",
+        title: "Username Issue",
+        description:
+          usernameStatus === "taken"
+            ? "Username already taken. Please choose another."
+            : "Please enter a valid username (3+ characters, letters, numbers, _ or - only)",
+      });
+      return false;
+    }
+    if (emailStatus !== "available") {
+      toast({
+        variant: "destructive",
+        title: "Email Issue",
+        description:
+          emailStatus === "taken"
+            ? "Email already registered. Please login or use another email."
+            : "Please enter a valid email address",
+      });
+      return false;
+    }
+    if (!formData.gender) {
+      toast({
+        variant: "destructive",
+        title: "Gender Required",
+        description: "Please select your gender",
+      });
+      return false;
+    }
+    return true;
+  };
+
+  // Validate Step 2 (Password)
+  const validateStep2 = () => {
+    if (formData.password.length < 8) {
+      toast({
+        variant: "destructive",
+        title: "Weak Password",
+        description: "Password must be at least 8 characters long",
+      });
+      return false;
+    }
+    if (formData.password !== formData.confirmPassword) {
+      toast({
+        variant: "destructive",
+        title: "Passwords Don't Match",
+        description: "Please make sure both passwords are the same",
+      });
+      return false;
+    }
+    return true;
+  };
+
+  const handleNextStep = () => {
+    if (currentStep === 1 && validateStep1()) {
+      setCurrentStep(2);
+    } else if (currentStep === 2 && validateStep2()) {
+      handleSubmit();
+    }
+  };
+
+  const handleSubmit = async () => {
     setIsLoading(true);
 
     try {
-      if (formData.password !== formData.confirmPassword) {
-        toast({
-          variant: "destructive",
-          title: "Error",
-          description: "Passwords do not match",
-        });
-        setIsLoading(false);
-        return;
-      }
-
-      if (formData.password.length < 6) {
-        toast({
-          variant: "destructive",
-          title: "Error",
-          description: "Password must be at least 6 characters long",
-        });
-        setIsLoading(false);
-        return;
-      }
-
       const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: formData.name,
+          username: formData.username,
           email: formData.email,
           password: formData.password,
         }),
@@ -92,17 +254,43 @@ export default function RegisterPage() {
 
       if (res.ok) {
         toast({
-          title: "Success!",
-          description: "OTP sent to your email. Please check your inbox.",
+          title: "✅ Account Created Successfully!",
+          description:
+            "We've sent a 6-digit verification code to your email. Please check your inbox (and spam folder).",
         });
-        setStep("verify");
+        setCurrentStep(3); // Move to OTP verification
         setResendTimer(60); // Start 60 second countdown
       } else {
+        // Enhanced error messages based on error code
+        let errorMessage = data.message || "Something went wrong";
+        let errorTitle = "Registration Failed";
+
+        if (data.code === "EMAIL_TAKEN") {
+          errorTitle = "Email Already Registered";
+          errorMessage =
+            "This email is already registered. Please login or use a different email.";
+        } else if (data.code === "USERNAME_TAKEN") {
+          errorTitle = "Username Taken";
+          errorMessage =
+            "This username is already taken. Please choose another.";
+        } else if (data.code === "WEAK_PASSWORD") {
+          errorTitle = "Weak Password";
+          errorMessage =
+            "Please use a stronger password (at least 8 characters with numbers and symbols).";
+        } else if (data.code === "INVALID_EMAIL") {
+          errorTitle = "Invalid Email";
+          errorMessage = "Please enter a valid email address.";
+        }
+
         toast({
           variant: "destructive",
-          title: "Registration Failed",
-          description: data.error || "Something went wrong",
+          title: errorTitle,
+          description: errorMessage,
         });
+        // Go back to step 1 if email/username issue
+        if (data.code === "EMAIL_TAKEN" || data.code === "USERNAME_TAKEN") {
+          setCurrentStep(1);
+        }
       }
     } catch (error) {
       toast({
@@ -285,7 +473,7 @@ export default function RegisterPage() {
 
         {/* Right Side - Auth Form */}
         <div className="w-full max-w-md mx-auto">
-          <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-gray-200/50 dark:border-gray-700/50 p-8 transition-all duration-500 hover:shadow-blue-500/20">
+          <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl border border-gray-200 dark:border-gray-700 p-8 transition-all duration-500 hover:shadow-blue-500/20">
             {/* Logo */}
             <div className="flex justify-center mb-8 animate-fade-in">
               <div className="relative group">
@@ -302,9 +490,39 @@ export default function RegisterPage() {
               </div>
             </div>
 
+            {/* Progress Indicator */}
+            {currentStep !== 3 && (
+              <div className="mb-6">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Step {currentStep} of 2
+                  </span>
+                  <span className="text-xs text-gray-500">
+                    {currentStep === 1 ? "Basic Info" : "Set Password"}
+                  </span>
+                </div>
+                <div className="flex gap-2">
+                  <div
+                    className={`h-2 flex-1 rounded-full transition-all duration-300 ${
+                      currentStep >= 1
+                        ? "bg-gradient-to-r from-blue-500 to-purple-500"
+                        : "bg-gray-300"
+                    }`}
+                  ></div>
+                  <div
+                    className={`h-2 flex-1 rounded-full transition-all duration-300 ${
+                      currentStep >= 2
+                        ? "bg-gradient-to-r from-blue-500 to-purple-500"
+                        : "bg-gray-300"
+                    }`}
+                  ></div>
+                </div>
+              </div>
+            )}
+
             {/* Form */}
-            {step === "register" ? (
-              <form onSubmit={handleSubmit} className="space-y-6">
+            {currentStep === 1 ? (
+              <div className="space-y-6">
                 {/* Name field */}
                 <div className="space-y-2 animate-slide-down">
                   <Label
@@ -329,10 +547,79 @@ export default function RegisterPage() {
                   </div>
                 </div>
 
-                {/* Email field */}
+                {/* Username field */}
                 <div
                   className="space-y-2 animate-slide-down"
                   style={{ animationDelay: "0.1s" }}
+                >
+                  <Label
+                    htmlFor="username"
+                    className="text-gray-700 dark:text-gray-300 font-medium"
+                  >
+                    Username
+                  </Label>
+                  <div className="relative group">
+                    <User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 group-focus-within:text-blue-500 transition-colors duration-300" />
+                    <Input
+                      id="username"
+                      type="text"
+                      placeholder="johndoe123"
+                      value={formData.username}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          username: e.target.value.trim().toLowerCase(),
+                        })
+                      }
+                      className={`pl-10 pr-10 h-12 bg-gray-50 dark:bg-gray-900/50 border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-300 ${
+                        usernameStatus === "available"
+                          ? "border-green-500"
+                          : usernameStatus === "taken" ||
+                            usernameStatus === "invalid"
+                          ? "border-red-500"
+                          : ""
+                      }`}
+                      required
+                      minLength={3}
+                    />
+                    {formData.username.length >= 3 && (
+                      <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                        {usernameStatus === "checking" ? (
+                          <Loader2 className="h-5 w-5 text-gray-400 animate-spin" />
+                        ) : usernameStatus === "available" ? (
+                          <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
+                            <Check className="h-3 w-3 text-white" />
+                          </div>
+                        ) : usernameStatus === "taken" ||
+                          usernameStatus === "invalid" ? (
+                          <div className="w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
+                            <X className="h-3 w-3 text-white" />
+                          </div>
+                        ) : null}
+                      </div>
+                    )}
+                  </div>
+                  {usernameStatus === "taken" && (
+                    <p className="text-xs text-red-500 mt-1">
+                      Username already taken
+                    </p>
+                  )}
+                  {usernameStatus === "invalid" && (
+                    <p className="text-xs text-red-500 mt-1">
+                      Only letters, numbers, _ and - allowed (min 3 characters)
+                    </p>
+                  )}
+                  {usernameStatus === "available" && (
+                    <p className="text-xs text-green-500 mt-1">
+                      Username is available
+                    </p>
+                  )}
+                </div>
+
+                {/* Email field */}
+                <div
+                  className="space-y-2 animate-slide-down"
+                  style={{ animationDelay: "0.2s" }}
                 >
                   <Label
                     htmlFor="email"
@@ -347,20 +634,141 @@ export default function RegisterPage() {
                       type="email"
                       placeholder="john@example.com"
                       value={formData.email}
-                      onChange={(e) =>
-                        setFormData({ ...formData, email: e.target.value })
-                      }
-                      className="pl-10 h-12 bg-gray-50 dark:bg-gray-900/50 border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-300"
+                      onChange={(e) => {
+                        setFormData({ ...formData, email: e.target.value });
+                      }}
+                      className={`pl-10 pr-10 h-12 bg-gray-50 dark:bg-gray-900/50 border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-300 ${
+                        emailStatus === "available"
+                          ? "border-green-500"
+                          : emailStatus === "taken" || emailStatus === "invalid"
+                          ? "border-red-500"
+                          : ""
+                      }`}
                       required
                     />
+                    {formData.email.length > 0 && (
+                      <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                        {emailStatus === "checking" ? (
+                          <Loader2 className="h-5 w-5 text-gray-400 animate-spin" />
+                        ) : emailStatus === "available" ? (
+                          <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
+                            <Check className="h-3 w-3 text-white" />
+                          </div>
+                        ) : emailStatus === "taken" ||
+                          emailStatus === "invalid" ? (
+                          <div className="w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
+                            <X className="h-3 w-3 text-white" />
+                          </div>
+                        ) : null}
+                      </div>
+                    )}
+                  </div>
+                  {emailStatus === "taken" && (
+                    <p className="text-xs text-red-500 mt-1">
+                      Email already registered
+                    </p>
+                  )}
+                  {emailStatus === "invalid" && (
+                    <p className="text-xs text-red-500 mt-1">
+                      Please enter a valid email address
+                    </p>
+                  )}
+                  {emailStatus === "available" && (
+                    <p className="text-xs text-green-500 mt-1">
+                      Email is available
+                    </p>
+                  )}
+                </div>
+
+                {/* Gender field */}
+                <div
+                  className="space-y-2 animate-slide-down"
+                  style={{ animationDelay: "0.3s" }}
+                >
+                  <Label
+                    htmlFor="gender"
+                    className="text-gray-700 dark:text-gray-300 font-medium"
+                  >
+                    Gender
+                  </Label>
+                  <select
+                    id="gender"
+                    value={formData.gender}
+                    onChange={(e) =>
+                      setFormData({ ...formData, gender: e.target.value })
+                    }
+                    className="w-full h-12 px-4 bg-gray-50 dark:bg-gray-900/50 border border-gray-300 dark:border-gray-600 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-300 text-gray-900 dark:text-white"
+                    required
+                  >
+                    <option value="">Select your gender</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="other">Other</option>
+                    <option value="prefer-not-to-say">Prefer not to say</option>
+                  </select>
+                </div>
+
+                {/* Next Button - Step 1 */}
+                <Button
+                  type="button"
+                  onClick={handleNextStep}
+                  disabled={
+                    !formData.name ||
+                    !formData.gender ||
+                    usernameStatus !== "available" ||
+                    emailStatus !== "available"
+                  }
+                  className="w-full h-12 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed animate-slide-down"
+                  style={{ animationDelay: "0.4s" }}
+                >
+                  <span className="flex items-center gap-2">
+                    Next: Set Password <ArrowRight className="h-5 w-5" />
+                  </span>
+                </Button>
+
+                {/* Link to Login */}
+                <div
+                  className="text-center pt-4 animate-slide-down"
+                  style={{ animationDelay: "0.5s" }}
+                >
+                  <p className="text-gray-600 dark:text-gray-400">
+                    Already have an account?{" "}
+                    <Link
+                      href="/login"
+                      className="text-blue-600 hover:text-purple-600 dark:text-blue-400 dark:hover:text-purple-400 font-semibold transition-colors duration-300 hover:underline"
+                    >
+                      Sign in
+                    </Link>
+                  </p>
+                </div>
+              </div>
+            ) : currentStep === 2 ? (
+              <div className="space-y-6">
+                {/* Summary of Step 1 */}
+                <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 space-y-2 animate-fade-in">
+                  <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Account Details:
+                  </p>
+                  <div className="text-xs text-gray-600 dark:text-gray-400 space-y-1">
+                    <p>
+                      <strong>Name:</strong> {formData.name}
+                    </p>
+                    <p>
+                      <strong>Username:</strong> @{formData.username}
+                    </p>
+                    <p>
+                      <strong>Email:</strong> {formData.email}
+                    </p>
+                    <p>
+                      <strong>Gender:</strong>{" "}
+                      {formData.gender.charAt(0).toUpperCase() +
+                        formData.gender.slice(1).replace("-", " ")}
+                    </p>
                   </div>
                 </div>
 
                 {/* Password field */}
-                <div
-                  className="space-y-2 animate-slide-down"
-                  style={{ animationDelay: "0.2s" }}
-                >
+                <div className="space-y-2 animate-slide-down">
                   <Label
                     htmlFor="password"
                     className="text-gray-700 dark:text-gray-300 font-medium"
@@ -374,12 +782,16 @@ export default function RegisterPage() {
                       type={showPassword ? "text" : "password"}
                       placeholder="••••••••••"
                       value={formData.password}
-                      onChange={(e) =>
-                        setFormData({ ...formData, password: e.target.value })
-                      }
+                      onChange={(e) => {
+                        const password = e.target.value;
+                        setFormData({ ...formData, password });
+                        setPasswordStrength(
+                          calculatePasswordStrength(password)
+                        );
+                      }}
                       className="pl-10 pr-10 h-12 bg-gray-50 dark:bg-gray-900/50 border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-300"
                       required
-                      minLength={6}
+                      minLength={8}
                     />
                     <button
                       type="button"
@@ -393,12 +805,69 @@ export default function RegisterPage() {
                       )}
                     </button>
                   </div>
+
+                  {/* Password Strength Indicator */}
+                  {formData.password.length > 0 && (
+                    <div className="space-y-1">
+                      <div className="flex gap-1 h-1">
+                        <div
+                          className={`flex-1 rounded-full transition-all duration-300 ${
+                            passwordStrength === "weak"
+                              ? "bg-red-500"
+                              : passwordStrength === "medium"
+                              ? "bg-yellow-500"
+                              : passwordStrength === "strong"
+                              ? "bg-green-500"
+                              : "bg-gray-300"
+                          }`}
+                        ></div>
+                        <div
+                          className={`flex-1 rounded-full transition-all duration-300 ${
+                            passwordStrength === "medium" ||
+                            passwordStrength === "strong"
+                              ? passwordStrength === "medium"
+                                ? "bg-yellow-500"
+                                : "bg-green-500"
+                              : "bg-gray-300"
+                          }`}
+                        ></div>
+                        <div
+                          className={`flex-1 rounded-full transition-all duration-300 ${
+                            passwordStrength === "strong"
+                              ? "bg-green-500"
+                              : "bg-gray-300"
+                          }`}
+                        ></div>
+                      </div>
+                      <p
+                        className={`text-xs font-medium ${
+                          passwordStrength === "weak"
+                            ? "text-red-500"
+                            : passwordStrength === "medium"
+                            ? "text-yellow-500"
+                            : passwordStrength === "strong"
+                            ? "text-green-500"
+                            : "text-gray-500"
+                        }`}
+                      >
+                        {passwordStrength === "weak" && "Weak password"}
+                        {passwordStrength === "medium" &&
+                          "Medium strength password"}
+                        {passwordStrength === "strong" && "Strong password! ✓"}
+                      </p>
+                      {passwordStrength === "weak" && (
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                          Use 8+ characters with uppercase, numbers & symbols
+                        </p>
+                      )}
+                    </div>
+                  )}
                 </div>
 
                 {/* Confirm Password */}
                 <div
                   className="space-y-2 animate-slide-down"
-                  style={{ animationDelay: "0.3s" }}
+                  style={{ animationDelay: "0.1s" }}
                 >
                   <Label
                     htmlFor="confirmPassword"
@@ -419,7 +888,15 @@ export default function RegisterPage() {
                           confirmPassword: e.target.value,
                         })
                       }
-                      className="pl-10 pr-10 h-12 bg-gray-50 dark:bg-gray-900/50 border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-300"
+                      className={`pl-10 pr-10 h-12 bg-gray-50 dark:bg-gray-900/50 border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-300 ${
+                        formData.confirmPassword &&
+                        formData.password !== formData.confirmPassword
+                          ? "border-red-500"
+                          : formData.confirmPassword &&
+                            formData.password === formData.confirmPassword
+                          ? "border-green-500"
+                          : ""
+                      }`}
                       required
                     />
                     <button
@@ -436,92 +913,55 @@ export default function RegisterPage() {
                       )}
                     </button>
                   </div>
+                  {formData.confirmPassword &&
+                    formData.password !== formData.confirmPassword && (
+                      <p className="text-xs text-red-500 mt-1">
+                        Passwords don't match
+                      </p>
+                    )}
+                  {formData.confirmPassword &&
+                    formData.password === formData.confirmPassword && (
+                      <p className="text-xs text-green-500 mt-1">
+                        Passwords match ✓
+                      </p>
+                    )}
                 </div>
 
-                {/* Submit Button */}
-                <Button
-                  type="submit"
-                  disabled={isLoading}
-                  className="w-full h-12 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed animate-slide-down"
-                  style={{ animationDelay: "0.4s" }}
-                >
-                  {isLoading ? (
-                    <div className="flex items-center gap-2">
-                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                      <span>Creating account...</span>
-                    </div>
-                  ) : (
-                    <span>Create Account</span>
-                  )}
-                </Button>
-
-                {/* Divider */}
-                <div
-                  className="relative my-6 animate-slide-down"
-                  style={{ animationDelay: "0.5s" }}
-                >
-                  <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-gray-300 dark:border-gray-600"></div>
-                  </div>
-                  <div className="relative flex justify-center text-sm">
-                    <span className="px-4 bg-white dark:bg-gray-800 text-gray-500">
-                      or
-                    </span>
-                  </div>
+                {/* Back and Submit Buttons */}
+                <div className="flex gap-3">
+                  <Button
+                    type="button"
+                    onClick={() => setCurrentStep(1)}
+                    variant="outline"
+                    className="h-12 px-6 border-2 border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800"
+                  >
+                    <ArrowLeft className="h-5 w-5 mr-2" />
+                    Back
+                  </Button>
+                  <Button
+                    type="button"
+                    onClick={handleNextStep}
+                    disabled={
+                      isLoading ||
+                      !formData.password ||
+                      formData.password !== formData.confirmPassword ||
+                      passwordStrength === "weak"
+                    }
+                    className="flex-1 h-12 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isLoading ? (
+                      <div className="flex items-center gap-2">
+                        <Loader2 className="h-5 w-5 animate-spin" />
+                        <span>Creating account...</span>
+                      </div>
+                    ) : (
+                      <span>Create Account</span>
+                    )}
+                  </Button>
                 </div>
-
-                {/* Google Sign In */}
-                <Button
-                  type="button"
-                  onClick={handleGoogleSignIn}
-                  disabled={isLoading}
-                  variant="outline"
-                  className="w-full h-12 border-2 border-gray-300 dark:border-gray-600 hover:border-blue-500 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all duration-300 transform hover:scale-[1.02] animate-slide-down"
-                  style={{ animationDelay: "0.6s" }}
-                >
-                  <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
-                    <path
-                      fill="currentColor"
-                      d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                      className="text-blue-500"
-                    />
-                    <path
-                      fill="currentColor"
-                      d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                      className="text-green-500"
-                    />
-                    <path
-                      fill="currentColor"
-                      d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-                      className="text-yellow-500"
-                    />
-                    <path
-                      fill="currentColor"
-                      d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-                      className="text-red-500"
-                    />
-                  </svg>
-                  Sign up with Google
-                </Button>
-
-                {/* Toggle Login/Register */}
-                <div
-                  className="text-center pt-4 animate-slide-down"
-                  style={{ animationDelay: "0.7s" }}
-                >
-                  <p className="text-gray-600 dark:text-gray-400">
-                    Already have an account?{" "}
-                    <Link
-                      href="/login"
-                      className="text-blue-600 hover:text-purple-600 dark:text-blue-400 dark:hover:text-purple-400 font-semibold transition-colors duration-300 hover:underline"
-                    >
-                      Sign in
-                    </Link>
-                  </p>
-                </div>
-              </form>
+              </div>
             ) : (
-              <form onSubmit={handleVerifyOTP} className="space-y-6">
+              <div className="space-y-6">
                 {/* OTP Info */}
                 <div className="text-center space-y-2 animate-fade-in">
                   <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full mb-4">
@@ -611,7 +1051,7 @@ export default function RegisterPage() {
                   <button
                     type="button"
                     onClick={() => {
-                      setStep("register");
+                      setCurrentStep(1);
                       setOtp("");
                     }}
                     className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition-colors duration-300 text-sm"
@@ -619,7 +1059,7 @@ export default function RegisterPage() {
                     ← Change email address
                   </button>
                 </div>
-              </form>
+              </div>
             )}
           </div>
         </div>

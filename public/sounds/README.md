@@ -1,33 +1,65 @@
 # Notification Sound Setup
 
-To add notification sounds to your chat system:
+## ✅ Current Status: CONFIGURED
 
-## Option 1: Use a Free Sound File
+The chat system is now using: **`/sounds/notification.wav`**
 
-1. Download a free notification sound from:
+## Audio File Details
 
-   - https://notificationsounds.com/
-   - https://freesound.org/
-   - https://mixkit.co/free-sound-effects/notification/
+- **Format:** WAV (Web Audio)
+- **Location:** `public/sounds/notification.wav`
+- **Volume:** Set to 50% for optimal user experience
+- **Status:** Ready to use! 🎵
 
-2. Rename the file to `notification.mp3`
+## How It Works
 
-3. Place it in: `public/sounds/notification.mp3`
+When you receive a new message, the app will:
 
-## Option 2: Use Browser's Default Audio
+1. Play the notification sound (notification.wav)
+2. Show a toast notification
+3. Display the message in real-time
 
-The chat system will attempt to play the notification sound if it exists.
-If the file doesn't exist, it will silently fail (no errors).
+## Customization
 
-## File Requirements
+Want to use a different sound? Simply replace `notification.wav` with your own file:
 
-- Format: MP3, OGG, or WAV
-- Size: < 500KB recommended
-- Duration: 0.5-2 seconds
-- Volume: Normalized
+1. **Keep the filename:** `notification.wav`
+2. **Supported formats:** WAV, MP3, OGG
+3. **Recommended:**
+   - Duration: 0.5-2 seconds
+   - Size: < 500KB
+   - Volume: Normalized
 
-## Current Status
+## Free Sound Sources
 
-The chat page is configured to play: `/sounds/notification.mp3`
+Download free notification sounds from:
 
-You can add this file anytime - the chat works perfectly without it!
+- https://notificationsounds.com/
+- https://freesound.org/
+- https://mixkit.co/free-sound-effects/notification/
+- https://pixabay.com/sound-effects/
+
+## Technical Details
+
+The notification sound is played when:
+
+- ✅ New message received (from other users)
+- ✅ File uploaded and shared
+- ✅ System notifications
+
+The sound will NOT play for:
+
+- ❌ Your own messages
+- ❌ System messages you send
+
+## Browser Compatibility
+
+Modern browsers may block autoplay. The app handles this gracefully:
+
+- Sound plays automatically when allowed
+- Silent fail if blocked (no errors shown)
+- User interaction may be required first
+
+---
+
+**Note:** The chat works perfectly with or without the notification sound!

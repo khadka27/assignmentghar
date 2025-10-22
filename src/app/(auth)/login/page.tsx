@@ -9,35 +9,35 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { Eye, EyeOff, Mail, Lock, User } from "lucide-react";
 import {
-  Eye,
-  EyeOff,
-  Mail,
-  Lock,
-  User,
-  ShieldCheck,
-  Clock,
-} from "lucide-react";
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 export default function LoginPage() {
   const router = useRouter();
   const { data: session, status } = useSession();
   const { toast } = useToast();
 
-  const [isLogin, setIsLogin] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [showOTPVerification, setShowOTPVerification] = useState(false);
-  const [otp, setOtp] = useState("");
-  const [resendTimer, setResendTimer] = useState(0);
-  const [unverifiedEmail, setUnverifiedEmail] = useState("");
+  const [checking, setChecking] = useState(false);
+  const [checkStatus, setCheckStatus] = useState<
+    "idle" | "checking" | "verified" | "unverified" | "not_found"
+  >("idle");
+  const [resolvedEmail, setResolvedEmail] = useState<string | null>(null);
+  const [showUnverifiedDialog, setShowUnverifiedDialog] = useState(false);
+  const [authError, setAuthError] = useState<string | null>(null);
 
   const [formData, setFormData] = useState({
-    name: "",
     email: "",
     password: "",
-    confirmPassword: "",
   });
 
   // Redirect if already logged in
@@ -47,223 +47,138 @@ export default function LoginPage() {
     }
   }, [status, session, router]);
 
-  // Resend timer countdown
-  useEffect(() => {
-    if (resendTimer > 0) {
-      const timer = setTimeout(() => setResendTimer(resendTimer - 1), 1000);
-      return () => clearTimeout(timer);
-    }
-  }, [resendTimer]);
-
-  const handleSendOTP = async (email: string) => {
-    setIsLoading(true);
-    try {
-      const res = await fetch("/api/auth/resend-otp", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
-      });
-
-      const data = await res.json();
-
-      if (res.ok) {
-        toast({
-          title: "Verification Code Sent!",
-          description: "Please check your email for the verification code.",
-        });
-        setShowOTPVerification(true);
-        setResendTimer(60);
-      } else {
-        toast({
-          variant: "destructive",
-          title: "Error",
-          description: data.error || "Failed to send verification code",
-        });
-      }
-    } catch (error) {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Something went wrong. Please try again.",
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleVerifyOTP = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-
-    try {
-      const res = await fetch("/api/auth/verify-otp", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: unverifiedEmail,
-          otp: otp,
-        }),
-      });
-
-      const data = await res.json();
-
-      if (res.ok) {
-        toast({
-          title: "Email Verified!",
-          description: "Your account has been verified. You can now login.",
-        });
-        setShowOTPVerification(false);
-        setOtp("");
-        setUnverifiedEmail("");
-        // Auto-fill the login form
-        setFormData({
-          ...formData,
-          email: unverifiedEmail,
-        });
-      } else {
-        toast({
-          variant: "destructive",
-          title: "Verification Failed",
-          description: data.error || "Invalid verification code",
-        });
-      }
-    } catch (error) {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Something went wrong. Please try again.",
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleResendOTP = async () => {
-    if (resendTimer > 0) return;
-    await handleSendOTP(unverifiedEmail);
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setAuthError(null);
 
     try {
-      if (isLogin) {
-        // Login
-        const result = await signIn("credentials", {
-          email: formData.email,
-          password: formData.password,
-          redirect: false,
+      // Preflight check if status isn't settled yet
+      if (checkStatus === "idle" || checkStatus === "checking") {
+        try {
+          const res = await fetch(
+            `/api/auth/check-account?identifier=${encodeURIComponent(
+              formData.email
+            )}`
+          );
+          if (res.ok) {
+            const data = await res.json();
+            if (data?.exists && !data?.isVerified) {
+              setResolvedEmail(data.email || null);
+              setShowUnverifiedDialog(true);
+              toast({
+                title: "Account not verified",
+                description: "Please verify your email before logging in.",
+              });
+              return;
+            }
+            if (data?.exists && data?.isVerified && data?.email) {
+              setResolvedEmail(data.email);
+            }
+          }
+        } catch {}
+      }
+
+      // Intercept if account is unverified to avoid server UNVERIFIED error
+      if (checkStatus === "unverified") {
+        setShowUnverifiedDialog(true);
+        toast({
+          title: "Account not verified",
+          description: "Please verify your email before logging in.",
         });
+        return; // Don't call signIn
+      }
 
-        if (result?.error) {
-          // Debug: Log the actual error
-          console.log("Login error:", result.error);
+      const emailToUse = resolvedEmail || formData.email;
+      // Login
+      const result = await signIn("credentials", {
+        email: emailToUse,
+        password: formData.password,
+        redirect: false,
+      });
 
-          // Parse error code from error message format: "CODE: message"
-          const errorParts = result.error.split(": ");
-          const errorCode = errorParts[0];
-          const errorMessage = errorParts.slice(1).join(": ") || result.error;
+      if (result?.error) {
+        // Debug: Log the actual error
+        console.log("=== LOGIN ERROR DEBUG ===");
+        console.log("Full error:", result.error);
+        console.log("Email used:", formData.email);
 
-          console.log("Parsed error code:", errorCode);
-          console.log("Parsed error message:", errorMessage);
+        // Parse error code from error message format: "CODE: message"
+        const errorParts = result.error.split(": ");
+        const errorCode = errorParts[0];
+        const errorMessage = errorParts.slice(1).join(": ") || result.error;
 
-          // Handle specific error codes
-          // Also check if error contains "verify" or "unverified" (fallback)
-          if (
-            errorCode === "UNVERIFIED" ||
-            result.error.toLowerCase().includes("verify") ||
-            result.error.toLowerCase().includes("unverified")
-          ) {
-            // Account exists but not verified - Send OTP inline
-            console.log("UNVERIFIED detected - sending OTP");
-            setUnverifiedEmail(formData.email);
-            toast({
-              title: "Email Not Verified",
-              description: "Sending verification code to your email...",
-            });
-            await handleSendOTP(formData.email);
-            // Alternative: Redirect to missing-verification page
-            // router.push(`/missing-verification?email=${encodeURIComponent(formData.email)}`);
-            return; // Exit early
-          }
+        console.log("Parsed error code:", errorCode);
+        console.log("Parsed error message:", errorMessage);
+        console.log("========================");
 
-          switch (errorCode) {
-            case "USER_NOT_FOUND":
-              toast({
-                variant: "destructive",
-                title: "User Not Found",
-                description:
-                  "No account found with this email. Please register first.",
-              });
-              break;
-
-            case "INVALID_CREDENTIALS":
-              toast({
-                variant: "destructive",
-                title: "Login Failed",
-                description: errorMessage || "Email or password incorrect",
-              });
-              break;
-
-            default:
-              // Fallback for any other errors
-              toast({
-                variant: "destructive",
-                title: "Login Failed",
-                description: errorMessage || "An error occurred during login",
-              });
-          }
-        } else {
+        // Handle specific error codes
+        // Also check if error contains "verify" or "unverified" (fallback)
+        if (
+          errorCode === "UNVERIFIED" ||
+          result.error.toLowerCase().includes("verify") ||
+          result.error.toLowerCase().includes("unverified")
+        ) {
+          // Account exists but not verified - Redirect to missing-verification page
+          console.log("UNVERIFIED detected - redirecting to verification");
           toast({
-            title: "Welcome back!",
-            description: "Login successful",
+            title: "Email Not Verified",
+            description: "Please verify your email first. Redirecting...",
           });
-          router.push("/");
+
+          // Redirect to missing-verification page with email and auto-send OTP
+          setTimeout(() => {
+            router.push(
+              `/missing-verification?email=${encodeURIComponent(
+                resolvedEmail || formData.email
+              )}&autoSend=true`
+            );
+          }, 1500);
+          setIsLoading(false); // Set loading false but keep user on page during redirect
+          return; // Exit early
+        }
+
+        switch (errorCode) {
+          case "USER_NOT_FOUND":
+            toast({
+              variant: "destructive",
+              title: "Account not found",
+              description:
+                "We couldn't find an account with that username or email. You can create one from the Register page.",
+            });
+            setAuthError(
+              "We couldn't find an account with that username or email."
+            );
+            break;
+
+          case "INVALID_CREDENTIALS":
+            toast({
+              variant: "destructive",
+              title: "Incorrect credentials",
+              description:
+                errorMessage ||
+                "The username/email or password you entered is incorrect. Please try again.",
+            });
+            setAuthError(
+              "The username/email or password you entered is incorrect."
+            );
+            break;
+
+          default:
+            // Fallback for any other errors
+            toast({
+              variant: "destructive",
+              title: "Login Failed",
+              description: errorMessage || "An error occurred during login",
+            });
+            setAuthError("An error occurred during login. Please try again.");
         }
       } else {
-        // Register
-        if (formData.password !== formData.confirmPassword) {
-          toast({
-            variant: "destructive",
-            title: "Error",
-            description: "Passwords do not match",
-          });
-          setIsLoading(false);
-          return;
-        }
-
-        const res = await fetch("/api/auth/register", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            name: formData.name,
-            email: formData.email,
-            password: formData.password,
-          }),
+        toast({
+          title: "Welcome back!",
+          description: "Login successful",
         });
-
-        const data = await res.json();
-
-        if (res.ok) {
-          toast({
-            title: "Account created!",
-            description: "Please login with your credentials",
-          });
-          setIsLogin(true);
-          setFormData({
-            name: "",
-            email: formData.email,
-            password: "",
-            confirmPassword: "",
-          });
-        } else {
-          toast({
-            variant: "destructive",
-            title: "Registration Failed",
-            description: data.message || "Something went wrong",
-          });
-        }
+        router.push("/");
       }
     } catch (error) {
       toast({
@@ -271,10 +186,63 @@ export default function LoginPage() {
         title: "Error",
         description: "Something went wrong. Please try again.",
       });
+      setAuthError("Something went wrong. Please try again.");
     } finally {
       setIsLoading(false);
     }
   };
+
+  // Realtime account check (username or email)
+  useEffect(() => {
+    const identifier = formData.email.trim();
+    if (!identifier || identifier.length < 3) {
+      setCheckStatus("idle");
+      setResolvedEmail(null);
+      return;
+    }
+
+    let cancelled = false;
+    setChecking(true);
+    setCheckStatus("checking");
+    const t = setTimeout(async () => {
+      try {
+        const res = await fetch(
+          `/api/auth/check-account?identifier=${encodeURIComponent(identifier)}`
+        );
+        if (cancelled) return;
+        if (!res.ok) {
+          setCheckStatus("idle");
+          setResolvedEmail(null);
+          return;
+        }
+        const data = await res.json();
+        if (!data.exists) {
+          setCheckStatus("not_found");
+          setResolvedEmail(null);
+          setShowUnverifiedDialog(false);
+          return;
+        }
+        setResolvedEmail(data.email || null);
+        if (data.isVerified) {
+          setCheckStatus("verified");
+          setShowUnverifiedDialog(false);
+        } else {
+          setCheckStatus("unverified");
+          setShowUnverifiedDialog(true); // open popup in real-time
+        }
+      } catch (e) {
+        setCheckStatus("idle");
+        setResolvedEmail(null);
+      } finally {
+        if (!cancelled) setChecking(false);
+      }
+    }, 400); // debounce
+
+    return () => {
+      cancelled = true;
+      clearTimeout(t);
+    };
+  }, [formData.email]);
 
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
@@ -365,7 +333,7 @@ export default function LoginPage() {
 
         {/* Right Side - Auth Form */}
         <div className="w-full max-w-md mx-auto">
-          <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-gray-200/50 dark:border-gray-700/50 p-8 transition-all duration-500 hover:shadow-blue-500/20">
+          <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl border border-gray-200 dark:border-gray-700 p-8 transition-all duration-500 hover:shadow-blue-500/20">
             {/* Logo */}
             <div className="flex justify-center mb-8 animate-fade-in">
               <div className="relative group">
@@ -384,53 +352,25 @@ export default function LoginPage() {
 
             {/* Form */}
             <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Name field - only for register */}
-              {!isLogin && (
-                <div className="space-y-2 animate-slide-down">
-                  <Label
-                    htmlFor="name"
-                    className="text-gray-700 dark:text-gray-300 font-medium"
-                  >
-                    Full Name
-                  </Label>
-                  <div className="relative group">
-                    <User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 group-focus-within:text-blue-500 transition-colors duration-300" />
-                    <Input
-                      id="name"
-                      type="text"
-                      placeholder="John Doe"
-                      value={formData.name}
-                      onChange={(e) =>
-                        setFormData({ ...formData, name: e.target.value })
-                      }
-                      className="pl-10 h-12 bg-gray-50 dark:bg-gray-900/50 border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-300"
-                      required={!isLogin}
-                    />
-                  </div>
-                </div>
-              )}
-
               {/* Email field */}
-              <div
-                className="space-y-2 animate-slide-down"
-                style={{ animationDelay: "0.1s" }}
-              >
+              <div className="space-y-2 animate-slide-down">
                 <Label
                   htmlFor="email"
                   className="text-gray-700 dark:text-gray-300 font-medium"
                 >
-                  {isLogin ? "Username or email" : "Email"}
+                  Username or email
                 </Label>
                 <div className="relative group">
                   <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 group-focus-within:text-blue-500 transition-colors duration-300" />
                   <Input
                     id="email"
-                    type={isLogin ? "text" : "email"}
-                    placeholder={isLogin ? "johnsmith007" : "john@example.com"}
+                    type="text"
+                    placeholder="johnsmith007"
                     value={formData.email}
-                    onChange={(e) =>
-                      setFormData({ ...formData, email: e.target.value })
-                    }
+                    onChange={(e) => {
+                      setFormData({ ...formData, email: e.target.value });
+                      if (authError) setAuthError(null);
+                    }}
                     className="pl-10 h-12 bg-gray-50 dark:bg-gray-900/50 border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-300"
                     required
                   />
@@ -438,10 +378,7 @@ export default function LoginPage() {
               </div>
 
               {/* Password field */}
-              <div
-                className="space-y-2 animate-slide-down"
-                style={{ animationDelay: "0.2s" }}
-              >
+              <div className="space-y-2 animate-slide-down">
                 <Label
                   htmlFor="password"
                   className="text-gray-700 dark:text-gray-300 font-medium"
@@ -455,9 +392,10 @@ export default function LoginPage() {
                     type={showPassword ? "text" : "password"}
                     placeholder="••••••••••"
                     value={formData.password}
-                    onChange={(e) =>
-                      setFormData({ ...formData, password: e.target.value })
-                    }
+                    onChange={(e) => {
+                      setFormData({ ...formData, password: e.target.value });
+                      if (authError) setAuthError(null);
+                    }}
                     className="pl-10 pr-10 h-12 bg-gray-50 dark:bg-gray-900/50 border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-300"
                     required
                   />
@@ -475,90 +413,78 @@ export default function LoginPage() {
                 </div>
               </div>
 
-              {/* Confirm Password - only for register */}
-              {!isLogin && (
-                <div
-                  className="space-y-2 animate-slide-down"
-                  style={{ animationDelay: "0.3s" }}
+              {/* Forgot Password */}
+              <div className="flex justify-end animate-slide-down">
+                <Link
+                  href="/recover"
+                  className="text-sm text-blue-600 hover:text-purple-600 dark:text-blue-400 dark:hover:text-purple-400 transition-colors duration-300 hover:underline"
                 >
-                  <Label
-                    htmlFor="confirmPassword"
-                    className="text-gray-700 dark:text-gray-300 font-medium"
-                  >
-                    Confirm Password
-                  </Label>
-                  <div className="relative group">
-                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 group-focus-within:text-blue-500 transition-colors duration-300" />
-                    <Input
-                      id="confirmPassword"
-                      type={showConfirmPassword ? "text" : "password"}
-                      placeholder="••••••••••"
-                      value={formData.confirmPassword}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          confirmPassword: e.target.value,
-                        })
-                      }
-                      className="pl-10 pr-10 h-12 bg-gray-50 dark:bg-gray-900/50 border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-300"
-                      required={!isLogin}
-                    />
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setShowConfirmPassword(!showConfirmPassword)
-                      }
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-blue-500 transition-colors duration-300"
-                    >
-                      {showConfirmPassword ? (
-                        <EyeOff className="h-5 w-5" />
-                      ) : (
-                        <Eye className="h-5 w-5" />
-                      )}
-                    </button>
-                  </div>
-                </div>
-              )}
+                  Forgot password?
+                </Link>
+              </div>
 
-              {/* Forgot Password - only for login */}
-              {isLogin && (
-                <div
-                  className="flex justify-end animate-slide-down"
-                  style={{ animationDelay: "0.3s" }}
-                >
-                  <Link
-                    href="/recover"
-                    className="text-sm text-blue-600 hover:text-purple-600 dark:text-blue-400 dark:hover:text-purple-400 transition-colors duration-300 hover:underline"
-                  >
-                    Forgot password?
-                  </Link>
-                </div>
+              {/* Error banner (friendly) */}
+              {authError && (
+                <Alert variant="destructive" className="animate-fade-in">
+                  <AlertTitle>We couldn’t sign you in</AlertTitle>
+                  <AlertDescription>
+                    <p>{authError}</p>
+                    <p className="text-xs mt-1 text-muted-foreground">
+                      Tip: Check that Caps Lock is off, or use “Forgot
+                      password?” to reset.
+                    </p>
+                  </AlertDescription>
+                </Alert>
               )}
 
               {/* Submit Button */}
               <Button
                 type="submit"
-                disabled={isLoading}
+                disabled={isLoading || checkStatus === "unverified"}
                 className="w-full h-12 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed animate-slide-down"
-                style={{ animationDelay: "0.4s" }}
               >
                 {isLoading ? (
                   <div className="flex items-center gap-2">
                     <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                    <span>
-                      {isLogin ? "Signing in..." : "Creating account..."}
-                    </span>
+                    <span>Signing in...</span>
                   </div>
                 ) : (
-                  <span>{isLogin ? "Sign in" : "Create Account"}</span>
+                  <span>Sign in</span>
                 )}
               </Button>
 
+              {/* Inline helper under email */}
+              <div className="min-h-5 text-sm text-gray-500">
+                {checkStatus === "checking" && (
+                  <span className="text-gray-500">Checking account…</span>
+                )}
+                {checkStatus === "not_found" && (
+                  <span className="text-gray-500">
+                    No account found. You can still create one.
+                  </span>
+                )}
+                {checkStatus === "unverified" && (
+                  <span className="text-amber-600">
+                    This account is not verified yet.{" "}
+                    <button
+                      type="button"
+                      onClick={() =>
+                        router.push(
+                          `/missing-verification?email=${encodeURIComponent(
+                            resolvedEmail || formData.email
+                          )}&autoSend=true`
+                        )
+                      }
+                      className="text-blue-600 hover:text-purple-600 underline underline-offset-2 font-medium"
+                    >
+                      Verify now
+                    </button>
+                  </span>
+                )}
+              </div>
+
               {/* Divider */}
-              <div
-                className="relative my-6 animate-slide-down"
-                style={{ animationDelay: "0.5s" }}
-              >
+              <div className="relative my-6 animate-slide-down">
                 <div className="absolute inset-0 flex items-center">
                   <div className="w-full border-t border-gray-300 dark:border-gray-600"></div>
                 </div>
@@ -576,7 +502,6 @@ export default function LoginPage() {
                 disabled={isLoading}
                 variant="outline"
                 className="w-full h-12 border-2 border-gray-300 dark:border-gray-600 hover:border-blue-500 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all duration-300 transform hover:scale-[1.02] animate-slide-down"
-                style={{ animationDelay: "0.6s" }}
               >
                 <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
                   <path
@@ -603,160 +528,60 @@ export default function LoginPage() {
                 Sign in with Google
               </Button>
 
-              {/* Toggle Login/Register */}
-              <div
-                className="text-center pt-4 animate-slide-down"
-                style={{ animationDelay: "0.7s" }}
-              >
+              {/* Link to Register */}
+              <div className="text-center pt-4 animate-slide-down">
                 <p className="text-gray-600 dark:text-gray-400">
-                  {isLogin ? "Are you new? " : "Already have an account? "}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsLogin(!isLogin);
-                      setFormData({
-                        name: "",
-                        email: "",
-                        password: "",
-                        confirmPassword: "",
-                      });
-                    }}
+                  Are you new?{" "}
+                  <Link
+                    href="/register"
                     className="text-blue-600 hover:text-purple-600 dark:text-blue-400 dark:hover:text-purple-400 font-semibold transition-colors duration-300 hover:underline"
                   >
-                    {isLogin ? "Create an Account" : "Sign in"}
-                  </button>
+                    Create an Account
+                  </Link>
                 </p>
               </div>
             </form>
-
-            {/* OTP Verification Section */}
-            {showOTPVerification && (
-              <div className="mt-8 p-6 bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-950/30 dark:to-purple-950/30 rounded-2xl border-2 border-blue-200 dark:border-blue-800 animate-slide-down">
-                <div className="text-center space-y-4">
-                  {/* Icon */}
-                  <div className="flex justify-center">
-                    <div className="relative">
-                      <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full blur-xl opacity-50 animate-pulse"></div>
-                      <div className="relative bg-white dark:bg-gray-800 rounded-full p-4 shadow-xl">
-                        <ShieldCheck
-                          className="w-12 h-12 text-transparent bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text"
-                          style={{ fill: "url(#gradient)" }}
-                        />
-                        <svg width="0" height="0">
-                          <defs>
-                            <linearGradient
-                              id="gradient"
-                              x1="0%"
-                              y1="0%"
-                              x2="100%"
-                              y2="100%"
-                            >
-                              <stop offset="0%" stopColor="#3B82F6" />
-                              <stop offset="100%" stopColor="#9333EA" />
-                            </linearGradient>
-                          </defs>
-                        </svg>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Title */}
-                  <div>
-                    <h3 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
-                      Verify Your Email
-                    </h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                      We've sent a 6-digit verification code to
-                    </p>
-                    <p className="text-sm font-semibold text-blue-600 dark:text-blue-400 mt-1">
-                      {unverifiedEmail}
-                    </p>
-                  </div>
-
-                  {/* OTP Input */}
-                  <div className="space-y-2">
-                    <Label
-                      htmlFor="otp-input"
-                      className="text-gray-700 dark:text-gray-300 font-medium"
-                    >
-                      Verification Code
-                    </Label>
-                    <div className="relative">
-                      <Input
-                        id="otp-input"
-                        type="text"
-                        inputMode="numeric"
-                        maxLength={6}
-                        placeholder="000000"
-                        value={otp}
-                        onChange={(e) => {
-                          const value = e.target.value.replace(/\D/g, "");
-                          setOtp(value.slice(0, 6));
-                        }}
-                        className="h-14 text-center text-2xl font-bold tracking-widest bg-white dark:bg-gray-900 border-2 border-blue-300 dark:border-blue-700 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Verify Button */}
-                  <Button
-                    type="button"
-                    onClick={handleVerifyOTP}
-                    disabled={otp.length !== 6 || isLoading}
-                    className="w-full h-12 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {isLoading ? (
-                      <div className="flex items-center gap-2">
-                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                        <span>Verifying...</span>
-                      </div>
-                    ) : (
-                      "Verify Email"
-                    )}
-                  </Button>
-
-                  {/* Resend Button */}
-                  <div className="flex items-center justify-center gap-2 text-sm">
-                    <span className="text-gray-600 dark:text-gray-400">
-                      Didn't receive the code?
-                    </span>
-                    <button
-                      type="button"
-                      onClick={handleResendOTP}
-                      disabled={resendTimer > 0 || isLoading}
-                      className="font-semibold text-blue-600 hover:text-purple-600 dark:text-blue-400 dark:hover:text-purple-400 disabled:opacity-50 disabled:cursor-not-allowed underline transition-colors duration-300"
-                    >
-                      {resendTimer > 0 ? (
-                        <span className="flex items-center gap-1">
-                          <Clock className="w-4 h-4" />
-                          Resend in {resendTimer}s
-                        </span>
-                      ) : (
-                        "Resend Code"
-                      )}
-                    </button>
-                  </div>
-
-                  {/* Back to Login */}
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    onClick={() => {
-                      setShowOTPVerification(false);
-                      setOtp("");
-                      setUnverifiedEmail("");
-                      setResendTimer(0);
-                    }}
-                    className="w-full text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
-                  >
-                    Back to Login
-                  </Button>
-                </div>
-              </div>
-            )}
           </div>
         </div>
       </div>
+
+      {/* Unverified account dialog */}
+      <Dialog
+        open={showUnverifiedDialog}
+        onOpenChange={setShowUnverifiedDialog}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Account not verified</DialogTitle>
+            <DialogDescription>
+              This account is unverified. Please verify your email first to
+              login.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setShowUnverifiedDialog(false)}
+            >
+              Close
+            </Button>
+            <Button
+              type="button"
+              onClick={() => {
+                const emailParam = encodeURIComponent(
+                  resolvedEmail || formData.email
+                );
+                router.push(
+                  `/missing-verification?email=${emailParam}&autoSend=true`
+                );
+              }}
+            >
+              Verify now
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <style jsx global>{`
         @keyframes float {

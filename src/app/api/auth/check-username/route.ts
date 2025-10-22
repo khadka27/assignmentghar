@@ -1,10 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
-export async function POST(request: NextRequest) {
+/**
+ * GET /api/auth/check-username?username=...
+ *
+ * Checks if a username is already taken.
+ *
+ * Response:
+ * - 200: { available: true/false, message?: string }
+ * - 400: { available: false, error: "..." }
+ */
+export async function GET(request: NextRequest) {
   try {
-    const body = await request.json();
-    const { username } = body;
+    const { searchParams } = new URL(request.url);
+    const username = searchParams.get("username")?.trim();
 
     if (!username) {
       return NextResponse.json(
@@ -21,9 +30,26 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check if username exists
-    const existingUser = await prisma.user.findUnique({
-      where: { username },
+    // Validate username format (alphanumeric, underscore, hyphen only)
+    if (!/^[a-zA-Z0-9_-]+$/.test(username)) {
+      return NextResponse.json(
+        {
+          available: false,
+          message: "Username can only contain letters, numbers, _ and -",
+        },
+        { status: 200 }
+      );
+    }
+
+    // Check if username exists (case-insensitive)
+    const existingUser = await prisma.user.findFirst({
+      where: {
+        username: {
+          equals: username,
+          mode: "insensitive",
+        },
+      },
+      select: { id: true },
     });
 
     if (existingUser) {

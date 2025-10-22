@@ -369,8 +369,18 @@ export default function ChatPage() {
   };
 
   const playNotificationSound = () => {
-    const audio = new Audio("/sounds/notification.mp3");
-    audio.play().catch(() => {});
+    try {
+      // Use the existing notification.wav file
+      const audio = new Audio("/sounds/notification.wav");
+      audio.volume = 0.5; // Set volume to 50% for better UX
+      audio.play().catch((error) => {
+        // Browser may block autoplay, this is expected behavior
+        console.log("Notification sound blocked:", error.message);
+      });
+    } catch (error) {
+      // Silent fail if audio not available
+      console.log("Audio not available");
+    }
   };
 
   const getOtherParticipant = (conversation: Conversation) => {

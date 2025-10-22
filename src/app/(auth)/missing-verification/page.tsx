@@ -24,6 +24,7 @@ export default function MissingVerificationPage() {
 
   // Get email from URL params if provided
   const emailFromParams = searchParams.get("email") || "";
+  const autoSend = searchParams.get("autoSend") === "true";
 
   // State management
   const [email, setEmail] = useState(emailFromParams);
@@ -51,6 +52,16 @@ export default function MissingVerificationPage() {
       setAccountStatus("checking");
     }
   }, [emailFromParams]);
+
+  // Auto-send OTP if autoSend parameter is present and account is unverified
+  useEffect(() => {
+    if (autoSend && accountStatus === "unverified" && email && !showOTPInput) {
+      // Delay to ensure UI is ready
+      setTimeout(() => {
+        handleSendOTP();
+      }, 500);
+    }
+  }, [autoSend, accountStatus, email]);
 
   // Check if account exists and verification status
   const checkAccountStatus = async (emailToCheck: string) => {

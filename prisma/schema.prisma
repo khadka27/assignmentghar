@@ -40,6 +40,9 @@ model User {
   readReceipts     ReadReceipt[]
   lastSeenUpdates  UserStatus[]
 
+  // Testimonial Relations
+  testimonials Testimonial[]
+
   @@map("users")
 }
 
@@ -272,4 +275,28 @@ enum MessageType {
   IMAGE
   FILE
   SYSTEM // For welcome messages
+}
+
+// =============================================
+// TESTIMONIAL/REVIEW MODEL
+// =============================================
+
+// Testimonial Model (for user reviews)
+model Testimonial {
+  id          String   @id @default(cuid())
+  userId      String? // Optional - null for anonymous
+  displayName String? // Optional - custom name if not anonymous
+  isAnonymous Boolean  @default(false)
+  rating      Int // 1-5 stars
+  message     String
+  isApproved  Boolean  @default(false) // For moderation
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations (optional - only if user is logged in)
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([isApproved])
+  @@index([createdAt])
+  @@map("testimonials")
 }
