@@ -94,6 +94,7 @@ model Assignment {
   id          String           @id @default(cuid())
   title       String
   description String
+  course      String // IT, Business, Finance, Hospitality, or Custom
   subject     String
   deadline    DateTime
   status      AssignmentStatus @default(PENDING)

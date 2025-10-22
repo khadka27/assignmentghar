@@ -48,7 +48,8 @@ export function Navbar() {
   // Authenticated user links
   const authLinks = [
     { href: "/", label: "Home" },
-    { href: "/submit", label: "Assignment" },
+    { href: "/submit", label: "Submit" },
+    { href: "/my-assignments", label: "My Assignments" },
     { href: "/chat", label: "Chat" },
     { href: "/contact", label: "Support" },
     { href: "/about", label: "About Us" },

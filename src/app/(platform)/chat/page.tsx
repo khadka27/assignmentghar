@@ -416,22 +416,22 @@ export default function ChatPage() {
   }
 
   return (
-    <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
-      <div className="w-full md:w-96 border-r border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 flex flex-col">
-        <div className="p-4 border-b border-gray-200 dark:border-gray-700">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-              <MessageSquare className="w-6 h-6 text-blue-600" />
+    <div className="flex h-screen bg-white dark:bg-black">
+      <div className="w-full md:w-96 border-r border-gray-200 dark:border-gray-800 bg-white dark:bg-black flex flex-col">
+        <div className="p-6 border-b border-gray-200 dark:border-gray-800">
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+              <MessageSquare className="w-5 h-5 text-blue-600 dark:text-blue-500" />
               Messages
             </h2>
           </div>
           <div className="flex items-center gap-2 text-sm">
             <div
               className={`w-2 h-2 rounded-full ${
-                isConnected ? "bg-green-500" : "bg-red-500"
+                isConnected ? "bg-blue-600" : "bg-gray-400"
               }`}
             ></div>
-            <span className="text-gray-600 dark:text-gray-400">
+            <span className="text-gray-500 dark:text-gray-400">
               {isConnected ? "Connected" : "Disconnected"}
             </span>
           </div>
@@ -440,12 +440,12 @@ export default function ChatPage() {
         <div className="flex-1 overflow-y-auto">
           {isLoading && chatList.length === 0 ? (
             <div className="flex items-center justify-center h-full">
-              <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
+              <Loader2 className="w-5 h-5 animate-spin text-blue-600" />
             </div>
           ) : chatList.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full p-8 text-center">
-              <MessageSquare className="w-16 h-16 text-gray-300 dark:text-gray-600 mb-4" />
-              <p className="text-gray-500 dark:text-gray-400 mb-4">
+              <MessageSquare className="w-12 h-12 text-gray-300 dark:text-gray-700 mb-3" />
+              <p className="text-sm text-gray-500 dark:text-gray-400">
                 {userRole === "ADMIN"
                   ? "No students available"
                   : "No admins available"}
@@ -460,20 +460,22 @@ export default function ChatPage() {
                 <button
                   key={chatItem.user.id}
                   onClick={() => selectChat(chatItem)}
-                  className={`w-full p-4 border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors ${
-                    isSelected ? "bg-blue-50 dark:bg-blue-900/20" : ""
+                  className={`w-full p-4 border-b border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors ${
+                    isSelected
+                      ? "bg-gray-50 dark:bg-gray-900 border-l-2 border-l-blue-600"
+                      : ""
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    <Avatar className="w-12 h-12">
+                    <Avatar className="w-10 h-10">
                       <AvatarImage src={chatItem.user.image} />
-                      <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-500 text-white">
+                      <AvatarFallback className="bg-blue-600 text-white text-sm font-medium">
                         {chatItem.user.name?.[0] || "U"}
                       </AvatarFallback>
                     </Avatar>
                     <div className="flex-1 text-left overflow-hidden">
                       <div className="flex items-center justify-between mb-1">
-                        <p className="font-semibold text-gray-900 dark:text-white truncate">
+                        <p className="font-medium text-gray-900 dark:text-white truncate text-sm">
                           {chatItem.user.name}
                         </p>
                         {lastMessage && (
@@ -483,11 +485,11 @@ export default function ChatPage() {
                         )}
                       </div>
                       {lastMessage ? (
-                        <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
+                        <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
                           {lastMessage.content}
                         </p>
                       ) : (
-                        <p className="text-sm text-gray-400 dark:text-gray-500 italic">
+                        <p className="text-xs text-gray-400 dark:text-gray-500">
                           Click to start chatting
                         </p>
                       )}
@@ -500,62 +502,51 @@ export default function ChatPage() {
         </div>
       </div>
 
-      <div className="flex-1 flex flex-col bg-white dark:bg-gray-800">
+      <div className="flex-1 flex flex-col bg-gray-50 dark:bg-gray-950">
         {selectedChat ? (
           <>
-            <div className="p-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+            <div className="p-4 border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-black">
               <div className="flex items-center gap-3">
                 <Avatar className="w-10 h-10">
                   <AvatarImage src={selectedChat.user.image} />
-                  <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-500 text-white">
+                  <AvatarFallback className="bg-blue-600 text-white text-sm font-medium">
                     {selectedChat.user.name?.[0] || "U"}
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex-1">
-                  <h3 className="font-semibold text-gray-900 dark:text-white">
+                  <h3 className="font-medium text-gray-900 dark:text-white text-sm">
                     {selectedChat.user.name}
                   </h3>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
                     {isTyping ? (
-                      <span className="text-blue-600 dark:text-blue-400">
+                      <span className="text-blue-600 dark:text-blue-500">
                         Typing...
                       </span>
                     ) : (
-                      "Online"
+                      <span className="flex items-center gap-1">
+                        <div
+                          className={`w-1.5 h-1.5 rounded-full ${
+                            isConnected ? "bg-blue-600" : "bg-gray-400"
+                          }`}
+                        ></div>
+                        {isConnected ? "Online" : "Offline"}
+                      </span>
                     )}
                   </p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div
-                    className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs ${
-                      isConnected
-                        ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
-                        : "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400"
-                    }`}
-                  >
-                    <div
-                      className={`w-2 h-2 rounded-full ${
-                        isConnected
-                          ? "bg-green-500 animate-pulse"
-                          : "bg-red-500"
-                      }`}
-                    ></div>
-                    {isConnected ? "Connected" : "Disconnected"}
-                  </div>
                 </div>
               </div>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50 dark:bg-gray-900">
+            <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50 dark:bg-gray-950">
               {messages.map((message) => {
                 const isOwn = message.sender.id === session?.user?.id;
                 const isSystem = message.messageType === "SYSTEM";
 
                 if (isSystem) {
                   return (
-                    <div key={message.id} className="flex justify-center my-6">
-                      <div className="bg-blue-100 dark:bg-blue-900/30 px-6 py-3 rounded-full max-w-2xl">
-                        <p className="text-sm text-blue-900 dark:text-blue-200 text-center">
+                    <div key={message.id} className="flex justify-center my-4">
+                      <div className="bg-gray-100 dark:bg-gray-900 px-4 py-2 rounded-lg">
+                        <p className="text-xs text-gray-600 dark:text-gray-400 text-center">
                           {message.content}
                         </p>
                       </div>
@@ -573,9 +564,9 @@ export default function ChatPage() {
                     <div
                       className={`max-w-md ${
                         isOwn
-                          ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white"
-                          : "bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700"
-                      } rounded-2xl p-4 shadow-sm`}
+                          ? "bg-blue-600 text-white"
+                          : "bg-white dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-800"
+                      } rounded-lg p-3`}
                     >
                       {message.attachments.length > 0 && (
                         <div className="mb-2 space-y-2">
@@ -585,7 +576,11 @@ export default function ChatPage() {
                             return (
                               <div
                                 key={attachment.id}
-                                className="bg-white/10 dark:bg-black/20 rounded-lg p-2"
+                                className={`${
+                                  isOwn
+                                    ? "bg-blue-700"
+                                    : "bg-gray-100 dark:bg-gray-800"
+                                } rounded-lg p-2`}
                               >
                                 {isImage ? (
                                   <img
@@ -597,13 +592,13 @@ export default function ChatPage() {
                                   <a
                                     href={attachment.fileUrl}
                                     download
-                                    className="flex items-center gap-2 hover:underline"
+                                    className="flex items-center gap-2 hover:underline text-xs"
                                   >
                                     <FileText className="w-4 h-4" />
-                                    <span className="text-sm">
+                                    <span className="truncate">
                                       {attachment.fileName}
                                     </span>
-                                    <Download className="w-4 h-4 ml-auto" />
+                                    <Download className="w-3 h-3 ml-auto flex-shrink-0" />
                                   </a>
                                 )}
                               </div>
@@ -616,7 +611,9 @@ export default function ChatPage() {
 
                       <p
                         className={`text-xs mt-1 ${
-                          isOwn ? "text-white/70" : "text-gray-500"
+                          isOwn
+                            ? "text-blue-100"
+                            : "text-gray-500 dark:text-gray-400"
                         }`}
                       >
                         {format(new Date(message.createdAt), "p")}
@@ -628,7 +625,7 @@ export default function ChatPage() {
               <div ref={messagesEndRef} />
             </div>
 
-            <div className="p-4 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+            <div className="p-4 border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-black">
               <div className="flex items-end gap-2">
                 <label className="cursor-pointer">
                   <input
@@ -641,9 +638,9 @@ export default function ChatPage() {
                     type="button"
                     variant="outline"
                     size="icon"
-                    className="flex-shrink-0"
+                    className="flex-shrink-0 h-11 w-11 border-gray-300 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-900"
                   >
-                    <Paperclip className="w-5 h-5" />
+                    <Paperclip className="w-5 h-5 text-gray-600 dark:text-gray-400" />
                   </Button>
                 </label>
 
@@ -660,13 +657,13 @@ export default function ChatPage() {
                     }
                   }}
                   placeholder="Type a message..."
-                  className="flex-1"
+                  className="flex-1 h-11 bg-gray-50 dark:bg-gray-900 border-gray-300 dark:border-gray-700 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
                 />
 
                 <Button
                   onClick={sendMessage}
                   disabled={!messageInput.trim() || isSending}
-                  className="bg-gradient-to-r from-blue-600 to-purple-600 flex-shrink-0"
+                  className="bg-blue-600 hover:bg-blue-700 flex-shrink-0 h-11 w-11 p-0"
                 >
                   {isSending ? (
                     <Loader2 className="w-5 h-5 animate-spin" />
@@ -678,15 +675,12 @@ export default function ChatPage() {
             </div>
           </>
         ) : (
-          <div className="flex-1 flex flex-col items-center justify-center p-8 text-center">
-            <MessageSquare className="w-24 h-24 text-gray-300 dark:text-gray-600 mb-6" />
-            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+          <div className="flex-1 flex flex-col items-center justify-center p-8 text-center bg-white dark:bg-black">
+            <MessageSquare className="w-16 h-16 text-gray-300 dark:text-gray-700 mb-4" />
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
               Welcome to Chat
             </h3>
-            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-              Welcome to Chat
-            </h3>
-            <p className="text-gray-500 dark:text-gray-400 max-w-md">
+            <p className="text-sm text-gray-500 dark:text-gray-400 max-w-md">
               Select {userRole === "ADMIN" ? "a student" : "an admin"} from the
               sidebar to start chatting
             </p>
