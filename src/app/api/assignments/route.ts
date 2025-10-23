@@ -1,21 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { uploadToGoogleDrive } from "@/lib/google-drive";
 import { v4 as uuidv4 } from "uuid";
 import path from "path";
 
+// Ensure this route runs on the Node.js runtime (googleapis requires Node, not Edge)
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
 // GET - Fetch all assignments for the current user
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await auth();
 
     if (!session?.user?.id) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const assignments = await prisma.assignment.findMany({
@@ -43,17 +43,31 @@ export async function GET(request: NextRequest) {
 // POST - Create a new assignment submission
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await auth();
 
     if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // Ensure Google Drive is configured (avoid opaque 500s)
+    const hasDriveEmail = !!process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
+    const hasDriveKey = !!process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY;
+    if (!hasDriveEmail || !hasDriveKey) {
+      const missing: string[] = [];
+      if (!hasDriveEmail) missing.push("GOOGLE_SERVICE_ACCOUNT_EMAIL");
+      if (!hasDriveKey) missing.push("GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY");
       return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
+        {
+          error:
+            "Google Drive is not configured. Missing required environment variables.",
+          details: `Missing: ${missing.join(", ")}`,
+        },
+        { status: 500 }
       );
     }
 
     const formData = await request.formData();
-    
+
     const name = formData.get("name") as string;
     const email = formData.get("email") as string;
     const course = formData.get("course") as string;
@@ -77,24 +91,23 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate file type
-    const allowedTypes = [
-      "application/pdf",
-      "application/msword",
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-    ];
-
-    if (!allowedTypes.includes(file.type)) {
+    // Validate file type by extension (more reliable across browsers/OS)
+    const allowedExts = [".pdf", ".doc", ".docx"];
+    const originalName = (file as any).name || "upload";
+    const ext = path.extname(originalName).toLowerCase();
+    if (!allowedExts.includes(ext)) {
       return NextResponse.json(
-        { error: "Only PDF and Word documents are allowed" },
+        { error: "Only PDF (.pdf) and Word (.doc, .docx) files are allowed" },
         { status: 400 }
       );
     }
 
     // Upload file to Google Drive
-    const fileExtension = path.extname(file.name);
-    const uniqueFilename = `${name}_${uuidv4()}${fileExtension}`;
-    
+    const fileExtension = ext || path.extname(originalName);
+    const safeName =
+      name?.toString().replace(/[^a-z0-9_-]+/gi, "_") || "assignment";
+    const uniqueFilename = `${safeName}_${uuidv4()}${fileExtension}`;
+
     let driveFileId: string;
     let fileUrl: string;
     let webViewLink: string;
@@ -104,18 +117,17 @@ export async function POST(request: NextRequest) {
       driveFileId = uploadResult.fileId;
       fileUrl = uploadResult.webContentLink; // Direct download link
       webViewLink = uploadResult.webViewLink; // Google Drive preview link
-      
+
       console.log("File uploaded to Google Drive:", {
         fileId: driveFileId,
         fileName: uniqueFilename,
         webViewLink,
       });
-    } catch (uploadError) {
+    } catch (uploadError: any) {
       console.error("Google Drive upload error:", uploadError);
-      return NextResponse.json(
-        { error: "Failed to upload file to Google Drive" },
-        { status: 500 }
-      );
+      const message =
+        uploadError?.message || "Failed to upload file to Google Drive";
+      return NextResponse.json({ error: message }, { status: 500 });
     }
 
     // Create assignment in database with Google Drive file URL
@@ -150,15 +162,14 @@ export async function POST(request: NextRequest) {
         assignment,
         driveFileId,
         webViewLink,
-        message: "Assignment submitted successfully and uploaded to Google Drive!",
+        message:
+          "Assignment submitted successfully and uploaded to Google Drive!",
       },
       { status: 201 }
     );
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error creating assignment:", error);
-    return NextResponse.json(
-      { error: "Failed to submit assignment" },
-      { status: 500 }
-    );
+    const message = error?.message || "Failed to submit assignment";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

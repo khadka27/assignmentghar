@@ -1,7 +1,7 @@
 import { google } from "googleapis";
 import { Readable } from "stream";
 
-// Initialize Google Drive API
+// Initialize Google Drive API (service account)
 const auth = new google.auth.GoogleAuth({
   credentials: {
     client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
@@ -15,12 +15,20 @@ const auth = new google.auth.GoogleAuth({
 
 const drive = google.drive({ version: "v3", auth });
 
-// Get or create the "Assignment" folder in Google Drive
+// Optional parent folder to contain the Assigenment folder
+const PARENT_FOLDER_ID = process.env.GOOGLE_DRIVE_PARENT_FOLDER_ID;
+// Control whether uploaded files are public by link
+const GOOGLE_DRIVE_PUBLIC =
+  (process.env.GOOGLE_DRIVE_PUBLIC || "true").toLowerCase() === "true";
+
+// Get or create the "Assigenment" folder in Google Drive (intentional spelling per request)
 async function getOrCreateAssignmentFolder(): Promise<string> {
   try {
-    // Search for existing "Assignment" folder
+    // Search for existing "Assigenment" folder
     const response = await drive.files.list({
-      q: "name='Assignment' and mimeType='application/vnd.google-apps.folder' and trashed=false",
+      q: `name='Assigenment' and mimeType='application/vnd.google-apps.folder' and trashed=false${
+        PARENT_FOLDER_ID ? ` and '${PARENT_FOLDER_ID}' in parents` : ""
+      }`,
       fields: "files(id, name)",
       spaces: "drive",
     });
@@ -32,8 +40,9 @@ async function getOrCreateAssignmentFolder(): Promise<string> {
 
     // Create new folder if it doesn't exist
     const folderMetadata = {
-      name: "Assignment",
+      name: "Assigenment",
       mimeType: "application/vnd.google-apps.folder",
+      ...(PARENT_FOLDER_ID ? { parents: [PARENT_FOLDER_ID] } : {}),
     };
 
     const folder = await drive.files.create({
@@ -41,10 +50,10 @@ async function getOrCreateAssignmentFolder(): Promise<string> {
       fields: "id",
     });
 
-    console.log("Created Assignment folder with ID:", folder.data.id);
+    console.log("Created Assigenment folder with ID:", folder.data.id);
     return folder.data.id!;
   } catch (error) {
-    console.error("Error getting/creating Assignment folder:", error);
+    console.error("Error getting/creating Assigenment folder:", error);
     throw error;
   }
 }
@@ -80,14 +89,16 @@ export async function uploadToGoogleDrive(
       fields: "id, webViewLink, webContentLink",
     });
 
-    // Make file publicly accessible (optional - remove if you want private files)
-    await drive.permissions.create({
-      fileId: response.data.id!,
-      requestBody: {
-        role: "reader",
-        type: "anyone",
-      },
-    });
+    // Make file publicly accessible (optional)
+    if (GOOGLE_DRIVE_PUBLIC) {
+      await drive.permissions.create({
+        fileId: response.data.id!,
+        requestBody: {
+          role: "reader",
+          type: "anyone",
+        },
+      });
+    }
 
     console.log("File uploaded successfully:", {
       fileId: response.data.id,
@@ -123,7 +134,8 @@ export async function getFileMetadata(fileId: string) {
   try {
     const response = await drive.files.get({
       fileId: fileId,
-      fields: "id, name, mimeType, size, webViewLink, webContentLink, createdTime",
+      fields:
+        "id, name, mimeType, size, webViewLink, webContentLink, createdTime",
     });
     return response.data;
   } catch (error) {
@@ -132,11 +144,11 @@ export async function getFileMetadata(fileId: string) {
   }
 }
 
-// List all files in Assignment folder
+// List all files in Assigenment folder
 export async function listAssignmentFiles() {
   try {
     const folderId = await getOrCreateAssignmentFolder();
-    
+
     const response = await drive.files.list({
       q: `'${folderId}' in parents and trashed=false`,
       fields: "files(id, name, mimeType, size, webViewLink, createdTime)",
@@ -145,7 +157,7 @@ export async function listAssignmentFiles() {
 
     return response.data.files || [];
   } catch (error) {
-    console.error("Error listing assignment files:", error);
+    console.error("Error listing assigenment files:", error);
     throw error;
   }
 }
