@@ -2,9 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { writeFile } from "fs/promises";
-import path from "path";
+import { uploadToGoogleDrive } from "@/lib/google-drive";
 import { v4 as uuidv4 } from "uuid";
+import path from "path";
 
 // GET - Fetch all assignments for the current user
 export async function GET(request: NextRequest) {
@@ -91,26 +91,34 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Save file
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-    
-    // Create unique filename
+    // Upload file to Google Drive
     const fileExtension = path.extname(file.name);
-    const uniqueFilename = `${uuidv4()}${fileExtension}`;
-    const uploadDir = path.join(process.cwd(), "public", "uploads", "assignments");
-    const filePath = path.join(uploadDir, uniqueFilename);
+    const uniqueFilename = `${name}_${uuidv4()}${fileExtension}`;
+    
+    let driveFileId: string;
+    let fileUrl: string;
+    let webViewLink: string;
 
-    // Ensure directory exists
-    const fs = require("fs");
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true });
+    try {
+      const uploadResult = await uploadToGoogleDrive(file, uniqueFilename);
+      driveFileId = uploadResult.fileId;
+      fileUrl = uploadResult.webContentLink; // Direct download link
+      webViewLink = uploadResult.webViewLink; // Google Drive preview link
+      
+      console.log("File uploaded to Google Drive:", {
+        fileId: driveFileId,
+        fileName: uniqueFilename,
+        webViewLink,
+      });
+    } catch (uploadError) {
+      console.error("Google Drive upload error:", uploadError);
+      return NextResponse.json(
+        { error: "Failed to upload file to Google Drive" },
+        { status: 500 }
+      );
     }
 
-    await writeFile(filePath, buffer);
-    const fileUrl = `/uploads/assignments/${uniqueFilename}`;
-
-    // Create assignment in database
+    // Create assignment in database with Google Drive file URL
     const assignment = await prisma.assignment.create({
       data: {
         title: name,
@@ -118,7 +126,7 @@ export async function POST(request: NextRequest) {
         course: course,
         subject: subject || course,
         deadline: new Date(deadline),
-        fileUrl: fileUrl,
+        fileUrl: webViewLink, // Store Google Drive view link
         status: "PENDING",
         userId: session.user.id,
       },
@@ -140,7 +148,9 @@ export async function POST(request: NextRequest) {
       {
         success: true,
         assignment,
-        message: "Assignment submitted successfully!",
+        driveFileId,
+        webViewLink,
+        message: "Assignment submitted successfully and uploaded to Google Drive!",
       },
       { status: 201 }
     );
