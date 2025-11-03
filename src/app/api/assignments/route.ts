@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { uploadToGoogleDrive } from "@/lib/google-drive";
+import { uploadToS3 } from "@/lib/s3";
 import { v4 as uuidv4 } from "uuid";
 import path from "path";
 
-// Ensure this route runs on the Node.js runtime (googleapis requires Node, not Edge)
+// Ensure this route runs on the Node.js runtime (AWS SDK requires Node, not Edge)
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
@@ -49,18 +49,24 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Ensure Google Drive is configured (avoid opaque 500s)
-    const hasDriveEmail = !!process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
-    const hasDriveKey = !!process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY;
-    if (!hasDriveEmail || !hasDriveKey) {
-      const missing: string[] = [];
-      if (!hasDriveEmail) missing.push("GOOGLE_SERVICE_ACCOUNT_EMAIL");
-      if (!hasDriveKey) missing.push("GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY");
+    // Ensure AWS S3 is configured
+    if (
+      !process.env.AWS_REGION ||
+      !process.env.AWS_ACCESS_KEY_ID ||
+      !process.env.AWS_SECRET_ACCESS_KEY
+    ) {
       return NextResponse.json(
         {
           error:
-            "Google Drive is not configured. Missing required environment variables.",
-          details: `Missing: ${missing.join(", ")}`,
+            "AWS S3 is not configured. Set AWS_REGION, AWS_ACCESS_KEY_ID, and AWS_SECRET_ACCESS_KEY in .env",
+        },
+        { status: 500 }
+      );
+    }
+    if (!process.env.AWS_S3_BUCKET_NAME) {
+      return NextResponse.json(
+        {
+          error: "AWS_S3_BUCKET_NAME is not configured. Set it in .env",
         },
         { status: 500 }
       );
@@ -102,35 +108,32 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Upload file to Google Drive
+    // Upload file to S3
     const fileExtension = ext || path.extname(originalName);
     const safeName =
       name?.toString().replace(/[^a-z0-9_-]+/gi, "_") || "assignment";
     const uniqueFilename = `${safeName}_${uuidv4()}${fileExtension}`;
 
-    let driveFileId: string;
+    let s3FileKey: string;
     let fileUrl: string;
-    let webViewLink: string;
 
     try {
-      const uploadResult = await uploadToGoogleDrive(file, uniqueFilename);
-      driveFileId = uploadResult.fileId;
-      fileUrl = uploadResult.webContentLink; // Direct download link
-      webViewLink = uploadResult.webViewLink; // Google Drive preview link
+      const uploadResult = await uploadToS3(file, uniqueFilename);
+      s3FileKey = uploadResult.fileKey;
+      fileUrl = uploadResult.fileUrl; // S3 file URL
 
-      console.log("File uploaded to Google Drive:", {
-        fileId: driveFileId,
+      console.log("File uploaded to S3:", {
+        fileKey: s3FileKey,
         fileName: uniqueFilename,
-        webViewLink,
+        fileUrl,
       });
     } catch (uploadError: any) {
-      console.error("Google Drive upload error:", uploadError);
-      const message =
-        uploadError?.message || "Failed to upload file to Google Drive";
+      console.error("S3 upload error:", uploadError);
+      const message = uploadError?.message || "Failed to upload file to S3";
       return NextResponse.json({ error: message }, { status: 500 });
     }
 
-    // Create assignment in database with Google Drive file URL
+    // Create assignment in database with S3 file URL
     const assignment = await prisma.assignment.create({
       data: {
         title: name,
@@ -138,7 +141,7 @@ export async function POST(request: NextRequest) {
         course: course,
         subject: subject || course,
         deadline: new Date(deadline),
-        fileUrl: webViewLink, // Store Google Drive view link
+        fileUrl: fileUrl, // Store S3 file URL
         status: "PENDING",
         userId: session.user.id,
       },
@@ -160,10 +163,9 @@ export async function POST(request: NextRequest) {
       {
         success: true,
         assignment,
-        driveFileId,
-        webViewLink,
-        message:
-          "Assignment submitted successfully and uploaded to Google Drive!",
+        s3FileKey,
+        fileUrl,
+        message: "Assignment submitted successfully and uploaded to S3!",
       },
       { status: 201 }
     );
