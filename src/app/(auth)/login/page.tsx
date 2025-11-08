@@ -3,11 +3,7 @@
 import { useState, useEffect } from "react";
 import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import {
   Eye,
@@ -16,6 +12,8 @@ import {
   Lock,
   AlertCircle,
   CheckCircle2,
+  Moon,
+  Sun,
 } from "lucide-react";
 import {
   Dialog,
@@ -25,13 +23,14 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
 
 export default function LoginPage() {
   const router = useRouter();
   const { data: session, status } = useSession();
   const { toast } = useToast();
 
+  const [isDark, setIsDark] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [checking, setChecking] = useState(false);
@@ -46,6 +45,14 @@ export default function LoginPage() {
     email: "",
     password: "",
   });
+
+  const themeColors = {
+    primary: "#0E52AC",
+    text1: isDark ? "#FFFFFF" : "#111E2F",
+    text2: isDark ? "#CBD5E1" : "#284366",
+    bg1: isDark ? "#0F172A" : "#E0EDFD",
+    bg2: isDark ? "#1E293B" : "#FFFFFF",
+  };
 
   useEffect(() => {
     if (status === "authenticated" && session?.user) {
@@ -245,22 +252,52 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-black">
+    <div
+      className="min-h-screen"
+      style={{ backgroundColor: isDark ? "#0A0F1E" : "#F8FBFF" }}
+    >
       <div className="container mx-auto px-4 py-8 lg:py-0">
+        {/* Theme Toggle Button */}
+        <div className="fixed top-6 right-6 z-50">
+          <button
+            onClick={() => setIsDark(!isDark)}
+            className="p-3 rounded-full shadow-lg transition-all hover:scale-110"
+            style={{
+              backgroundColor: themeColors.bg2,
+              color: themeColors.text1,
+            }}
+          >
+            {isDark ? (
+              <Sun className="w-5 h-5" />
+            ) : (
+              <Moon className="w-5 h-5" />
+            )}
+          </button>
+        </div>
+
         <div className="min-h-screen flex items-center justify-center">
           <div className="w-full max-w-[1200px] grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
             {/* Left Side - Hero Section */}
             <div className="hidden lg:block space-y-8">
               <div className="space-y-4">
                 <div className="inline-block">
-                  <h1 className="text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-2">
+                  <h1
+                    className="text-5xl lg:text-6xl font-bold mb-2"
+                    style={{ color: themeColors.text1 }}
+                  >
                     Welcome Back
                   </h1>
-                  <div className="h-1.5 bg-blue-600 rounded-full w-24"></div>
+                  <div
+                    className="h-1.5 rounded-full w-24"
+                    style={{ backgroundColor: themeColors.primary }}
+                  ></div>
                 </div>
-                <p className="text-lg text-gray-600 dark:text-gray-400 max-w-md">
+                <p
+                  className="text-lg max-w-md"
+                  style={{ color: themeColors.text2 }}
+                >
                   Sign in to access your assignments and continue your academic
-                  journey
+                  journey with Assignment Ghar
                 </p>
               </div>
 
@@ -268,14 +305,14 @@ export default function LoginPage() {
               <div className="space-y-4">
                 {[
                   {
-                    icon: "📚",
-                    title: "Manage Assignments",
-                    desc: "Track all your work in one place",
+                    icon: "�",
+                    title: "Live Chat Support",
+                    desc: "Connect with experts in real-time",
                   },
                   {
-                    icon: "✓",
-                    title: "Stay Organized",
-                    desc: "Never miss a deadline again",
+                    icon: "📄",
+                    title: "File Sharing",
+                    desc: "Upload and share documents securely",
                   },
                   {
                     icon: "📊",
@@ -285,14 +322,24 @@ export default function LoginPage() {
                 ].map((feature, idx) => (
                   <div
                     key={idx}
-                    className="flex items-start gap-4 p-4 rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 transition-all hover:border-blue-600 dark:hover:border-blue-600"
+                    className="flex items-start gap-4 p-5 rounded-xl border transition-all hover:shadow-lg"
+                    style={{
+                      backgroundColor: themeColors.bg2,
+                      borderColor: isDark ? "#334155" : "#E0EDFD",
+                    }}
                   >
                     <div className="text-3xl">{feature.icon}</div>
                     <div>
-                      <h3 className="font-semibold text-gray-900 dark:text-white mb-1">
+                      <h3
+                        className="font-semibold mb-1"
+                        style={{ color: themeColors.text1 }}
+                      >
                         {feature.title}
                       </h3>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                      <p
+                        className="text-sm"
+                        style={{ color: themeColors.text2 }}
+                      >
                         {feature.desc}
                       </p>
                     </div>
@@ -305,19 +352,34 @@ export default function LoginPage() {
             <div className="w-full max-w-md mx-auto lg:mx-0">
               {/* Logo - Mobile Only */}
               <div className="lg:hidden mb-8 text-center">
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-                  Assignment Hub
+                <h1
+                  className="text-3xl font-bold mb-2"
+                  style={{ color: themeColors.text1 }}
+                >
+                  Assignment Ghar
                 </h1>
-                <div className="h-1 bg-blue-600 rounded-full w-16 mx-auto"></div>
+                <div
+                  className="h-1 rounded-full w-16 mx-auto"
+                  style={{ backgroundColor: themeColors.primary }}
+                ></div>
               </div>
 
-              <div className="bg-white dark:bg-gray-950 rounded-2xl border border-gray-200 dark:border-gray-800 p-8 shadow-sm">
+              <div
+                className="rounded-2xl border p-8 shadow-xl"
+                style={{
+                  backgroundColor: themeColors.bg2,
+                  borderColor: isDark ? "#334155" : "#E0EDFD",
+                }}
+              >
                 {/* Header */}
                 <div className="mb-8">
-                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                  <h2
+                    className="text-2xl font-bold mb-2"
+                    style={{ color: themeColors.text1 }}
+                  >
                     Sign In
                   </h2>
-                  <p className="text-gray-600 dark:text-gray-400">
+                  <p style={{ color: themeColors.text2 }}>
                     Enter your credentials to continue
                   </p>
                 </div>
@@ -325,15 +387,19 @@ export default function LoginPage() {
                 <form onSubmit={handleSubmit} className="space-y-5">
                   {/* Email/Username Field */}
                   <div className="space-y-2">
-                    <Label
+                    <label
                       htmlFor="email"
-                      className="text-sm font-medium text-gray-900 dark:text-white"
+                      className="text-sm font-medium block"
+                      style={{ color: themeColors.text1 }}
                     >
                       Username or Email
-                    </Label>
+                    </label>
                     <div className="relative">
-                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-                      <Input
+                      <Mail
+                        className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5"
+                        style={{ color: themeColors.text2 }}
+                      />
+                      <input
                         id="email"
                         type="text"
                         placeholder="Enter username or email"
@@ -342,7 +408,20 @@ export default function LoginPage() {
                           setFormData({ ...formData, email: e.target.value });
                           if (authError) setAuthError(null);
                         }}
-                        className="pl-10 h-11 bg-gray-50 dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white placeholder:text-gray-500 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
+                        className="w-full pl-10 pr-10 h-11 rounded-lg border outline-none transition-all"
+                        style={{
+                          backgroundColor: isDark ? "#1E293B" : "#F8FBFF",
+                          borderColor: isDark ? "#475569" : "#CBD5E1",
+                          color: themeColors.text1,
+                        }}
+                        onFocus={(e) =>
+                          (e.target.style.borderColor = themeColors.primary)
+                        }
+                        onBlur={(e) =>
+                          (e.target.style.borderColor = isDark
+                            ? "#475569"
+                            : "#CBD5E1")
+                        }
                         required
                       />
                       {checkStatus === "verified" && (
@@ -352,13 +431,16 @@ export default function LoginPage() {
 
                     {/* Status Messages */}
                     {checkStatus === "not_found" && (
-                      <p className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                      <p
+                        className="text-xs flex items-center gap-1"
+                        style={{ color: themeColors.text2 }}
+                      >
                         <AlertCircle className="h-3 w-3" />
                         No account found with this username/email
                       </p>
                     )}
                     {checkStatus === "unverified" && (
-                      <p className="text-xs text-amber-600 dark:text-amber-500 flex items-center gap-1">
+                      <p className="text-xs text-amber-600 flex items-center gap-1">
                         <AlertCircle className="h-3 w-3" />
                         Account not verified.{" "}
                         <button
@@ -380,15 +462,19 @@ export default function LoginPage() {
 
                   {/* Password Field */}
                   <div className="space-y-2">
-                    <Label
+                    <label
                       htmlFor="password"
-                      className="text-sm font-medium text-gray-900 dark:text-white"
+                      className="text-sm font-medium block"
+                      style={{ color: themeColors.text1 }}
                     >
                       Password
-                    </Label>
+                    </label>
                     <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-                      <Input
+                      <Lock
+                        className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5"
+                        style={{ color: themeColors.text2 }}
+                      />
+                      <input
                         id="password"
                         type={showPassword ? "text" : "password"}
                         placeholder="Enter your password"
@@ -400,13 +486,27 @@ export default function LoginPage() {
                           });
                           if (authError) setAuthError(null);
                         }}
-                        className="pl-10 pr-10 h-11 bg-gray-50 dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white placeholder:text-gray-500 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
+                        className="w-full pl-10 pr-10 h-11 rounded-lg border outline-none transition-all"
+                        style={{
+                          backgroundColor: isDark ? "#1E293B" : "#F8FBFF",
+                          borderColor: isDark ? "#475569" : "#CBD5E1",
+                          color: themeColors.text1,
+                        }}
+                        onFocus={(e) =>
+                          (e.target.style.borderColor = themeColors.primary)
+                        }
+                        onBlur={(e) =>
+                          (e.target.style.borderColor = isDark
+                            ? "#475569"
+                            : "#CBD5E1")
+                        }
                         required
                       />
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 transition-colors"
+                        style={{ color: themeColors.text2 }}
                       >
                         {showPassword ? (
                           <EyeOff className="h-5 w-5" />
@@ -421,7 +521,8 @@ export default function LoginPage() {
                   <div className="flex justify-end">
                     <Link
                       href="/recover"
-                      className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-500 dark:hover:text-blue-400 font-medium"
+                      className="text-sm font-medium hover:opacity-80 transition-opacity"
+                      style={{ color: themeColors.primary }}
                     >
                       Forgot password?
                     </Link>
@@ -429,52 +530,75 @@ export default function LoginPage() {
 
                   {/* Error Alert */}
                   {authError && (
-                    <Alert
-                      variant="destructive"
-                      className="bg-red-50 dark:bg-red-950/30 border-red-200 dark:border-red-900"
+                    <div
+                      className="flex items-start gap-3 p-4 rounded-lg border"
+                      style={{
+                        backgroundColor: isDark ? "#7F1D1D" : "#FEE2E2",
+                        borderColor: isDark ? "#991B1B" : "#FCA5A5",
+                      }}
                     >
-                      <AlertCircle className="h-4 w-4" />
-                      <AlertDescription className="text-sm text-red-800 dark:text-red-400">
+                      <AlertCircle
+                        className="h-5 w-5 flex-shrink-0"
+                        style={{ color: "#DC2626" }}
+                      />
+                      <p
+                        className="text-sm"
+                        style={{ color: isDark ? "#FCA5A5" : "#991B1B" }}
+                      >
                         {authError}
-                      </AlertDescription>
-                    </Alert>
+                      </p>
+                    </div>
                   )}
 
                   {/* Sign In Button */}
-                  <Button
+                  <button
                     type="submit"
                     disabled={isLoading || checkStatus === "unverified"}
-                    className="w-full h-11 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    className="w-full h-11 text-white font-semibold rounded-lg transition-all hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
+                    style={{ backgroundColor: themeColors.primary }}
                   >
                     {isLoading ? (
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center justify-center gap-2">
                         <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
                         Signing in...
                       </div>
                     ) : (
                       "Sign In"
                     )}
-                  </Button>
+                  </button>
 
                   {/* Divider */}
                   <div className="relative my-6">
                     <div className="absolute inset-0 flex items-center">
-                      <div className="w-full border-t border-gray-200 dark:border-gray-800"></div>
+                      <div
+                        className="w-full border-t"
+                        style={{ borderColor: isDark ? "#334155" : "#E0EDFD" }}
+                      ></div>
                     </div>
                     <div className="relative flex justify-center text-xs">
-                      <span className="px-3 bg-white dark:bg-gray-950 text-gray-500">
+                      <span
+                        className="px-3"
+                        style={{
+                          backgroundColor: themeColors.bg2,
+                          color: themeColors.text2,
+                        }}
+                      >
                         OR CONTINUE WITH
                       </span>
                     </div>
                   </div>
 
                   {/* Google Sign In */}
-                  <Button
+                  <button
                     type="button"
                     onClick={handleGoogleSignIn}
                     disabled={isLoading}
-                    variant="outline"
-                    className="w-full h-11 border-gray-300 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-900 text-gray-900 dark:text-white font-medium rounded-lg transition-colors"
+                    className="w-full h-11 font-medium rounded-lg border transition-all hover:opacity-80 flex items-center justify-center gap-2"
+                    style={{
+                      backgroundColor: themeColors.bg2,
+                      borderColor: isDark ? "#475569" : "#CBD5E1",
+                      color: themeColors.text1,
+                    }}
                   >
                     <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
                       <path
@@ -495,19 +619,37 @@ export default function LoginPage() {
                       />
                     </svg>
                     Continue with Google
-                  </Button>
+                  </button>
 
                   {/* Sign Up Link */}
-                  <p className="text-center text-sm text-gray-600 dark:text-gray-400 pt-4">
+                  <p
+                    className="text-center text-sm pt-4"
+                    style={{ color: themeColors.text2 }}
+                  >
                     Don't have an account?{" "}
                     <Link
                       href="/register"
-                      className="text-blue-600 hover:text-blue-700 dark:text-blue-500 dark:hover:text-blue-400 font-semibold"
+                      className="font-semibold hover:opacity-80 transition-opacity"
+                      style={{ color: themeColors.primary }}
                     >
                       Create Account
                     </Link>
                   </p>
                 </form>
+              </div>
+
+              {/* Security Message */}
+              <div className="mt-6 text-center">
+                <div
+                  className="flex items-center justify-center gap-2 text-sm"
+                  style={{ color: themeColors.text2 }}
+                >
+                  <CheckCircle2
+                    className="w-4 h-4"
+                    style={{ color: "#10B981" }}
+                  />
+                  <span>Secure login protected by encryption</span>
+                </div>
               </div>
             </div>
           </div>

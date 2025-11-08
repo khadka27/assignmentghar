@@ -3,8 +3,6 @@
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import {
   ShieldCheck,
@@ -15,10 +13,10 @@ import {
   CheckCircle,
   ArrowLeft,
   Loader2,
+  Moon,
+  Sun,
 } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export default function MissingVerificationPage() {
   const router = useRouter();
@@ -28,6 +26,7 @@ export default function MissingVerificationPage() {
   const emailFromParams = searchParams.get("email") || "";
   const autoSend = searchParams.get("autoSend") === "true";
 
+  const [isDark, setIsDark] = useState(false);
   const [email, setEmail] = useState(emailFromParams);
   const [otp, setOtp] = useState("");
   const [accountStatus, setAccountStatus] = useState<
@@ -36,6 +35,14 @@ export default function MissingVerificationPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [resendTimer, setResendTimer] = useState(0);
   const [showOTPInput, setShowOTPInput] = useState(false);
+
+  const themeColors = {
+    primary: "#0E52AC",
+    text1: isDark ? "#FFFFFF" : "#111E2F",
+    text2: isDark ? "#CBD5E1" : "#284366",
+    bg1: isDark ? "#0F172A" : "#E0EDFD",
+    bg2: isDark ? "#1E293B" : "#FFFFFF",
+  };
 
   useEffect(() => {
     if (resendTimer > 0) {
@@ -195,76 +202,139 @@ export default function MissingVerificationPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-black">
+    <div
+      className="min-h-screen"
+      style={{ backgroundColor: isDark ? "#0A0F1E" : "#F8FBFF" }}
+    >
       <div className="container mx-auto px-4 py-8">
+        {/* Theme Toggle Button */}
+        <div className="fixed top-6 right-6 z-50">
+          <button
+            onClick={() => setIsDark(!isDark)}
+            className="p-3 rounded-full shadow-lg transition-all hover:scale-110"
+            style={{
+              backgroundColor: themeColors.bg2,
+              color: themeColors.text1,
+            }}
+          >
+            {isDark ? (
+              <Sun className="w-5 h-5" />
+            ) : (
+              <Moon className="w-5 h-5" />
+            )}
+          </button>
+        </div>
+
         <div className="min-h-screen flex items-center justify-center">
           <div className="w-full max-w-md">
-            <div className="bg-white dark:bg-gray-950 rounded-2xl border border-gray-200 dark:border-gray-800 p-8 shadow-sm">
+            <div
+              className="rounded-2xl border p-8 shadow-xl"
+              style={{
+                backgroundColor: themeColors.bg2,
+                borderColor: isDark ? "#334155" : "#E0EDFD",
+              }}
+            >
               {/* Logo */}
               <div className="mb-8 text-center">
-                <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-                  Assignment Hub
+                <h1
+                  className="text-2xl font-bold mb-2"
+                  style={{ color: themeColors.text1 }}
+                >
+                  Assignment Ghar
                 </h1>
-                <div className="h-1 bg-blue-600 rounded-full w-16 mx-auto"></div>
+                <div
+                  className="h-1 rounded-full w-16 mx-auto"
+                  style={{ backgroundColor: themeColors.primary }}
+                ></div>
               </div>
 
               {/* Email Check Form */}
               {accountStatus === "checking" && !emailFromParams && (
                 <div className="space-y-6">
                   <div className="text-center space-y-3">
-                    <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-100 dark:bg-blue-950 rounded-full mb-2">
-                      <ShieldCheck className="w-8 h-8 text-blue-600" />
+                    <div
+                      className="inline-flex items-center justify-center w-16 h-16 rounded-full mb-2"
+                      style={{
+                        backgroundColor: isDark ? "#1E3A8A" : "#DBEAFE",
+                      }}
+                    >
+                      <ShieldCheck
+                        className="w-8 h-8"
+                        style={{ color: themeColors.primary }}
+                      />
                     </div>
-                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                    <h2
+                      className="text-2xl font-bold"
+                      style={{ color: themeColors.text1 }}
+                    >
                       Account Verification
                     </h2>
-                    <p className="text-gray-600 dark:text-gray-400">
+                    <p style={{ color: themeColors.text2 }}>
                       Check your account verification status
                     </p>
                   </div>
 
                   <form onSubmit={handleCheckAccount} className="space-y-5">
                     <div className="space-y-2">
-                      <Label
+                      <label
                         htmlFor="email-check"
-                        className="text-sm font-medium text-gray-900 dark:text-white"
+                        className="text-sm font-medium block"
+                        style={{ color: themeColors.text1 }}
                       >
                         Email Address
-                      </Label>
+                      </label>
                       <div className="relative">
-                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-                        <Input
+                        <Mail
+                          className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5"
+                          style={{ color: themeColors.text2 }}
+                        />
+                        <input
                           id="email-check"
                           type="email"
                           placeholder="Enter your email"
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
-                          className="pl-10 h-11 bg-gray-50 dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white placeholder:text-gray-500 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
+                          className="w-full pl-10 pr-4 h-11 rounded-lg border outline-none transition-all"
+                          style={{
+                            backgroundColor: isDark ? "#1E293B" : "#F8FBFF",
+                            borderColor: isDark ? "#475569" : "#CBD5E1",
+                            color: themeColors.text1,
+                          }}
+                          onFocus={(e) =>
+                            (e.target.style.borderColor = themeColors.primary)
+                          }
+                          onBlur={(e) =>
+                            (e.target.style.borderColor = isDark
+                              ? "#475569"
+                              : "#CBD5E1")
+                          }
                           required
                         />
                       </div>
                     </div>
 
-                    <Button
+                    <button
                       type="submit"
                       disabled={isLoading || !email}
-                      className="w-full h-11 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="w-full h-11 text-white font-semibold rounded-lg transition-all hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
+                      style={{ backgroundColor: themeColors.primary }}
                     >
                       {isLoading ? (
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center justify-center gap-2">
                           <Loader2 className="w-4 h-4 animate-spin" />
                           Checking...
                         </div>
                       ) : (
                         "Check Account Status"
                       )}
-                    </Button>
+                    </button>
                   </form>
 
                   <div className="text-center">
                     <Link
                       href="/login"
-                      className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-500 dark:hover:text-blue-400 font-medium inline-flex items-center gap-1"
+                      className="text-sm font-medium inline-flex items-center gap-1 hover:opacity-80 transition-opacity"
+                      style={{ color: themeColors.primary }}
                     >
                       <ArrowLeft className="h-4 w-4" />
                       Back to Login
@@ -277,9 +347,12 @@ export default function MissingVerificationPage() {
               {isLoading && accountStatus === "checking" && emailFromParams && (
                 <div className="space-y-6 text-center">
                   <div className="flex justify-center">
-                    <Loader2 className="w-12 h-12 text-blue-600 animate-spin" />
+                    <Loader2
+                      className="w-12 h-12 animate-spin"
+                      style={{ color: themeColors.primary }}
+                    />
                   </div>
-                  <p className="text-gray-600 dark:text-gray-400">
+                  <p style={{ color: themeColors.text2 }}>
                     Checking account status...
                   </p>
                 </div>
@@ -289,43 +362,66 @@ export default function MissingVerificationPage() {
               {accountStatus === "not-found" && (
                 <div className="space-y-6">
                   <div className="text-center space-y-4">
-                    <div className="inline-flex items-center justify-center w-16 h-16 bg-red-100 dark:bg-red-950 rounded-full">
+                    <div
+                      className="inline-flex items-center justify-center w-16 h-16 rounded-full"
+                      style={{
+                        backgroundColor: isDark ? "#7F1D1D" : "#FEE2E2",
+                      }}
+                    >
                       <UserX className="w-8 h-8 text-red-600" />
                     </div>
-                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                    <h2
+                      className="text-2xl font-bold"
+                      style={{ color: themeColors.text1 }}
+                    >
                       Account Not Found
                     </h2>
-                    <p className="text-gray-600 dark:text-gray-400">
+                    <p style={{ color: themeColors.text2 }}>
                       No account exists with email:
                       <br />
-                      <span className="font-semibold text-gray-900 dark:text-white">
+                      <span
+                        className="font-semibold"
+                        style={{ color: themeColors.text1 }}
+                      >
                         {email}
                       </span>
                     </p>
                   </div>
 
-                  <Alert className="bg-blue-50 dark:bg-blue-950/30 border-blue-200 dark:border-blue-900">
-                    <AlertDescription className="text-center">
-                      <p className="text-gray-700 dark:text-gray-300 font-medium mb-4">
-                        Would you like to create an account?
-                      </p>
-                      <div className="flex gap-3">
-                        <Button
-                          onClick={() => router.push("/register")}
-                          className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
-                        >
-                          Create Account
-                        </Button>
-                        <Button
-                          variant="outline"
-                          onClick={() => router.push("/login")}
-                          className="flex-1 border-gray-300 dark:border-gray-700"
-                        >
-                          Go to Login
-                        </Button>
-                      </div>
-                    </AlertDescription>
-                  </Alert>
+                  <div
+                    className="p-4 rounded-lg border"
+                    style={{
+                      backgroundColor: isDark ? "#1E3A8A" : "#DBEAFE",
+                      borderColor: isDark ? "#1E40AF" : "#93C5FD",
+                    }}
+                  >
+                    <p
+                      className="font-medium mb-4 text-center"
+                      style={{ color: themeColors.text1 }}
+                    >
+                      Would you like to create an account?
+                    </p>
+                    <div className="flex gap-3">
+                      <button
+                        onClick={() => router.push("/register")}
+                        className="flex-1 h-11 text-white font-semibold rounded-lg hover:opacity-90 transition-opacity"
+                        style={{ backgroundColor: themeColors.primary }}
+                      >
+                        Create Account
+                      </button>
+                      <button
+                        onClick={() => router.push("/login")}
+                        className="flex-1 h-11 font-semibold rounded-lg border hover:opacity-80 transition-opacity"
+                        style={{
+                          backgroundColor: themeColors.bg2,
+                          borderColor: isDark ? "#475569" : "#CBD5E1",
+                          color: themeColors.text1,
+                        }}
+                      >
+                        Go to Login
+                      </button>
+                    </div>
+                  </div>
                 </div>
               )}
 
@@ -333,50 +429,70 @@ export default function MissingVerificationPage() {
               {accountStatus === "unverified" && !showOTPInput && (
                 <div className="space-y-6">
                   <div className="text-center space-y-4">
-                    <div className="inline-flex items-center justify-center w-16 h-16 bg-yellow-100 dark:bg-yellow-950 rounded-full">
+                    <div
+                      className="inline-flex items-center justify-center w-16 h-16 rounded-full"
+                      style={{
+                        backgroundColor: isDark ? "#854D0E" : "#FEF3C7",
+                      }}
+                    >
                       <AlertCircle className="w-8 h-8 text-yellow-600" />
                     </div>
-                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                    <h2
+                      className="text-2xl font-bold"
+                      style={{ color: themeColors.text1 }}
+                    >
                       Email Not Verified
                     </h2>
-                    <p className="text-gray-600 dark:text-gray-400">
+                    <p style={{ color: themeColors.text2 }}>
                       Your account exists but email is not verified yet
                     </p>
                   </div>
 
-                  <Alert className="bg-yellow-50 dark:bg-yellow-950/30 border-yellow-200 dark:border-yellow-900">
-                    <AlertDescription className="space-y-4">
-                      <p className="text-gray-700 dark:text-gray-300 font-medium text-center">
-                        Email:{" "}
-                        <span className="text-blue-600 dark:text-blue-400">
-                          {email}
-                        </span>
-                      </p>
-                      <p className="text-sm text-gray-600 dark:text-gray-400 text-center">
-                        We'll send a verification code to complete your
-                        registration
-                      </p>
-                      <Button
-                        onClick={handleSendOTP}
-                        disabled={isLoading}
-                        className="w-full h-11 bg-blue-600 hover:bg-blue-700 text-white font-medium disabled:opacity-50"
-                      >
-                        {isLoading ? (
-                          <div className="flex items-center gap-2">
-                            <Loader2 className="w-4 h-4 animate-spin" />
-                            Sending Code...
-                          </div>
-                        ) : (
-                          "Send Verification Code"
-                        )}
-                      </Button>
-                    </AlertDescription>
-                  </Alert>
+                  <div
+                    className="p-4 rounded-lg border"
+                    style={{
+                      backgroundColor: isDark ? "#854D0E" : "#FEF3C7",
+                      borderColor: isDark ? "#A16207" : "#FDE047",
+                    }}
+                  >
+                    <p
+                      className="font-medium text-center mb-2"
+                      style={{ color: themeColors.text1 }}
+                    >
+                      Email:{" "}
+                      <span style={{ color: themeColors.primary }}>
+                        {email}
+                      </span>
+                    </p>
+                    <p
+                      className="text-sm text-center mb-4"
+                      style={{ color: themeColors.text2 }}
+                    >
+                      We'll send a verification code to complete your
+                      registration
+                    </p>
+                    <button
+                      onClick={handleSendOTP}
+                      disabled={isLoading}
+                      className="w-full h-11 text-white font-semibold rounded-lg hover:opacity-90 disabled:opacity-50 transition-opacity"
+                      style={{ backgroundColor: themeColors.primary }}
+                    >
+                      {isLoading ? (
+                        <div className="flex items-center justify-center gap-2">
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                          Sending Code...
+                        </div>
+                      ) : (
+                        "Send Verification Code"
+                      )}
+                    </button>
+                  </div>
 
                   <div className="text-center">
                     <Link
                       href="/login"
-                      className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-500 dark:hover:text-blue-400 font-medium inline-flex items-center gap-1"
+                      className="text-sm font-medium inline-flex items-center gap-1 hover:opacity-80 transition-opacity"
+                      style={{ color: themeColors.primary }}
                     >
                       <ArrowLeft className="h-4 w-4" />
                       Back to Login
@@ -389,29 +505,44 @@ export default function MissingVerificationPage() {
               {(accountStatus === "otp-sent" || showOTPInput) && (
                 <div className="space-y-6">
                   <div className="text-center space-y-3">
-                    <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-100 dark:bg-blue-950 rounded-full">
-                      <Mail className="w-8 h-8 text-blue-600" />
+                    <div
+                      className="inline-flex items-center justify-center w-16 h-16 rounded-full"
+                      style={{
+                        backgroundColor: isDark ? "#1E3A8A" : "#DBEAFE",
+                      }}
+                    >
+                      <Mail
+                        className="w-8 h-8"
+                        style={{ color: themeColors.primary }}
+                      />
                     </div>
-                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                    <h2
+                      className="text-2xl font-bold"
+                      style={{ color: themeColors.text1 }}
+                    >
                       Verify Your Email
                     </h2>
-                    <p className="text-gray-600 dark:text-gray-400">
+                    <p style={{ color: themeColors.text2 }}>
                       We've sent a 6-digit code to
                     </p>
-                    <p className="font-semibold text-gray-900 dark:text-white">
+                    <p
+                      className="font-semibold"
+                      style={{ color: themeColors.text1 }}
+                    >
                       {email}
                     </p>
                   </div>
 
                   <div className="space-y-4">
                     <div className="space-y-2">
-                      <Label
+                      <label
                         htmlFor="otp-input"
-                        className="text-sm font-medium text-gray-900 dark:text-white"
+                        className="text-sm font-medium block"
+                        style={{ color: themeColors.text1 }}
                       >
                         Verification Code
-                      </Label>
-                      <Input
+                      </label>
+                      <input
                         id="otp-input"
                         type="text"
                         inputMode="numeric"
@@ -422,64 +553,84 @@ export default function MissingVerificationPage() {
                           const value = e.target.value.replace(/\D/g, "");
                           setOtp(value.slice(0, 6));
                         }}
-                        className="h-14 text-center text-2xl font-bold tracking-widest bg-gray-50 dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
+                        className="w-full h-14 text-center text-2xl font-bold tracking-widest rounded-lg border outline-none transition-all"
+                        style={{
+                          backgroundColor: isDark ? "#1E293B" : "#F8FBFF",
+                          borderColor: isDark ? "#475569" : "#CBD5E1",
+                          color: themeColors.text1,
+                        }}
+                        onFocus={(e) =>
+                          (e.target.style.borderColor = themeColors.primary)
+                        }
+                        onBlur={(e) =>
+                          (e.target.style.borderColor = isDark
+                            ? "#475569"
+                            : "#CBD5E1")
+                        }
                       />
-                      <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
+                      <p
+                        className="text-xs text-center"
+                        style={{ color: themeColors.text2 }}
+                      >
                         Code expires in 10 minutes
                       </p>
                     </div>
 
-                    <Button
+                    <button
                       onClick={handleVerifyOTP}
                       disabled={otp.length !== 6 || isLoading}
-                      className="w-full h-11 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="w-full h-11 text-white font-semibold rounded-lg hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
+                      style={{ backgroundColor: themeColors.primary }}
                     >
                       {isLoading ? (
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center justify-center gap-2">
                           <Loader2 className="w-4 h-4 animate-spin" />
                           Verifying...
                         </div>
                       ) : (
                         "Verify Email"
                       )}
-                    </Button>
+                    </button>
 
                     <div className="text-center space-y-2">
-                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                      <p
+                        className="text-sm"
+                        style={{ color: themeColors.text2 }}
+                      >
                         Didn't receive the code?
                       </p>
-                      <Button
+                      <button
                         type="button"
                         onClick={handleResendOTP}
                         disabled={resendTimer > 0 || isLoading}
-                        variant="ghost"
-                        className="text-blue-600 hover:text-blue-700 dark:text-blue-500 dark:hover:text-blue-400 font-medium disabled:opacity-50"
+                        className="font-medium disabled:opacity-50 hover:opacity-80 transition-opacity"
+                        style={{ color: themeColors.primary }}
                       >
                         {resendTimer > 0 ? (
-                          <span className="flex items-center gap-1">
+                          <span className="flex items-center justify-center gap-1">
                             <Clock className="w-4 h-4" />
                             Resend in {resendTimer}s
                           </span>
                         ) : (
                           "Resend Code"
                         )}
-                      </Button>
+                      </button>
                     </div>
                   </div>
 
                   <div className="text-center">
-                    <Button
-                      variant="ghost"
+                    <button
                       onClick={() => {
                         setShowOTPInput(false);
                         setOtp("");
                         setAccountStatus("unverified");
                       }}
-                      className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white text-sm"
+                      className="text-sm hover:opacity-80 transition-opacity inline-flex items-center gap-1"
+                      style={{ color: themeColors.text2 }}
                     >
-                      <ArrowLeft className="h-4 w-4 mr-1" />
+                      <ArrowLeft className="h-4 w-4" />
                       Back
-                    </Button>
+                    </button>
                   </div>
                 </div>
               )}
@@ -487,17 +638,28 @@ export default function MissingVerificationPage() {
               {/* Account Already Verified */}
               {accountStatus === "verified" && (
                 <div className="space-y-6 text-center">
-                  <div className="inline-flex items-center justify-center w-16 h-16 bg-green-100 dark:bg-green-950 rounded-full">
+                  <div
+                    className="inline-flex items-center justify-center w-16 h-16 rounded-full"
+                    style={{
+                      backgroundColor: isDark ? "#065F46" : "#D1FAE5",
+                    }}
+                  >
                     <CheckCircle className="w-8 h-8 text-green-600" />
                   </div>
-                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                  <h2
+                    className="text-2xl font-bold"
+                    style={{ color: themeColors.text1 }}
+                  >
                     Account Already Verified!
                   </h2>
-                  <p className="text-gray-600 dark:text-gray-400">
+                  <p style={{ color: themeColors.text2 }}>
                     Redirecting you to login...
                   </p>
                   <div className="flex justify-center">
-                    <Loader2 className="w-6 h-6 text-blue-600 animate-spin" />
+                    <Loader2
+                      className="w-6 h-6 animate-spin"
+                      style={{ color: themeColors.primary }}
+                    />
                   </div>
                 </div>
               )}

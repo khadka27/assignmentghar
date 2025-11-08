@@ -2,615 +2,815 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { services } from "@/data/services";
-import { testimonials } from "@/data/testimonials";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import {
-  Star,
-  Lock,
-  Clock,
-  Brain,
-  MessageSquare,
-  BookOpen,
-  Award,
-  Users,
-  CheckCircle,
-  TrendingUp,
-  Target,
-  Sparkles,
-  ArrowRight,
-  Play,
-  GraduationCap,
-  FileCheck,
-  Zap,
-} from "lucide-react";
-import { useState, useEffect } from "react";
+import { Check } from "lucide-react";
+import React from "react";
 
 export default function Home() {
-  const [activeTestimonial, setActiveTestimonial] = useState(0);
-  const [counters, setCounters] = useState({
-    students: 0,
-    assignments: 0,
-    experts: 0,
-    satisfaction: 0,
-  });
-
-  // Animated counter effect
-  useEffect(() => {
-    const targets = {
-      students: 15000,
-      assignments: 25000,
-      experts: 500,
-      satisfaction: 98,
-    };
-
-    const duration = 2000;
-    const steps = 60;
-    const increment = duration / steps;
-
-    let currentStep = 0;
-    const timer = setInterval(() => {
-      currentStep++;
-      const progress = currentStep / steps;
-
-      setCounters({
-        students: Math.floor(targets.students * progress),
-        assignments: Math.floor(targets.assignments * progress),
-        experts: Math.floor(targets.experts * progress),
-        satisfaction: Math.floor(targets.satisfaction * progress),
-      });
-
-      if (currentStep >= steps) {
-        clearInterval(timer);
-        setCounters(targets);
-      }
-    }, increment);
-
-    return () => clearInterval(timer);
-  }, []);
-
-  // Auto-rotate testimonials
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setActiveTestimonial((prev) => (prev + 1) % testimonials.length);
-    }, 5000);
-    return () => clearInterval(interval);
-  }, []);
-
   return (
-    <div className="w-full overflow-hidden">
+    <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center bg-white dark:bg-black border-b border-gray-200 dark:border-gray-800">
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            {/* Left Content */}
-            <div className="text-center lg:text-left space-y-8">
-              {/* Badge */}
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 dark:bg-gray-900 border border-blue-200 dark:border-blue-900 rounded-lg text-blue-600 dark:text-blue-400 text-sm font-medium">
-                <Sparkles className="w-4 h-4" />
-                <span>#1 Assignment Help Platform</span>
-              </div>
+      <div className="container mx-auto px-4 py-8 md:py-12 lg:py-16">
+        <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+          {/* Left Content */}
+          <div className="space-y-6 md:space-y-8">
+            {/* Brand Name */}
+            <div
+              className="text-sm md:text-base font-medium"
+              style={{ color: "#284366" }}
+            >
+              Assignment Ghar
+            </div>
 
-              {/* Main Heading */}
-              <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold leading-tight text-gray-900 dark:text-white">
-                Master Your
-                <br />
-                Academic Journey
+            {/* Main Heading */}
+            <div className="space-y-2">
+              <h1
+                className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight"
+                style={{ color: "#111E2F" }}
+              >
+                A{" "}
+                <span
+                  style={{ color: "#0E52AC" }}
+                  className="relative inline-block"
+                >
+                  Trusted Partner
+                  <svg
+                    className="absolute -bottom-1 left-0 w-full"
+                    height="8"
+                    viewBox="0 0 300 8"
+                    fill="none"
+                  >
+                    <path
+                      d="M2 6C100 2 200 2 298 6"
+                      stroke="#0E52AC"
+                      strokeWidth="3"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                </span>
               </h1>
-
-              {/* Subtitle */}
-              <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl">
-                Get expert assignment help, connect with top consultants, and
-                achieve academic excellence with our comprehensive platform.
-              </p>
-
-              {/* CTA Buttons */}
-              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                <Link href="/register">
-                  <Button
-                    size="lg"
-                    className="bg-blue-600 hover:bg-blue-700 text-white h-14 px-8 text-lg font-medium"
+              <h1
+                className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight"
+                style={{ color: "#111E2F" }}
+              >
+                for your Academic
+              </h1>
+              <h1 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight">
+                <span
+                  style={{ color: "#0E52AC" }}
+                  className="relative inline-block"
+                >
+                  Success
+                  <svg
+                    className="absolute -bottom-1 left-0 w-full"
+                    height="8"
+                    viewBox="0 0 200 8"
+                    fill="none"
                   >
-                    Get Started Free
-                    <ArrowRight className="ml-2 w-5 h-5" />
-                  </Button>
-                </Link>
-                <Link href="/about">
-                  <Button
-                    variant="outline"
-                    size="lg"
-                    className="border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-900 h-14 px-8 text-lg"
-                  >
-                    <Play className="mr-2 w-5 h-5" />
-                    Watch Demo
-                  </Button>
-                </Link>
-              </div>
-
-              {/* Features List */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-8">
-                {[
-                  { icon: CheckCircle, text: "24/7 Support" },
-                  { icon: Lock, text: "Secure & Private" },
-                  { icon: Zap, text: "Fast Delivery" },
-                ].map((item, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center gap-2 text-gray-700 dark:text-gray-300"
-                  >
-                    <item.icon className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                    <span className="font-medium">{item.text}</span>
-                  </div>
-                ))}
-              </div>
+                    <path
+                      d="M2 6C66 2 133 2 198 6"
+                      stroke="#0E52AC"
+                      strokeWidth="3"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                </span>
+              </h1>
             </div>
 
-            {/* Right Illustration */}
-            <div className="relative hidden lg:block">
-              <div className="relative bg-white dark:bg-gray-900 rounded-lg p-8 border border-gray-200 dark:border-gray-800">
-                {/* Floating cards */}
-                <div className="space-y-6">
-                  {/* Student Card */}
-                  <div className="bg-blue-600 rounded-lg p-6 text-white">
-                    <div className="flex items-center gap-4">
-                      <div className="w-16 h-16 bg-blue-700 rounded-full flex items-center justify-center">
-                        <GraduationCap className="w-8 h-8" />
-                      </div>
-                      <div>
-                        <h3 className="text-lg font-bold">Expert Tutors</h3>
-                        <p className="text-blue-100">Available 24/7</p>
-                      </div>
-                    </div>
-                  </div>
+            {/* Features List */}
+            <div className="space-y-4 md:space-y-5">
+              <FeatureItem text="Get quick and reliable help with your college or university assignments" />
 
-                  {/* Assignment Card */}
-                  <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700">
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="flex items-center gap-3">
-                        <FileCheck className="w-8 h-8 text-blue-600" />
-                        <div>
-                          <h3 className="font-bold text-gray-900 dark:text-white">
-                            Assignment Status
-                          </h3>
-                          <p className="text-sm text-gray-600 dark:text-gray-400">
-                            In Progress
-                          </p>
-                        </div>
-                      </div>
-                      <Badge className="bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400">
-                        85%
-                      </Badge>
-                    </div>
-                    <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                      <div
-                        className="bg-blue-600 h-2 rounded-full"
-                        style={{ width: "85%" }}
-                      ></div>
-                    </div>
-                  </div>
+              <FeatureItem text="No matter where you study or how close your deadline is, we connect you directly with expert consultants who understand your subject and your struggles." />
 
-                  {/* Success Card */}
-                  <div className="bg-blue-600 rounded-lg p-6 text-white">
-                    <div className="flex items-center gap-4">
-                      <Award className="w-12 h-12" />
-                      <div>
-                        <h3 className="text-2xl font-bold">A+ Grade</h3>
-                        <p className="text-blue-100">Achievement Unlocked!</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <FeatureItem text="Chat in real time, share your files securely, and receive personalized guidance that helps you complete your assignments with confidence and quality." />
+            </div>
+
+            {/* CTA Buttons */}
+            <div className="flex flex-col sm:flex-row gap-3 md:gap-4 pt-2 md:pt-4">
+              <Link href="/chat">
+                <button
+                  className="w-full sm:w-auto px-6 md:px-8 py-3 md:py-3.5 rounded-lg font-semibold text-white text-sm md:text-base transition-all hover:opacity-90 hover:shadow-lg"
+                  style={{ backgroundColor: "#0E52AC" }}
+                >
+                  Start Chat Now
+                </button>
+              </Link>
+              <Link href="/submit">
+                <button
+                  className="w-full sm:w-auto px-6 md:px-8 py-3 md:py-3.5 rounded-lg font-semibold text-sm md:text-base border-2 transition-all hover:shadow-lg"
+                  style={{
+                    color: "#0E52AC",
+                    borderColor: "#0E52AC",
+                    backgroundColor: "white",
+                  }}
+                >
+                  Submit your Assignment
+                </button>
+              </Link>
             </div>
           </div>
-        </div>
-      </section>
 
-      {/* Stats Counter Section */}
-      <section className="py-20 bg-gray-50 dark:bg-gray-900 border-y border-gray-200 dark:border-gray-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {[
-              {
-                icon: Users,
-                count: counters.students,
-                label: "Happy Students",
-                suffix: "+",
-              },
-              {
-                icon: FileCheck,
-                count: counters.assignments,
-                label: "Assignments Completed",
-                suffix: "+",
-              },
-              {
-                icon: Award,
-                count: counters.experts,
-                label: "Expert Tutors",
-                suffix: "+",
-              },
-              {
-                icon: TrendingUp,
-                count: counters.satisfaction,
-                label: "Satisfaction Rate",
-                suffix: "%",
-              },
-            ].map((stat, index) => (
-              <div key={index} className="text-center space-y-3">
-                <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-900">
-                  <stat.icon className="w-8 h-8 text-blue-600 dark:text-blue-400" />
-                </div>
-                <div className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white">
-                  {stat.count.toLocaleString()}
-                  {stat.suffix}
-                </div>
-                <div className="text-gray-600 dark:text-gray-400 font-medium">
-                  {stat.label}
-                </div>
-              </div>
-            ))}
+          {/* Right Image */}
+          <div className="relative order-first lg:order-last">
+            <div className="relative rounded-2xl overflow-hidden shadow-2xl h-[400px] md:h-[500px] lg:h-[600px]">
+              <Image
+                src="/Images/landing/hero.jpg"
+                alt="Student studying with laptop"
+                fill
+                className="object-cover"
+                priority
+              />
+              {/* Overlay gradient for better text visibility on mobile */}
+              <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/10 lg:hidden"></div>
+            </div>
+
+            {/* Decorative elements */}
+            <div
+              className="hidden lg:block absolute -top-4 -right-4 w-24 h-24 rounded-full opacity-20"
+              style={{ backgroundColor: "#0E52AC" }}
+            ></div>
+            <div
+              className="hidden lg:block absolute -bottom-4 -left-4 w-32 h-32 rounded-full opacity-10"
+              style={{ backgroundColor: "#0E52AC" }}
+            ></div>
           </div>
         </div>
-      </section>
+      </div>
 
-      {/* Features Section */}
-      <section className="py-20 bg-white dark:bg-black">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* Why Students Trust Us Section */}
+      <div
+        className="py-12 md:py-16 lg:py-20"
+        style={{ backgroundColor: "#F8FBFF" }}
+      >
+        <div className="container mx-auto px-4">
           {/* Section Header */}
-          <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
-            <Badge className="bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400 text-sm px-4 py-1 border border-blue-200 dark:border-blue-900">
-              Why Choose Us
-            </Badge>
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white">
-              Everything You Need
-              <br />
-              For Academic Success
+          <div className="text-center mb-8 md:mb-12">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 md:mb-6">
+              <span style={{ color: "#111E2F" }}>Why Students </span>
+              <span
+                style={{ color: "#0E52AC" }}
+                className="relative inline-block"
+              >
+                Trust Us
+                <svg
+                  className="absolute -bottom-1 left-0 w-full"
+                  height="8"
+                  viewBox="0 0 200 8"
+                  fill="none"
+                >
+                  <path
+                    d="M2 6C66 2 133 2 198 6"
+                    stroke="#0E52AC"
+                    strokeWidth="3"
+                    strokeLinecap="round"
+                  />
+                </svg>
+              </span>
             </h2>
-            <p className="text-xl text-gray-600 dark:text-gray-400">
-              Comprehensive tools and expert support to help you excel in your
-              studies
+            <p
+              className="text-sm md:text-base lg:text-lg max-w-4xl mx-auto"
+              style={{ color: "#284366" }}
+            >
+              We built{" "}
+              <span style={{ color: "#0E52AC" }} className="font-semibold">
+                Assignment Ghar
+              </span>{" "}
+              for students who deserve stress-free academic support, not another
+              automated service.
+              <br className="hidden sm:block" />
+              Our system is designed for real connection and real results.
             </p>
           </div>
 
           {/* Features Grid */}
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[
-              {
-                icon: MessageSquare,
-                title: "Real-Time Chat",
-                description:
-                  "Connect instantly with expert tutors through our advanced chat system",
-              },
-              {
-                icon: Brain,
-                title: "Expert Guidance",
-                description:
-                  "Get personalized help from qualified professionals in your field",
-              },
-              {
-                icon: Clock,
-                title: "24/7 Support",
-                description:
-                  "Round-the-clock assistance whenever you need help with assignments",
-              },
-              {
-                icon: Lock,
-                title: "Secure Platform",
-                description:
-                  "Your data and assignments are protected with end-to-end encryption",
-              },
-              {
-                icon: Target,
-                title: "Quality Guarantee",
-                description:
-                  "100% plagiarism-free work with unlimited revisions until you're satisfied",
-              },
-              {
-                icon: TrendingUp,
-                title: "Grade Improvement",
-                description:
-                  "Proven track record of helping students achieve higher grades",
-              },
-            ].map((feature, index) => (
-              <Card
-                key={index}
-                className="p-8 border border-gray-200 dark:border-gray-800 hover:border-blue-600 dark:hover:border-blue-600 transition-colors"
-              >
-                <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-900 mb-6">
-                  <feature.icon className="w-8 h-8 text-blue-600 dark:text-blue-400" />
-                </div>
-                <h3 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">
-                  {feature.title}
-                </h3>
-                <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-                  {feature.description}
-                </p>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Services Section */}
-      <section className="py-20 bg-gray-50 dark:bg-gray-900">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
-            <Badge className="bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400 text-sm px-4 py-1 border border-blue-200 dark:border-blue-900">
-              Our Services
-            </Badge>
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white">
-              Wide Range of Academic Services
-            </h2>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8 md:mb-12">
+            <FeatureCard
+              image="/Images/landing/1.png"
+              title="Chat System"
+              description="Real time chat between student and admin"
+            />
+            <FeatureCard
+              image="/Images/landing/2.png"
+              title="File Sharing"
+              description="File and image sharing inside chat window"
+            />
+            <FeatureCard
+              image="/Images/landing/3.png"
+              title="QR Payment"
+              description="QR payment visible in chat for easy scan-and-pay"
+            />
+            <FeatureCard
+              image="/Images/landing/4.png"
+              title="Consultancy Videos"
+              description="Free consultancy videos for students"
+            />
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {services.map((service) => (
-              <Card
-                key={service.title}
-                className="p-6 border border-gray-200 dark:border-gray-800 hover:border-blue-600 dark:hover:border-blue-600 transition-colors"
-              >
-                <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-900 mb-4">
-                  <BookOpen className="w-8 h-8 text-blue-600 dark:text-blue-400" />
-                </div>
-                <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">
-                  {service.title}
-                </h3>
-                <p className="text-gray-600 dark:text-gray-400 mb-4">
-                  {service.description}
-                </p>
-                <Link href="/submit">
-                  <Button
-                    variant="ghost"
-                    className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 p-0 h-auto font-medium"
+          {/* Testimonial Card */}
+          <div className="max-w-5xl mx-auto">
+            <div className="bg-white rounded-2xl shadow-lg p-6 md:p-8 lg:p-10">
+              <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 items-start lg:items-center">
+                <div className="flex-1">
+                  <p
+                    className="text-base md:text-lg mb-4"
+                    style={{ color: "#284366" }}
                   >
-                    Learn More
-                    <ArrowRight className="ml-2 w-4 h-4" />
-                  </Button>
-                </Link>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* How It Works Section */}
-      <section className="py-20 bg-white dark:bg-black border-t border-gray-200 dark:border-gray-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
-            <Badge className="bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400 text-sm px-4 py-1 border border-blue-200 dark:border-blue-900">
-              Simple Process
-            </Badge>
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white">
-              How It Works
-            </h2>
-            <p className="text-xl text-gray-600 dark:text-gray-400">
-              Get started in 3 easy steps
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            {[
-              {
-                step: "01",
-                title: "Submit Assignment",
-                description:
-                  "Upload your assignment details and requirements through our easy-to-use platform",
-                icon: FileCheck,
-              },
-              {
-                step: "02",
-                title: "Connect with Expert",
-                description:
-                  "Get matched with a qualified tutor who specializes in your subject area",
-                icon: Users,
-              },
-              {
-                step: "03",
-                title: "Receive Solution",
-                description:
-                  "Get your completed assignment with detailed explanations and on-time delivery",
-                icon: Award,
-              },
-            ].map((step, index) => (
-              <div key={index} className="relative">
-                <div className="bg-white dark:bg-gray-900 rounded-lg p-8 border border-gray-200 dark:border-gray-800">
-                  {/* Step Number */}
-                  <div className="text-5xl font-bold text-gray-200 dark:text-gray-800 mb-4">
-                    {step.step}
-                  </div>
-
-                  {/* Icon */}
-                  <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-900 mb-6">
-                    <step.icon className="w-8 h-8 text-blue-600 dark:text-blue-400" />
-                  </div>
-
-                  {/* Content */}
-                  <h3 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">
-                    {step.title}
-                  </h3>
-                  <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-                    {step.description}
+                    &quot;I was struggling with my IT assignment while abroad.
+                    Assignment Ghar helped me understand the topic, not just
+                    finish it.&quot;
                   </p>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div className="text-center mt-12">
-            <Link href="/submit">
-              <Button
-                size="lg"
-                className="bg-blue-600 hover:bg-blue-700 text-white h-12 px-8"
-              >
-                Get Started Now
-                <ArrowRight className="ml-2 w-5 h-5" />
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonials Section */}
-      <section className="py-20 bg-gray-50 dark:bg-gray-900">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
-            <Badge className="bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400 text-sm px-4 py-1 border border-blue-200 dark:border-blue-900">
-              Testimonials
-            </Badge>
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white">
-              What Students Say
-            </h2>
-            <p className="text-xl text-gray-600 dark:text-gray-400">
-              Real feedback from students who achieved success with our help
-            </p>
-          </div>
-
-          {/* Featured Testimonial */}
-          <div className="relative max-w-4xl mx-auto mb-12">
-            <Card className="p-8 md:p-12 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
-              <div className="flex flex-col md:flex-row items-center gap-8">
-                <div className="flex-shrink-0">
-                  <div className="w-24 h-24 bg-blue-600 rounded-full flex items-center justify-center text-white text-3xl font-bold">
-                    {testimonials[activeTestimonial]?.initials || "S"}
+                  <div className="flex items-center gap-3">
+                    <span className="text-sm" style={{ color: "#94A3B8" }}>
+                      Student from Canada
+                    </span>
+                    <div
+                      className="flex items-center gap-1 px-3 py-1 rounded-full"
+                      style={{ backgroundColor: "#FEF3C7" }}
+                    >
+                      <span className="text-sm">⭐</span>
+                      <span
+                        className="text-sm font-semibold"
+                        style={{ color: "#92400E" }}
+                      >
+                        5.0
+                      </span>
+                    </div>
                   </div>
                 </div>
-                <div className="flex-1 text-center md:text-left">
-                  <div className="flex items-center justify-center md:justify-start gap-1 mb-4">
-                    {Array.from({ length: 5 }).map((_, i) => (
-                      <Star
-                        key={i}
-                        className="w-6 h-6 fill-blue-600 text-blue-600"
+                <div className="flex items-center gap-4 lg:border-l lg:border-gray-200 lg:pl-8">
+                  <div
+                    className="w-12 h-12 rounded-full flex items-center justify-center"
+                    style={{ backgroundColor: "#D1FAE5" }}
+                  >
+                    <svg
+                      className="w-7 h-7"
+                      style={{ color: "#059669" }}
+                      viewBox="0 0 24 24"
+                      fill="none"
+                    >
+                      <path
+                        d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                       />
-                    ))}
+                    </svg>
                   </div>
-                  <p className="text-xl md:text-2xl text-gray-700 dark:text-gray-300 mb-4">
-                    "{testimonials[activeTestimonial]?.text}"
-                  </p>
                   <div>
-                    <p className="font-bold text-gray-900 dark:text-white text-lg">
-                      {testimonials[activeTestimonial]?.initials}
-                    </p>
-                    <p className="text-gray-600 dark:text-gray-400">
-                      {testimonials[activeTestimonial]?.course}
-                    </p>
+                    <div
+                      className="font-semibold text-base md:text-lg"
+                      style={{ color: "#111E2F" }}
+                    >
+                      Trusted & Transparent
+                    </div>
+                    <div className="text-sm" style={{ color: "#94A3B8" }}>
+                      Public Testimonial
+                    </div>
                   </div>
                 </div>
               </div>
-            </Card>
-
-            {/* Navigation dots */}
-            <div className="flex items-center justify-center gap-2 mt-6">
-              {testimonials.map((_, index) => (
-                <button
-                  key={index}
-                  onClick={() => setActiveTestimonial(index)}
-                  className={`h-2 rounded-full transition-all ${
-                    index === activeTestimonial
-                      ? "w-8 bg-blue-600"
-                      : "w-2 bg-gray-300 dark:bg-gray-600"
-                  }`}
-                  aria-label={`View testimonial ${index + 1}`}
-                />
-              ))}
             </div>
           </div>
+        </div>
+      </div>
 
-          {/* Testimonial Grid */}
-          <div className="grid md:grid-cols-3 gap-6">
-            {testimonials.slice(0, 3).map((testimonial, index) => (
-              <Card
-                key={index}
-                className="p-6 border border-gray-200 dark:border-gray-800"
+      {/* Our Areas of Expertise Section */}
+      <div
+        className="py-12 md:py-16 lg:py-20"
+        style={{ backgroundColor: "#F8FBFF" }}
+      >
+        <div className="container mx-auto px-4">
+          {/* Section Header */}
+          <div className="text-center mb-8 md:mb-12">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 md:mb-6">
+              <span style={{ color: "#111E2F" }}>Our Areas of </span>
+              <span
+                style={{ color: "#0E52AC" }}
+                className="relative inline-block"
               >
-                <div className="flex items-center justify-between mb-4">
-                  <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold">
-                    {testimonial.initials}
-                  </div>
-                  <div className="flex gap-1">
-                    {Array.from({ length: testimonial.rating }).map((_, i) => (
-                      <Star
-                        key={i}
-                        className="w-4 h-4 fill-blue-600 text-blue-600"
-                      />
-                    ))}
-                  </div>
+                Expertise
+                <svg
+                  className="absolute -bottom-1 left-0 w-full"
+                  height="8"
+                  viewBox="0 0 250 8"
+                  fill="none"
+                >
+                  <path
+                    d="M2 6C83 2 166 2 248 6"
+                    stroke="#0E52AC"
+                    strokeWidth="3"
+                    strokeLinecap="round"
+                  />
+                </svg>
+              </span>
+            </h2>
+            <p
+              className="text-sm md:text-base lg:text-lg max-w-5xl mx-auto leading-relaxed"
+              style={{ color: "#284366" }}
+            >
+              We help students across diverse academic backgrounds achieve
+              excellence through expert guidance, subject-focused insights, and
+              personalized support. Each subject area is handled by experts who
+              understand global university standards, ensuring accuracy,
+              originality and academic integrity in every submission.
+            </p>
+          </div>
+
+          {/* Expertise Grid */}
+          <div className="grid md:grid-cols-2 gap-6 md:gap-8 lg:gap-12 max-w-7xl mx-auto">
+            <ExpertiseCardVertical
+              image="https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=400&h=300&fit=crop"
+              title="IT & Computer Science"
+              description="Coding help, software development, system design, and technical report writing tailored to university standards."
+            />
+            <ExpertiseCardVertical
+              image="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=300&fit=crop"
+              title="Business & Management"
+              description="Professional support for reports, case studies, and research assignments with real-world context."
+            />
+            <ExpertiseCardVertical
+              image="https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=400&h=300&fit=crop"
+              title="Finance & Accounting"
+              description="Step-by-step assistance for financial analysis, problem-solving, and accounting coursework."
+            />
+            <ExpertiseCardVertical
+              image="https://images.unsplash.com/photo-1503220317375-aaad61436b1b?w=400&h=300&fit=crop"
+              title="Hospitality & Tourism"
+              description="Well-structured research papers, project reports, and essays aligned to global trends."
+            />
+            <ExpertiseCardVertical
+              image="https://images.unsplash.com/photo-1584820927498-cfe5211fd8bf?w=400&h=300&fit=crop"
+              title="Nursing & Healthcare"
+              description="Accurate care plans, reflective journals, and academic reports built on real-life medical context."
+            />
+            <ExpertiseCardVertical
+              image="https://images.unsplash.com/photo-1581094271901-8022df4466f9?w=400&h=300&fit=crop"
+              title="Engineering & Technology"
+              description="Comprehensive guidance for technical reports, design documentation, and project submissions."
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* What Makes Us Different Section */}
+      <div className="py-12 md:py-16 lg:py-20 bg-white">
+        <div className="container mx-auto px-4">
+          {/* Section Header */}
+          <div className="text-center mb-12 md:mb-16">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold">
+              <span style={{ color: "#111E2F" }}>What Makes Us </span>
+              <span
+                style={{ color: "#0E52AC" }}
+                className="relative inline-block"
+              >
+                Different
+                <svg
+                  className="absolute -bottom-1 left-0 w-full"
+                  height="8"
+                  viewBox="0 0 250 8"
+                  fill="none"
+                >
+                  <path
+                    d="M2 6C83 2 166 2 248 6"
+                    stroke="#0E52AC"
+                    strokeWidth="3"
+                    strokeLinecap="round"
+                  />
+                </svg>
+              </span>
+            </h2>
+          </div>
+
+          {/* Content Grid */}
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center max-w-6xl mx-auto">
+            {/* Left Side - Decorative Pattern */}
+            <div className="hidden lg:flex justify-center items-center">
+              <div className="relative w-full max-w-md">
+                {/* Dot Pattern */}
+                <div className="grid grid-cols-6 gap-4">
+                  {[...Array(36)].map((_, i) => (
+                    <div
+                      key={i}
+                      className="rounded-full transition-all duration-300 hover:scale-150"
+                      style={{
+                        width:
+                          i % 6 >= 2 &&
+                          i % 6 <= 3 &&
+                          Math.floor(i / 6) >= 2 &&
+                          Math.floor(i / 6) <= 3
+                            ? "20px"
+                            : "12px",
+                        height:
+                          i % 6 >= 2 &&
+                          i % 6 <= 3 &&
+                          Math.floor(i / 6) >= 2 &&
+                          Math.floor(i / 6) <= 3
+                            ? "20px"
+                            : "12px",
+                        backgroundColor:
+                          i % 6 >= 2 &&
+                          i % 6 <= 3 &&
+                          Math.floor(i / 6) >= 2 &&
+                          Math.floor(i / 6) <= 3
+                            ? "#0E52AC"
+                            : "#E0EDFD",
+                        opacity:
+                          i % 6 >= 2 &&
+                          i % 6 <= 3 &&
+                          Math.floor(i / 6) >= 2 &&
+                          Math.floor(i / 6) <= 3
+                            ? 1
+                            : 0.5,
+                      }}
+                    ></div>
+                  ))}
                 </div>
-                <p className="text-gray-700 dark:text-gray-300 mb-4">
-                  "{testimonial.text}"
-                </p>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  {testimonial.course}
-                </p>
-              </Card>
-            ))}
-          </div>
-
-          <div className="text-center mt-12">
-            <Link href="/testimonials">
-              <Button
-                variant="outline"
-                size="lg"
-                className="border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
-              >
-                View All Testimonials
-                <ArrowRight className="ml-2 w-4 h-4" />
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="relative py-20 bg-blue-600 text-white border-t border-blue-700">
-        <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-4xl md:text-5xl font-bold mb-6">
-            Ready to Excel in Your Studies?
-          </h2>
-          <p className="text-xl mb-8 text-blue-100 max-w-3xl mx-auto">
-            Join thousands of students who have improved their grades and
-            achieved academic success with our expert help.
-          </p>
-
-          {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-            <Link href="/register">
-              <Button
-                size="lg"
-                className="bg-white text-blue-600 hover:bg-gray-100 h-14 px-8 text-lg font-medium"
-              >
-                Get Started Free
-                <ArrowRight className="ml-2 w-5 h-5" />
-              </Button>
-            </Link>
-            <Link href="/chat">
-              <Button
-                variant="outline"
-                size="lg"
-                className="border-2 border-white text-white hover:bg-blue-700 h-14 px-8 text-lg"
-              >
-                <MessageSquare className="mr-2 w-5 h-5" />
-                Start Chat Now
-              </Button>
-            </Link>
-          </div>
-
-          {/* Trust indicators */}
-          <div className="flex flex-wrap items-center justify-center gap-8 pt-8 border-t border-blue-500">
-            {[
-              "✓ 100% Plagiarism-Free",
-              "✓ 24/7 Support",
-              "✓ Money-Back Guarantee",
-              "✓ Confidential & Secure",
-            ].map((item, index) => (
-              <div key={index} className="text-blue-100 font-medium">
-                {item}
+                {/* Central Card */}
+                <div
+                  className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-2xl shadow-2xl p-8"
+                  style={{
+                    backgroundColor: "#0E52AC",
+                    width: "200px",
+                    height: "140px",
+                  }}
+                ></div>
               </div>
-            ))}
+            </div>
+
+            {/* Right Side - Features List */}
+            <div className="space-y-6 md:space-y-8">
+              <DifferenceItem
+                title="Global Student Support"
+                description="Whether you study in Australia, the UK, Canada, or the UAE, we tailor our help to your university's format and grading style."
+              />
+              <DifferenceItem
+                title="Plagiarism-Free Guidance"
+                description="Every assignment is crafted uniquely to maintain academic integrity."
+              />
+              <DifferenceItem
+                title="Fast Turnaround"
+                description="We work around your schedule, urgent help available."
+              />
+              <DifferenceItem
+                title="Affordable & Transparent"
+                description="No hidden charges, no confusion, just clear, student-friendly pricing."
+              />
+              <DifferenceItem
+                title="Expert Consultants"
+                description="Our team includes qualified tutors, industry professionals, and academic writers who care about your success."
+              />
+            </div>
           </div>
         </div>
-      </section>
+      </div>
+
+      {/* Our Student Experiences Section */}
+      <div
+        className="py-12 md:py-16 lg:py-20"
+        style={{ backgroundColor: "#F8FBFF" }}
+      >
+        <div className="container mx-auto px-4">
+          {/* Section Header */}
+          <div className="text-center mb-12 md:mb-16">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold">
+              <span style={{ color: "#111E2F" }}>Our Student </span>
+              <span
+                style={{ color: "#0E52AC" }}
+                className="relative inline-block"
+              >
+                Experiences
+                <svg
+                  className="absolute -bottom-1 left-0 w-full"
+                  height="8"
+                  viewBox="0 0 300 8"
+                  fill="none"
+                >
+                  <path
+                    d="M2 6C100 2 200 2 298 6"
+                    stroke="#0E52AC"
+                    strokeWidth="3"
+                    strokeLinecap="round"
+                  />
+                </svg>
+              </span>
+            </h2>
+          </div>
+
+          {/* Testimonials Carousel */}
+          <div className="relative max-w-7xl mx-auto">
+            <div
+              className="rounded-3xl p-8 md:p-12 lg:p-16"
+              style={{ backgroundColor: "#E8F2FD" }}
+            >
+              <div className="grid md:grid-cols-3 gap-6 md:gap-8 mb-8">
+                <TestimonialCard
+                  quote="Assignment Ghar became my academic home I could chat, upload, and get help in one place - it felt personal."
+                  name="John Doe"
+                  location="Australia"
+                  rating={5}
+                />
+                <TestimonialCard
+                  quote="Their consultant explained my entire finance case study in plain language. I actually learned while completing my assignment."
+                  name="Sara Lee"
+                  location="UAE"
+                  rating={5}
+                />
+                <TestimonialCard
+                  quote="Affordable, responsive, and trustworthy - I couldn't ask for more."
+                  name="Anonymous"
+                  location="UK"
+                  rating={5}
+                />
+              </div>
+
+              {/* Carousel Dots */}
+              <div className="flex justify-center items-center gap-2">
+                <button
+                  className="w-2 h-2 rounded-full transition-all"
+                  style={{ backgroundColor: "#CBD5E1" }}
+                ></button>
+                <button
+                  className="w-3 h-3 rounded-full transition-all ring-2 ring-offset-2 ring-blue-600"
+                  style={{ backgroundColor: "#0E52AC" }}
+                ></button>
+                <button
+                  className="w-2 h-2 rounded-full transition-all"
+                  style={{ backgroundColor: "#CBD5E1" }}
+                ></button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* CTA Section - Start Your Journey */}
+      <div className="py-12 md:py-16 lg:py-20 bg-white">
+        <div className="container mx-auto px-4">
+          <div
+            className="relative max-w-6xl mx-auto rounded-3xl overflow-hidden"
+            style={{ backgroundColor: "#4A9FF5" }}
+          >
+            <div className="grid lg:grid-cols-2 items-center">
+              {/* Left Content */}
+              <div className="p-8 md:p-12 lg:p-16 text-white">
+                <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 md:mb-6 leading-tight">
+                  Start Your Journey with Assignment Ghar
+                </h2>
+                <p className="text-sm md:text-base lg:text-lg mb-6 md:mb-8 opacity-95 leading-relaxed">
+                  Your success deserves the right support. With instant chat,
+                  secure payments, and expert academic guidance, we make
+                  assignment help personal, transparent, and effective.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-3 md:gap-4">
+                  <Link href="/chat">
+                    <button
+                      className="w-full sm:w-auto px-6 md:px-8 py-3 md:py-3.5 rounded-lg font-semibold bg-white text-sm md:text-base transition-all hover:shadow-xl"
+                      style={{ color: "#0E52AC" }}
+                    >
+                      Start Chat Now
+                    </button>
+                  </Link>
+                  <Link href="/submit">
+                    <button className="w-full sm:w-auto px-6 md:px-8 py-3 md:py-3.5 rounded-lg font-semibold text-white text-sm md:text-base border-2 border-white transition-all hover:bg-white/10">
+                      Submit your Assignment
+                    </button>
+                  </Link>
+                </div>
+              </div>
+
+              {/* Right Image */}
+              <div className="relative h-full hidden lg:block overflow-hidden">
+                <Image
+                  src="/Images/landing/women_with_laptop.png"
+                  alt="Professional woman with laptop"
+                  width={600}
+                  height={500}
+                  className="absolute right-0 bottom-0 h-full w-auto object-cover object-left"
+                  style={{ maxHeight: "500px" }}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Background decorative elements */}
+      <div
+        className="fixed top-0 right-0 w-64 md:w-96 h-64 md:h-96 rounded-full blur-3xl opacity-5 pointer-events-none"
+        style={{ backgroundColor: "#E0EDFD" }}
+      ></div>
+      <div
+        className="fixed bottom-0 left-0 w-64 md:w-96 h-64 md:h-96 rounded-full blur-3xl opacity-5 pointer-events-none"
+        style={{ backgroundColor: "#E0EDFD" }}
+      ></div>
     </div>
   );
 }
+
+// Component Definitions
+
+interface FeatureItemProps {
+  text: string;
+}
+
+const FeatureItem: React.FC<FeatureItemProps> = ({ text }) => {
+  return (
+    <div className="flex gap-3 md:gap-4">
+      <div className="flex-shrink-0 mt-1">
+        <div
+          className="w-5 h-5 md:w-6 md:h-6 rounded-full flex items-center justify-center"
+          style={{ backgroundColor: "#0E52AC" }}
+        >
+          <Check className="w-3 h-3 md:w-4 md:h-4 text-white" strokeWidth={3} />
+        </div>
+      </div>
+      <p
+        className="text-sm md:text-base lg:text-lg"
+        style={{ color: "#284366" }}
+      >
+        {text}
+      </p>
+    </div>
+  );
+};
+
+interface FeatureCardProps {
+  image: string;
+  title: string;
+  description: string;
+}
+
+const FeatureCard: React.FC<FeatureCardProps> = ({
+  image,
+  title,
+  description,
+}) => {
+  return (
+    <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300">
+      <div className="relative h-48 md:h-56 overflow-hidden">
+        <Image src={image} alt={title} fill className="object-cover" />
+      </div>
+      <div className="p-6 md:p-8 text-center">
+        <h3
+          className="text-lg md:text-xl font-bold mb-2"
+          style={{ color: "#111E2F" }}
+        >
+          {title}
+        </h3>
+        <p className="text-sm md:text-base" style={{ color: "#284366" }}>
+          {description}
+        </p>
+      </div>
+    </div>
+  );
+};
+
+interface ExpertiseCardProps {
+  image: string;
+  title: string;
+  description: string;
+}
+
+const ExpertiseCardVertical: React.FC<ExpertiseCardProps> = ({
+  image,
+  title,
+  description,
+}) => {
+  return (
+    <div className="group">
+      <div className="relative h-56 md:h-64 rounded-2xl overflow-hidden shadow-md group-hover:shadow-xl transition-all duration-300">
+        <Image src={image} alt={title} fill className="object-cover" />
+      </div>
+      <div className="mt-4 md:mt-6">
+        <h3
+          className="text-lg md:text-xl font-bold mb-2 md:mb-3"
+          style={{ color: "#111E2F" }}
+        >
+          {title}
+        </h3>
+        <p
+          className="text-sm md:text-base mb-4 md:mb-5"
+          style={{ color: "#284366" }}
+        >
+          {description}
+        </p>
+        <button
+          className="flex items-center gap-2 px-6 py-2.5 rounded-full font-semibold text-white text-sm transition-all hover:opacity-90 hover:gap-3"
+          style={{ backgroundColor: "#111E2F" }}
+        >
+          Learn More
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 16 16"
+            fill="none"
+            className="transition-transform"
+          >
+            <path
+              d="M6 3L11 8L6 13"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </button>
+      </div>
+    </div>
+  );
+};
+
+interface DifferenceItemProps {
+  title: string;
+  description: string;
+}
+
+const DifferenceItem: React.FC<DifferenceItemProps> = ({
+  title,
+  description,
+}) => {
+  return (
+    <div className="flex gap-4">
+      <div className="flex-shrink-0 mt-1">
+        <div
+          className="w-6 h-6 rounded-full flex items-center justify-center"
+          style={{ backgroundColor: "#0E52AC" }}
+        >
+          <Check className="w-4 h-4 text-white" strokeWidth={3} />
+        </div>
+      </div>
+      <div>
+        <h3
+          className="text-lg md:text-xl font-bold mb-2"
+          style={{ color: "#111E2F" }}
+        >
+          {title}
+        </h3>
+        <p className="text-sm md:text-base" style={{ color: "#284366" }}>
+          {description}
+        </p>
+      </div>
+    </div>
+  );
+};
+
+interface TestimonialCardProps {
+  quote: string;
+  name: string;
+  location: string;
+  rating: number;
+}
+
+const TestimonialCard: React.FC<TestimonialCardProps> = ({
+  quote,
+  name,
+  location,
+  rating,
+}) => {
+  return (
+    <div className="bg-white rounded-2xl p-6 md:p-8 shadow-md hover:shadow-xl transition-shadow duration-300">
+      <div className="mb-6">
+        <svg
+          width="32"
+          height="32"
+          viewBox="0 0 32 32"
+          fill="none"
+          className="mb-4"
+        >
+          <path
+            d="M10 18C10 15.7909 8.20914 14 6 14V12C9.31371 12 12 9.31371 12 6H14C14 10.4183 10.4183 14 6 14C8.20914 14 10 15.7909 10 18ZM24 18C24 15.7909 22.2091 14 20 14V12C23.3137 12 26 9.31371 26 6H28C28 10.4183 24.4183 14 20 14C22.2091 14 24 15.7909 24 18Z"
+            fill="#111E2F"
+          />
+        </svg>
+        <p
+          className="text-sm md:text-base leading-relaxed"
+          style={{ color: "#284366" }}
+        >
+          {quote}
+        </p>
+      </div>
+      <div className="flex items-center justify-between">
+        <div>
+          <div
+            className="font-semibold text-base md:text-lg"
+            style={{ color: "#111E2F" }}
+          >
+            {name}
+          </div>
+          <div className="text-xs md:text-sm" style={{ color: "#94A3B8" }}>
+            {location}
+          </div>
+        </div>
+        <div className="flex gap-0.5">
+          {[...Array(rating)].map((_, i) => (
+            <span key={i} className="text-yellow-400 text-lg">
+              ⭐
+            </span>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};

@@ -2,11 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import {
   Mail,
@@ -19,13 +14,16 @@ import {
   ArrowLeft,
   Check,
   AlertCircle,
+  Moon,
+  Sun,
 } from "lucide-react";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import Link from "next/link";
 
 export default function RecoverPage() {
   const router = useRouter();
   const { toast } = useToast();
 
+  const [isDark, setIsDark] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [step, setStep] = useState<"email" | "verify" | "reset">("email");
   const [email, setEmail] = useState("");
@@ -35,6 +33,14 @@ export default function RecoverPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [resendTimer, setResendTimer] = useState(0);
+
+  const themeColors = {
+    primary: "#0E52AC",
+    text1: isDark ? "#FFFFFF" : "#111E2F",
+    text2: isDark ? "#CBD5E1" : "#284366",
+    bg1: isDark ? "#0F172A" : "#E0EDFD",
+    bg2: isDark ? "#1E293B" : "#FFFFFF",
+  };
 
   useEffect(() => {
     if (resendTimer > 0) {
@@ -193,27 +199,66 @@ export default function RecoverPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-black">
+    <div
+      className="min-h-screen"
+      style={{ backgroundColor: isDark ? "#0A0F1E" : "#F8FBFF" }}
+    >
       <div className="container mx-auto px-4 py-8">
+        {/* Theme Toggle Button */}
+        <div className="fixed top-6 right-6 z-50">
+          <button
+            onClick={() => setIsDark(!isDark)}
+            className="p-3 rounded-full shadow-lg transition-all hover:scale-110"
+            style={{
+              backgroundColor: themeColors.bg2,
+              color: themeColors.text1,
+            }}
+          >
+            {isDark ? (
+              <Sun className="w-5 h-5" />
+            ) : (
+              <Moon className="w-5 h-5" />
+            )}
+          </button>
+        </div>
+
         <div className="min-h-screen flex items-center justify-center">
           <div className="w-full max-w-md">
-            <div className="bg-white dark:bg-gray-950 rounded-2xl border border-gray-200 dark:border-gray-800 p-8 shadow-sm">
-              {/* Logo - Mobile Centered */}
-              <div className="mb-8 text-center">
-                <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-                  Assignment Hub
+            <div
+              className="rounded-2xl border p-6 md:p-8 shadow-xl"
+              style={{
+                backgroundColor: themeColors.bg2,
+                borderColor: isDark ? "#334155" : "#E0EDFD",
+              }}
+            >
+              {/* Logo */}
+              <div className="mb-6 md:mb-8 text-center">
+                <h1
+                  className="text-xl md:text-2xl font-bold mb-2"
+                  style={{ color: themeColors.text1 }}
+                >
+                  Assignment Ghar
                 </h1>
-                <div className="h-1 bg-blue-600 rounded-full w-16 mx-auto"></div>
+                <div
+                  className="h-1 rounded-full w-16 mx-auto"
+                  style={{ backgroundColor: themeColors.primary }}
+                ></div>
               </div>
 
               {/* Header */}
-              <div className="mb-8">
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+              <div className="mb-6 md:mb-8">
+                <h2
+                  className="text-xl md:text-2xl font-bold mb-2"
+                  style={{ color: themeColors.text1 }}
+                >
                   {step === "email" && "Recover Password"}
                   {step === "verify" && "Verify Code"}
                   {step === "reset" && "Reset Password"}
                 </h2>
-                <p className="text-gray-600 dark:text-gray-400">
+                <p
+                  className="text-sm md:text-base"
+                  style={{ color: themeColors.text2 }}
+                >
                   {step === "email" &&
                     "Enter your email to receive a reset code"}
                   {step === "verify" && "Enter the code sent to your email"}
@@ -224,7 +269,10 @@ export default function RecoverPage() {
               {/* Step Indicator */}
               <div className="mb-6">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  <span
+                    className="text-xs md:text-sm font-medium"
+                    style={{ color: themeColors.text1 }}
+                  >
                     Step{" "}
                     {step === "email" ? "1" : step === "verify" ? "2" : "3"} of
                     3
@@ -232,25 +280,39 @@ export default function RecoverPage() {
                 </div>
                 <div className="flex gap-2">
                   <div
-                    className={`h-1.5 flex-1 rounded-full transition-all ${
-                      step === "email" || step === "verify" || step === "reset"
-                        ? "bg-blue-600"
-                        : "bg-gray-300 dark:bg-gray-700"
-                    }`}
+                    className="h-1.5 flex-1 rounded-full transition-all"
+                    style={{
+                      backgroundColor:
+                        step === "email" ||
+                        step === "verify" ||
+                        step === "reset"
+                          ? themeColors.primary
+                          : isDark
+                          ? "#475569"
+                          : "#CBD5E1",
+                    }}
                   ></div>
                   <div
-                    className={`h-1.5 flex-1 rounded-full transition-all ${
-                      step === "verify" || step === "reset"
-                        ? "bg-blue-600"
-                        : "bg-gray-300 dark:bg-gray-700"
-                    }`}
+                    className="h-1.5 flex-1 rounded-full transition-all"
+                    style={{
+                      backgroundColor:
+                        step === "verify" || step === "reset"
+                          ? themeColors.primary
+                          : isDark
+                          ? "#475569"
+                          : "#CBD5E1",
+                    }}
                   ></div>
                   <div
-                    className={`h-1.5 flex-1 rounded-full transition-all ${
-                      step === "reset"
-                        ? "bg-blue-600"
-                        : "bg-gray-300 dark:bg-gray-700"
-                    }`}
+                    className="h-1.5 flex-1 rounded-full transition-all"
+                    style={{
+                      backgroundColor:
+                        step === "reset"
+                          ? themeColors.primary
+                          : isDark
+                          ? "#475569"
+                          : "#CBD5E1",
+                    }}
                   ></div>
                 </div>
               </div>
@@ -259,45 +321,64 @@ export default function RecoverPage() {
               {step === "email" && (
                 <form onSubmit={handleSendOTP} className="space-y-5">
                   <div className="space-y-2">
-                    <Label
+                    <label
                       htmlFor="email"
-                      className="text-sm font-medium text-gray-900 dark:text-white"
+                      className="text-sm font-medium block"
+                      style={{ color: themeColors.text1 }}
                     >
                       Email Address
-                    </Label>
+                    </label>
                     <div className="relative">
-                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-                      <Input
+                      <Mail
+                        className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5"
+                        style={{ color: themeColors.text2 }}
+                      />
+                      <input
                         id="email"
                         type="email"
                         placeholder="Enter your email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        className="pl-10 h-11 bg-gray-50 dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white placeholder:text-gray-500 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
+                        className="w-full pl-10 pr-4 h-11 rounded-lg border outline-none transition-all"
+                        style={{
+                          backgroundColor: isDark ? "#1E293B" : "#F8FBFF",
+                          borderColor: isDark ? "#475569" : "#CBD5E1",
+                          color: themeColors.text1,
+                        }}
+                        onFocus={(e) =>
+                          (e.target.style.borderColor = themeColors.primary)
+                        }
+                        onBlur={(e) =>
+                          (e.target.style.borderColor = isDark
+                            ? "#475569"
+                            : "#CBD5E1")
+                        }
                         required
                       />
                     </div>
                   </div>
 
-                  <Button
+                  <button
                     type="submit"
                     disabled={isLoading}
-                    className="w-full h-11 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    className="w-full h-11 text-white font-semibold rounded-lg transition-all hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
+                    style={{ backgroundColor: themeColors.primary }}
                   >
                     {isLoading ? (
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center justify-center gap-2">
                         <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
                         Sending...
                       </div>
                     ) : (
                       "Send Reset Code"
                     )}
-                  </Button>
+                  </button>
 
                   <div className="text-center pt-4">
                     <Link
                       href="/login"
-                      className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-500 dark:hover:text-blue-400 font-medium inline-flex items-center gap-1"
+                      className="text-sm font-medium inline-flex items-center gap-1 hover:opacity-80 transition-opacity"
+                      style={{ color: themeColors.primary }}
                     >
                       <ArrowLeft className="h-4 w-4" />
                       Back to Login
@@ -310,26 +391,38 @@ export default function RecoverPage() {
               {step === "verify" && (
                 <form onSubmit={handleVerifyOTP} className="space-y-6">
                   <div className="text-center space-y-3 mb-6">
-                    <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-100 dark:bg-blue-950 rounded-full">
-                      <ShieldCheck className="w-8 h-8 text-blue-600" />
+                    <div
+                      className="inline-flex items-center justify-center w-16 h-16 rounded-full"
+                      style={{
+                        backgroundColor: isDark ? "#1E3A8A" : "#DBEAFE",
+                      }}
+                    >
+                      <ShieldCheck
+                        className="w-8 h-8"
+                        style={{ color: themeColors.primary }}
+                      />
                     </div>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                    <p className="text-sm" style={{ color: themeColors.text2 }}>
                       Reset code sent to
                       <br />
-                      <span className="font-semibold text-gray-900 dark:text-white">
+                      <span
+                        className="font-semibold"
+                        style={{ color: themeColors.text1 }}
+                      >
                         {email}
                       </span>
                     </p>
                   </div>
 
                   <div className="space-y-2">
-                    <Label
+                    <label
                       htmlFor="otp"
-                      className="text-sm font-medium text-gray-900 dark:text-white"
+                      className="text-sm font-medium block"
+                      style={{ color: themeColors.text1 }}
                     >
                       Reset Code
-                    </Label>
-                    <Input
+                    </label>
+                    <input
                       id="otp"
                       type="text"
                       placeholder="000000"
@@ -337,50 +430,67 @@ export default function RecoverPage() {
                       onChange={(e) =>
                         setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))
                       }
-                      className="h-14 text-center text-2xl font-bold tracking-widest bg-gray-50 dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
+                      className="w-full h-14 text-center text-2xl font-bold tracking-widest rounded-lg border outline-none transition-all"
+                      style={{
+                        backgroundColor: isDark ? "#1E293B" : "#F8FBFF",
+                        borderColor: isDark ? "#475569" : "#CBD5E1",
+                        color: themeColors.text1,
+                      }}
+                      onFocus={(e) =>
+                        (e.target.style.borderColor = themeColors.primary)
+                      }
+                      onBlur={(e) =>
+                        (e.target.style.borderColor = isDark
+                          ? "#475569"
+                          : "#CBD5E1")
+                      }
                       required
                       maxLength={6}
                     />
-                    <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
+                    <p
+                      className="text-xs text-center"
+                      style={{ color: themeColors.text2 }}
+                    >
                       Code expires in 10 minutes
                     </p>
                   </div>
 
-                  <Button
+                  <button
                     type="submit"
                     disabled={isLoading || otp.length !== 6}
-                    className="w-full h-11 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full h-11 text-white font-semibold rounded-lg hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
+                    style={{ backgroundColor: themeColors.primary }}
                   >
                     {isLoading ? (
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center justify-center gap-2">
                         <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
                         Verifying...
                       </div>
                     ) : (
                       "Verify Code"
                     )}
-                  </Button>
+                  </button>
 
                   <div className="text-center space-y-3">
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                    <p className="text-sm" style={{ color: themeColors.text2 }}>
                       Didn't receive the code?
                     </p>
-                    <Button
+                    <button
                       type="button"
                       onClick={handleResendOTP}
                       disabled={resendTimer > 0 || isLoading}
-                      variant="ghost"
-                      className="text-blue-600 hover:text-blue-700 dark:text-blue-500 dark:hover:text-blue-400 font-medium disabled:opacity-50"
+                      className="font-medium disabled:opacity-50 hover:opacity-80 transition-opacity"
+                      style={{ color: themeColors.primary }}
                     >
                       {resendTimer > 0 ? (
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center justify-center gap-2">
                           <Clock className="w-4 h-4" />
                           Resend in {resendTimer}s
                         </div>
                       ) : (
                         "Resend Code"
                       )}
-                    </Button>
+                    </button>
                   </div>
 
                   <div className="text-center pt-2">
@@ -390,7 +500,8 @@ export default function RecoverPage() {
                         setStep("email");
                         setOtp("");
                       }}
-                      className="text-sm text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition-colors inline-flex items-center gap-1"
+                      className="text-sm hover:opacity-80 transition-opacity inline-flex items-center gap-1"
+                      style={{ color: themeColors.text2 }}
                     >
                       <ArrowLeft className="h-3 w-3" />
                       Change email address
@@ -403,34 +514,60 @@ export default function RecoverPage() {
               {step === "reset" && (
                 <form onSubmit={handleResetPassword} className="space-y-5">
                   <div className="text-center mb-6">
-                    <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-100 dark:bg-blue-950 rounded-full">
-                      <KeyRound className="w-8 h-8 text-blue-600" />
+                    <div
+                      className="inline-flex items-center justify-center w-16 h-16 rounded-full"
+                      style={{
+                        backgroundColor: isDark ? "#1E3A8A" : "#DBEAFE",
+                      }}
+                    >
+                      <KeyRound
+                        className="w-8 h-8"
+                        style={{ color: themeColors.primary }}
+                      />
                     </div>
                   </div>
 
                   <div className="space-y-2">
-                    <Label
+                    <label
                       htmlFor="newPassword"
-                      className="text-sm font-medium text-gray-900 dark:text-white"
+                      className="text-sm font-medium block"
+                      style={{ color: themeColors.text1 }}
                     >
                       New Password
-                    </Label>
+                    </label>
                     <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-                      <Input
+                      <Lock
+                        className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5"
+                        style={{ color: themeColors.text2 }}
+                      />
+                      <input
                         id="newPassword"
                         type={showPassword ? "text" : "password"}
                         placeholder="Enter new password"
                         value={newPassword}
                         onChange={(e) => setNewPassword(e.target.value)}
-                        className="pl-10 pr-10 h-11 bg-gray-50 dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white placeholder:text-gray-500 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
+                        className="w-full pl-10 pr-10 h-11 rounded-lg border outline-none transition-all"
+                        style={{
+                          backgroundColor: isDark ? "#1E293B" : "#F8FBFF",
+                          borderColor: isDark ? "#475569" : "#CBD5E1",
+                          color: themeColors.text1,
+                        }}
+                        onFocus={(e) =>
+                          (e.target.style.borderColor = themeColors.primary)
+                        }
+                        onBlur={(e) =>
+                          (e.target.style.borderColor = isDark
+                            ? "#475569"
+                            : "#CBD5E1")
+                        }
                         required
                         minLength={6}
                       />
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 transition-colors"
+                        style={{ color: themeColors.text2 }}
                       >
                         {showPassword ? (
                           <EyeOff className="h-5 w-5" />
@@ -439,33 +576,64 @@ export default function RecoverPage() {
                         )}
                       </button>
                     </div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                    <p className="text-xs" style={{ color: themeColors.text2 }}>
                       Must be at least 6 characters long
                     </p>
                   </div>
 
                   <div className="space-y-2">
-                    <Label
+                    <label
                       htmlFor="confirmPassword"
-                      className="text-sm font-medium text-gray-900 dark:text-white"
+                      className="text-sm font-medium block"
+                      style={{ color: themeColors.text1 }}
                     >
                       Confirm New Password
-                    </Label>
+                    </label>
                     <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-                      <Input
+                      <Lock
+                        className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5"
+                        style={{ color: themeColors.text2 }}
+                      />
+                      <input
                         id="confirmPassword"
                         type={showConfirmPassword ? "text" : "password"}
                         placeholder="Re-enter new password"
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
-                        className={`pl-10 pr-10 h-11 bg-gray-50 dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white placeholder:text-gray-500 focus:border-blue-600 focus:ring-1 focus:ring-blue-600 ${
-                          confirmPassword && newPassword !== confirmPassword
-                            ? "border-red-600"
-                            : confirmPassword && newPassword === confirmPassword
-                            ? "border-green-600"
-                            : ""
-                        }`}
+                        className="w-full pl-10 pr-10 h-11 rounded-lg border outline-none transition-all"
+                        style={{
+                          backgroundColor: isDark ? "#1E293B" : "#F8FBFF",
+                          borderColor:
+                            confirmPassword && newPassword !== confirmPassword
+                              ? "#DC2626"
+                              : confirmPassword &&
+                                newPassword === confirmPassword
+                              ? "#10B981"
+                              : isDark
+                              ? "#475569"
+                              : "#CBD5E1",
+                          color: themeColors.text1,
+                        }}
+                        onFocus={(e) =>
+                          (e.target.style.borderColor =
+                            confirmPassword && newPassword !== confirmPassword
+                              ? "#DC2626"
+                              : confirmPassword &&
+                                newPassword === confirmPassword
+                              ? "#10B981"
+                              : themeColors.primary)
+                        }
+                        onBlur={(e) =>
+                          (e.target.style.borderColor =
+                            confirmPassword && newPassword !== confirmPassword
+                              ? "#DC2626"
+                              : confirmPassword &&
+                                newPassword === confirmPassword
+                              ? "#10B981"
+                              : isDark
+                              ? "#475569"
+                              : "#CBD5E1")
+                        }
                         required
                       />
                       <button
@@ -473,7 +641,8 @@ export default function RecoverPage() {
                         onClick={() =>
                           setShowConfirmPassword(!showConfirmPassword)
                         }
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 transition-colors"
+                        style={{ color: themeColors.text2 }}
                       >
                         {showConfirmPassword ? (
                           <EyeOff className="h-5 w-5" />
@@ -496,24 +665,25 @@ export default function RecoverPage() {
                     )}
                   </div>
 
-                  <Button
+                  <button
                     type="submit"
                     disabled={
                       isLoading ||
                       newPassword !== confirmPassword ||
                       newPassword.length < 6
                     }
-                    className="w-full h-11 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full h-11 text-white font-semibold rounded-lg hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
+                    style={{ backgroundColor: themeColors.primary }}
                   >
                     {isLoading ? (
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center justify-center gap-2">
                         <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
                         Resetting...
                       </div>
                     ) : (
                       "Reset Password"
                     )}
-                  </Button>
+                  </button>
                 </form>
               )}
             </div>
