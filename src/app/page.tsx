@@ -3,20 +3,37 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Check } from "lucide-react";
-import React from "react";
+import { useTheme } from "@/hooks/use-theme";
 
 export default function Home() {
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
+
+  const themeColors = {
+    primary: "#0E52AC",
+    text1: isDark ? "#FFFFFF" : "#111E2F",
+    text2: isDark ? "#CBD5E1" : "#284366",
+    text3: "#94A3B8",
+    bg1: isDark ? "#0A0F1E" : "#FFFFFF",
+    bg2: isDark ? "#1E293B" : "#F8FBFF",
+    cardBg: isDark ? "#1E293B" : "#FFFFFF",
+    border: isDark ? "#475569" : "#E0EDFD",
+  };
+
   return (
-    <div className="min-h-screen bg-white">
+    <div
+      className="min-h-screen relative transition-colors"
+      style={{ backgroundColor: themeColors.bg1 }}
+    >
       {/* Hero Section */}
-      <div className="container mx-auto px-4 py-8 md:py-12 lg:py-16">
+      <div className="container mx-auto px-6 md:px-8 lg:px-12 py-8 md:py-12 lg:py-16">
         <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
           {/* Left Content */}
           <div className="space-y-6 md:space-y-8">
             {/* Brand Name */}
             <div
-              className="text-sm md:text-base font-medium"
-              style={{ color: "#284366" }}
+              className="text-sm md:text-base font-medium transition-colors"
+              style={{ color: themeColors.text2 }}
             >
               Assignment Ghar
             </div>
@@ -24,12 +41,12 @@ export default function Home() {
             {/* Main Heading */}
             <div className="space-y-2">
               <h1
-                className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight"
-                style={{ color: "#111E2F" }}
+                className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight transition-colors"
+                style={{ color: themeColors.text1 }}
               >
                 A{" "}
                 <span
-                  style={{ color: "#0E52AC" }}
+                  style={{ color: themeColors.primary }}
                   className="relative inline-block"
                 >
                   Trusted Partner
@@ -41,7 +58,7 @@ export default function Home() {
                   >
                     <path
                       d="M2 6C100 2 200 2 298 6"
-                      stroke="#0E52AC"
+                      stroke={themeColors.primary}
                       strokeWidth="3"
                       strokeLinecap="round"
                     />
@@ -49,14 +66,14 @@ export default function Home() {
                 </span>
               </h1>
               <h1
-                className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight"
-                style={{ color: "#111E2F" }}
+                className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight transition-colors"
+                style={{ color: themeColors.text1 }}
               >
                 for your Academic
               </h1>
               <h1 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight">
                 <span
-                  style={{ color: "#0E52AC" }}
+                  style={{ color: themeColors.primary }}
                   className="relative inline-block"
                 >
                   Success
@@ -68,7 +85,7 @@ export default function Home() {
                   >
                     <path
                       d="M2 6C66 2 133 2 198 6"
-                      stroke="#0E52AC"
+                      stroke={themeColors.primary}
                       strokeWidth="3"
                       strokeLinecap="round"
                     />
@@ -79,11 +96,20 @@ export default function Home() {
 
             {/* Features List */}
             <div className="space-y-4 md:space-y-5">
-              <FeatureItem text="Get quick and reliable help with your college or university assignments" />
+              <FeatureItem
+                text="Get quick and reliable help with your college or university assignments"
+                themeColors={themeColors}
+              />
 
-              <FeatureItem text="No matter where you study or how close your deadline is, we connect you directly with expert consultants who understand your subject and your struggles." />
+              <FeatureItem
+                text="No matter where you study or how close your deadline is, we connect you directly with expert consultants who understand your subject and your struggles."
+                themeColors={themeColors}
+              />
 
-              <FeatureItem text="Chat in real time, share your files securely, and receive personalized guidance that helps you complete your assignments with confidence and quality." />
+              <FeatureItem
+                text="Chat in real time, share your files securely, and receive personalized guidance that helps you complete your assignments with confidence and quality."
+                themeColors={themeColors}
+              />
             </div>
 
             {/* CTA Buttons */}
@@ -91,7 +117,7 @@ export default function Home() {
               <Link href="/chat">
                 <button
                   className="w-full sm:w-auto px-6 md:px-8 py-3 md:py-3.5 rounded-lg font-semibold text-white text-sm md:text-base transition-all hover:opacity-90 hover:shadow-lg"
-                  style={{ backgroundColor: "#0E52AC" }}
+                  style={{ backgroundColor: themeColors.primary }}
                 >
                   Start Chat Now
                 </button>
@@ -100,9 +126,9 @@ export default function Home() {
                 <button
                   className="w-full sm:w-auto px-6 md:px-8 py-3 md:py-3.5 rounded-lg font-semibold text-sm md:text-base border-2 transition-all hover:shadow-lg"
                   style={{
-                    color: "#0E52AC",
-                    borderColor: "#0E52AC",
-                    backgroundColor: "white",
+                    color: themeColors.primary,
+                    borderColor: themeColors.primary,
+                    backgroundColor: themeColors.bg1,
                   }}
                 >
                   Submit your Assignment
@@ -127,12 +153,12 @@ export default function Home() {
 
             {/* Decorative elements */}
             <div
-              className="hidden lg:block absolute -top-4 -right-4 w-24 h-24 rounded-full opacity-20"
-              style={{ backgroundColor: "#0E52AC" }}
+              className="hidden lg:block absolute -top-4 -right-4 w-24 h-24 rounded-full opacity-20 transition-colors"
+              style={{ backgroundColor: themeColors.primary }}
             ></div>
             <div
-              className="hidden lg:block absolute -bottom-4 -left-4 w-32 h-32 rounded-full opacity-10"
-              style={{ backgroundColor: "#0E52AC" }}
+              className="hidden lg:block absolute -bottom-4 -left-4 w-32 h-32 rounded-full opacity-10 transition-colors"
+              style={{ backgroundColor: themeColors.primary }}
             ></div>
           </div>
         </div>
@@ -140,16 +166,21 @@ export default function Home() {
 
       {/* Why Students Trust Us Section */}
       <div
-        className="py-12 md:py-16 lg:py-20"
-        style={{ backgroundColor: "#F8FBFF" }}
+        className="py-12 md:py-16 lg:py-20 transition-colors"
+        style={{ backgroundColor: themeColors.bg2 }}
       >
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-6 md:px-8 lg:px-12">
           {/* Section Header */}
           <div className="text-center mb-8 md:mb-12">
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 md:mb-6">
-              <span style={{ color: "#111E2F" }}>Why Students </span>
               <span
-                style={{ color: "#0E52AC" }}
+                style={{ color: themeColors.text1 }}
+                className="transition-colors"
+              >
+                Why Students{" "}
+              </span>
+              <span
+                style={{ color: themeColors.primary }}
                 className="relative inline-block"
               >
                 Trust Us
@@ -161,7 +192,7 @@ export default function Home() {
                 >
                   <path
                     d="M2 6C66 2 133 2 198 6"
-                    stroke="#0E52AC"
+                    stroke={themeColors.primary}
                     strokeWidth="3"
                     strokeLinecap="round"
                   />
@@ -169,11 +200,14 @@ export default function Home() {
               </span>
             </h2>
             <p
-              className="text-sm md:text-base lg:text-lg max-w-4xl mx-auto"
-              style={{ color: "#284366" }}
+              className="text-sm md:text-base lg:text-lg max-w-4xl mx-auto transition-colors"
+              style={{ color: themeColors.text2 }}
             >
               We built{" "}
-              <span style={{ color: "#0E52AC" }} className="font-semibold">
+              <span
+                style={{ color: themeColors.primary }}
+                className="font-semibold"
+              >
                 Assignment Ghar
               </span>{" "}
               for students who deserve stress-free academic support, not another
@@ -189,63 +223,82 @@ export default function Home() {
               image="/Images/landing/1.png"
               title="Chat System"
               description="Real time chat between student and admin"
+              themeColors={themeColors}
             />
             <FeatureCard
               image="/Images/landing/2.png"
               title="File Sharing"
               description="File and image sharing inside chat window"
+              themeColors={themeColors}
             />
             <FeatureCard
               image="/Images/landing/3.png"
               title="QR Payment"
               description="QR payment visible in chat for easy scan-and-pay"
+              themeColors={themeColors}
             />
             <FeatureCard
               image="/Images/landing/4.png"
               title="Consultancy Videos"
               description="Free consultancy videos for students"
+              themeColors={themeColors}
             />
           </div>
 
           {/* Testimonial Card */}
           <div className="max-w-5xl mx-auto">
-            <div className="bg-white rounded-2xl shadow-lg p-6 md:p-8 lg:p-10">
+            <div
+              className="rounded-2xl shadow-lg p-6 md:p-8 lg:p-10 transition-colors"
+              style={{ backgroundColor: themeColors.cardBg }}
+            >
               <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 items-start lg:items-center">
                 <div className="flex-1">
                   <p
-                    className="text-base md:text-lg mb-4"
-                    style={{ color: "#284366" }}
+                    className="text-base md:text-lg mb-4 transition-colors"
+                    style={{ color: themeColors.text2 }}
                   >
                     &quot;I was struggling with my IT assignment while abroad.
                     Assignment Ghar helped me understand the topic, not just
                     finish it.&quot;
                   </p>
                   <div className="flex items-center gap-3">
-                    <span className="text-sm" style={{ color: "#94A3B8" }}>
+                    <span
+                      className="text-sm transition-colors"
+                      style={{ color: themeColors.text3 }}
+                    >
                       Student from Canada
                     </span>
                     <div
-                      className="flex items-center gap-1 px-3 py-1 rounded-full"
-                      style={{ backgroundColor: "#FEF3C7" }}
+                      className="flex items-center gap-1 px-3 py-1 rounded-full transition-colors"
+                      style={{
+                        backgroundColor: isDark ? "#422006" : "#FEF3C7",
+                      }}
                     >
                       <span className="text-sm">⭐</span>
                       <span
-                        className="text-sm font-semibold"
-                        style={{ color: "#92400E" }}
+                        className="text-sm font-semibold transition-colors"
+                        style={{ color: isDark ? "#FCD34D" : "#92400E" }}
                       >
                         5.0
                       </span>
                     </div>
                   </div>
                 </div>
-                <div className="flex items-center gap-4 lg:border-l lg:border-gray-200 lg:pl-8">
+                <div
+                  className="flex items-center gap-4 lg:pl-8"
+                  style={{
+                    borderLeft: isDark
+                      ? "1px solid #475569"
+                      : "1px solid #E5E7EB",
+                  }}
+                >
                   <div
-                    className="w-12 h-12 rounded-full flex items-center justify-center"
-                    style={{ backgroundColor: "#D1FAE5" }}
+                    className="w-12 h-12 rounded-full flex items-center justify-center transition-colors"
+                    style={{ backgroundColor: isDark ? "#064E3B" : "#D1FAE5" }}
                   >
                     <svg
-                      className="w-7 h-7"
-                      style={{ color: "#059669" }}
+                      className="w-7 h-7 transition-colors"
+                      style={{ color: isDark ? "#10B981" : "#059669" }}
                       viewBox="0 0 24 24"
                       fill="none"
                     >
@@ -260,12 +313,15 @@ export default function Home() {
                   </div>
                   <div>
                     <div
-                      className="font-semibold text-base md:text-lg"
-                      style={{ color: "#111E2F" }}
+                      className="font-semibold text-base md:text-lg transition-colors"
+                      style={{ color: themeColors.text1 }}
                     >
                       Trusted & Transparent
                     </div>
-                    <div className="text-sm" style={{ color: "#94A3B8" }}>
+                    <div
+                      className="text-sm transition-colors"
+                      style={{ color: themeColors.text3 }}
+                    >
                       Public Testimonial
                     </div>
                   </div>
@@ -278,16 +334,21 @@ export default function Home() {
 
       {/* Our Areas of Expertise Section */}
       <div
-        className="py-12 md:py-16 lg:py-20"
-        style={{ backgroundColor: "#F8FBFF" }}
+        className="py-12 md:py-16 lg:py-20 transition-colors"
+        style={{ backgroundColor: themeColors.bg2 }}
       >
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-6 md:px-8 lg:px-12">
           {/* Section Header */}
           <div className="text-center mb-8 md:mb-12">
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 md:mb-6">
-              <span style={{ color: "#111E2F" }}>Our Areas of </span>
               <span
-                style={{ color: "#0E52AC" }}
+                style={{ color: themeColors.text1 }}
+                className="transition-colors"
+              >
+                Our Areas of{" "}
+              </span>
+              <span
+                style={{ color: themeColors.primary }}
                 className="relative inline-block"
               >
                 Expertise
@@ -299,7 +360,7 @@ export default function Home() {
                 >
                   <path
                     d="M2 6C83 2 166 2 248 6"
-                    stroke="#0E52AC"
+                    stroke={themeColors.primary}
                     strokeWidth="3"
                     strokeLinecap="round"
                   />
@@ -307,8 +368,8 @@ export default function Home() {
               </span>
             </h2>
             <p
-              className="text-sm md:text-base lg:text-lg max-w-5xl mx-auto leading-relaxed"
-              style={{ color: "#284366" }}
+              className="text-sm md:text-base lg:text-lg max-w-5xl mx-auto leading-relaxed transition-colors"
+              style={{ color: themeColors.text2 }}
             >
               We help students across diverse academic backgrounds achieve
               excellence through expert guidance, subject-focused insights, and
@@ -324,45 +385,59 @@ export default function Home() {
               image="https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=400&h=300&fit=crop"
               title="IT & Computer Science"
               description="Coding help, software development, system design, and technical report writing tailored to university standards."
+              themeColors={themeColors}
             />
             <ExpertiseCardVertical
               image="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=300&fit=crop"
               title="Business & Management"
               description="Professional support for reports, case studies, and research assignments with real-world context."
+              themeColors={themeColors}
             />
             <ExpertiseCardVertical
               image="https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=400&h=300&fit=crop"
               title="Finance & Accounting"
               description="Step-by-step assistance for financial analysis, problem-solving, and accounting coursework."
+              themeColors={themeColors}
             />
             <ExpertiseCardVertical
               image="https://images.unsplash.com/photo-1503220317375-aaad61436b1b?w=400&h=300&fit=crop"
               title="Hospitality & Tourism"
               description="Well-structured research papers, project reports, and essays aligned to global trends."
+              themeColors={themeColors}
             />
             <ExpertiseCardVertical
               image="https://images.unsplash.com/photo-1584820927498-cfe5211fd8bf?w=400&h=300&fit=crop"
               title="Nursing & Healthcare"
               description="Accurate care plans, reflective journals, and academic reports built on real-life medical context."
+              themeColors={themeColors}
             />
             <ExpertiseCardVertical
               image="https://images.unsplash.com/photo-1581094271901-8022df4466f9?w=400&h=300&fit=crop"
               title="Engineering & Technology"
               description="Comprehensive guidance for technical reports, design documentation, and project submissions."
+              themeColors={themeColors}
             />
           </div>
         </div>
       </div>
 
       {/* What Makes Us Different Section */}
-      <div className="py-12 md:py-16 lg:py-20 bg-white">
-        <div className="container mx-auto px-4">
+      <div
+        className="py-12 md:py-16 lg:py-20 transition-colors"
+        style={{ backgroundColor: themeColors.bg1 }}
+      >
+        <div className="container mx-auto px-6 md:px-8 lg:px-12">
           {/* Section Header */}
           <div className="text-center mb-12 md:mb-16">
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold">
-              <span style={{ color: "#111E2F" }}>What Makes Us </span>
               <span
-                style={{ color: "#0E52AC" }}
+                style={{ color: themeColors.text1 }}
+                className="transition-colors"
+              >
+                What Makes Us{" "}
+              </span>
+              <span
+                style={{ color: themeColors.primary }}
                 className="relative inline-block"
               >
                 Different
@@ -374,7 +449,7 @@ export default function Home() {
                 >
                   <path
                     d="M2 6C83 2 166 2 248 6"
-                    stroke="#0E52AC"
+                    stroke={themeColors.primary}
                     strokeWidth="3"
                     strokeLinecap="round"
                   />
@@ -390,9 +465,9 @@ export default function Home() {
               <div className="relative w-full max-w-md">
                 {/* Dot Pattern */}
                 <div className="grid grid-cols-6 gap-4">
-                  {[...Array(36)].map((_, i) => (
+                  {Array.from({ length: 36 }, (_, i) => (
                     <div
-                      key={i}
+                      key={`dot-${i}`}
                       className="rounded-full transition-all duration-300 hover:scale-150"
                       style={{
                         width:
@@ -414,8 +489,8 @@ export default function Home() {
                           i % 6 <= 3 &&
                           Math.floor(i / 6) >= 2 &&
                           Math.floor(i / 6) <= 3
-                            ? "#0E52AC"
-                            : "#E0EDFD",
+                            ? themeColors.primary
+                            : themeColors.border,
                         opacity:
                           i % 6 >= 2 &&
                           i % 6 <= 3 &&
@@ -431,7 +506,7 @@ export default function Home() {
                 <div
                   className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-2xl shadow-2xl p-8"
                   style={{
-                    backgroundColor: "#0E52AC",
+                    backgroundColor: themeColors.primary,
                     width: "200px",
                     height: "140px",
                   }}
@@ -444,22 +519,27 @@ export default function Home() {
               <DifferenceItem
                 title="Global Student Support"
                 description="Whether you study in Australia, the UK, Canada, or the UAE, we tailor our help to your university's format and grading style."
+                themeColors={themeColors}
               />
               <DifferenceItem
                 title="Plagiarism-Free Guidance"
                 description="Every assignment is crafted uniquely to maintain academic integrity."
+                themeColors={themeColors}
               />
               <DifferenceItem
                 title="Fast Turnaround"
                 description="We work around your schedule, urgent help available."
+                themeColors={themeColors}
               />
               <DifferenceItem
                 title="Affordable & Transparent"
                 description="No hidden charges, no confusion, just clear, student-friendly pricing."
+                themeColors={themeColors}
               />
               <DifferenceItem
                 title="Expert Consultants"
                 description="Our team includes qualified tutors, industry professionals, and academic writers who care about your success."
+                themeColors={themeColors}
               />
             </div>
           </div>
@@ -468,16 +548,21 @@ export default function Home() {
 
       {/* Our Student Experiences Section */}
       <div
-        className="py-12 md:py-16 lg:py-20"
-        style={{ backgroundColor: "#F8FBFF" }}
+        className="py-12 md:py-16 lg:py-20 transition-colors"
+        style={{ backgroundColor: themeColors.bg2 }}
       >
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-6 md:px-8 lg:px-12">
           {/* Section Header */}
           <div className="text-center mb-12 md:mb-16">
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold">
-              <span style={{ color: "#111E2F" }}>Our Student </span>
               <span
-                style={{ color: "#0E52AC" }}
+                style={{ color: themeColors.text1 }}
+                className="transition-colors"
+              >
+                Our Student{" "}
+              </span>
+              <span
+                style={{ color: themeColors.primary }}
                 className="relative inline-block"
               >
                 Experiences
@@ -489,7 +574,7 @@ export default function Home() {
                 >
                   <path
                     d="M2 6C100 2 200 2 298 6"
-                    stroke="#0E52AC"
+                    stroke={themeColors.primary}
                     strokeWidth="3"
                     strokeLinecap="round"
                   />
@@ -501,8 +586,8 @@ export default function Home() {
           {/* Testimonials Carousel */}
           <div className="relative max-w-7xl mx-auto">
             <div
-              className="rounded-3xl p-8 md:p-12 lg:p-16"
-              style={{ backgroundColor: "#E8F2FD" }}
+              className="rounded-3xl p-8 md:p-12 lg:p-16 transition-colors"
+              style={{ backgroundColor: isDark ? "#0F172A" : "#E8F2FD" }}
             >
               <div className="grid md:grid-cols-3 gap-6 md:gap-8 mb-8">
                 <TestimonialCard
@@ -510,18 +595,21 @@ export default function Home() {
                   name="John Doe"
                   location="Australia"
                   rating={5}
+                  themeColors={themeColors}
                 />
                 <TestimonialCard
                   quote="Their consultant explained my entire finance case study in plain language. I actually learned while completing my assignment."
                   name="Sara Lee"
                   location="UAE"
                   rating={5}
+                  themeColors={themeColors}
                 />
                 <TestimonialCard
                   quote="Affordable, responsive, and trustworthy - I couldn't ask for more."
                   name="Anonymous"
                   location="UK"
                   rating={5}
+                  themeColors={themeColors}
                 />
               </div>
 
@@ -529,15 +617,18 @@ export default function Home() {
               <div className="flex justify-center items-center gap-2">
                 <button
                   className="w-2 h-2 rounded-full transition-all"
-                  style={{ backgroundColor: "#CBD5E1" }}
+                  style={{ backgroundColor: themeColors.border }}
                 ></button>
                 <button
-                  className="w-3 h-3 rounded-full transition-all ring-2 ring-offset-2 ring-blue-600"
-                  style={{ backgroundColor: "#0E52AC" }}
+                  className="w-3 h-3 rounded-full transition-all"
+                  style={{
+                    backgroundColor: themeColors.primary,
+                    boxShadow: `0 0 0 2px ${themeColors.bg1}, 0 0 0 4px ${themeColors.primary}`,
+                  }}
                 ></button>
                 <button
                   className="w-2 h-2 rounded-full transition-all"
-                  style={{ backgroundColor: "#CBD5E1" }}
+                  style={{ backgroundColor: themeColors.border }}
                 ></button>
               </div>
             </div>
@@ -546,8 +637,11 @@ export default function Home() {
       </div>
 
       {/* CTA Section - Start Your Journey */}
-      <div className="py-12 md:py-16 lg:py-20 bg-white">
-        <div className="container mx-auto px-4">
+      <div
+        className="py-12 md:py-16 lg:py-20 transition-colors"
+        style={{ backgroundColor: themeColors.bg1 }}
+      >
+        <div className="container mx-auto px-6 md:px-8 lg:px-12">
           <div
             className="relative max-w-6xl mx-auto rounded-3xl overflow-hidden"
             style={{ backgroundColor: "#4A9FF5" }}
@@ -598,12 +692,12 @@ export default function Home() {
 
       {/* Background decorative elements */}
       <div
-        className="fixed top-0 right-0 w-64 md:w-96 h-64 md:h-96 rounded-full blur-3xl opacity-5 pointer-events-none"
-        style={{ backgroundColor: "#E0EDFD" }}
+        className="fixed top-0 right-0 w-64 md:w-96 h-64 md:h-96 rounded-full blur-3xl opacity-5 pointer-events-none transition-colors"
+        style={{ backgroundColor: isDark ? "#1E40AF" : "#E0EDFD" }}
       ></div>
       <div
-        className="fixed bottom-0 left-0 w-64 md:w-96 h-64 md:h-96 rounded-full blur-3xl opacity-5 pointer-events-none"
-        style={{ backgroundColor: "#E0EDFD" }}
+        className="fixed bottom-0 left-0 w-64 md:w-96 h-64 md:h-96 rounded-full blur-3xl opacity-5 pointer-events-none transition-colors"
+        style={{ backgroundColor: isDark ? "#1E40AF" : "#E0EDFD" }}
       ></div>
     </div>
   );
@@ -613,22 +707,23 @@ export default function Home() {
 
 interface FeatureItemProps {
   text: string;
+  themeColors: any;
 }
 
-const FeatureItem: React.FC<FeatureItemProps> = ({ text }) => {
+const FeatureItem: React.FC<FeatureItemProps> = ({ text, themeColors }) => {
   return (
     <div className="flex gap-3 md:gap-4">
       <div className="flex-shrink-0 mt-1">
         <div
-          className="w-5 h-5 md:w-6 md:h-6 rounded-full flex items-center justify-center"
-          style={{ backgroundColor: "#0E52AC" }}
+          className="w-5 h-5 md:w-6 md:h-6 rounded-full flex items-center justify-center transition-colors"
+          style={{ backgroundColor: themeColors.primary }}
         >
           <Check className="w-3 h-3 md:w-4 md:h-4 text-white" strokeWidth={3} />
         </div>
       </div>
       <p
-        className="text-sm md:text-base lg:text-lg"
-        style={{ color: "#284366" }}
+        className="text-sm md:text-base lg:text-lg transition-colors"
+        style={{ color: themeColors.text2 }}
       >
         {text}
       </p>
@@ -640,26 +735,34 @@ interface FeatureCardProps {
   image: string;
   title: string;
   description: string;
+  themeColors: any;
 }
 
 const FeatureCard: React.FC<FeatureCardProps> = ({
   image,
   title,
   description,
+  themeColors,
 }) => {
   return (
-    <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300">
+    <div
+      className="rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-300"
+      style={{ backgroundColor: themeColors.cardBg }}
+    >
       <div className="relative h-48 md:h-56 overflow-hidden">
         <Image src={image} alt={title} fill className="object-cover" />
       </div>
       <div className="p-6 md:p-8 text-center">
         <h3
-          className="text-lg md:text-xl font-bold mb-2"
-          style={{ color: "#111E2F" }}
+          className="text-lg md:text-xl font-bold mb-2 transition-colors"
+          style={{ color: themeColors.text1 }}
         >
           {title}
         </h3>
-        <p className="text-sm md:text-base" style={{ color: "#284366" }}>
+        <p
+          className="text-sm md:text-base transition-colors"
+          style={{ color: themeColors.text2 }}
+        >
           {description}
         </p>
       </div>
@@ -671,12 +774,14 @@ interface ExpertiseCardProps {
   image: string;
   title: string;
   description: string;
+  themeColors: any;
 }
 
 const ExpertiseCardVertical: React.FC<ExpertiseCardProps> = ({
   image,
   title,
   description,
+  themeColors,
 }) => {
   return (
     <div className="group">
@@ -685,20 +790,20 @@ const ExpertiseCardVertical: React.FC<ExpertiseCardProps> = ({
       </div>
       <div className="mt-4 md:mt-6">
         <h3
-          className="text-lg md:text-xl font-bold mb-2 md:mb-3"
-          style={{ color: "#111E2F" }}
+          className="text-lg md:text-xl font-bold mb-2 md:mb-3 transition-colors"
+          style={{ color: themeColors.text1 }}
         >
           {title}
         </h3>
         <p
-          className="text-sm md:text-base mb-4 md:mb-5"
-          style={{ color: "#284366" }}
+          className="text-sm md:text-base mb-4 md:mb-5 transition-colors"
+          style={{ color: themeColors.text2 }}
         >
           {description}
         </p>
         <button
           className="flex items-center gap-2 px-6 py-2.5 rounded-full font-semibold text-white text-sm transition-all hover:opacity-90 hover:gap-3"
-          style={{ backgroundColor: "#111E2F" }}
+          style={{ backgroundColor: themeColors.text1 }}
         >
           Learn More
           <svg
@@ -725,30 +830,35 @@ const ExpertiseCardVertical: React.FC<ExpertiseCardProps> = ({
 interface DifferenceItemProps {
   title: string;
   description: string;
+  themeColors: any;
 }
 
 const DifferenceItem: React.FC<DifferenceItemProps> = ({
   title,
   description,
+  themeColors,
 }) => {
   return (
     <div className="flex gap-4">
       <div className="flex-shrink-0 mt-1">
         <div
-          className="w-6 h-6 rounded-full flex items-center justify-center"
-          style={{ backgroundColor: "#0E52AC" }}
+          className="w-6 h-6 rounded-full flex items-center justify-center transition-colors"
+          style={{ backgroundColor: themeColors.primary }}
         >
           <Check className="w-4 h-4 text-white" strokeWidth={3} />
         </div>
       </div>
       <div>
         <h3
-          className="text-lg md:text-xl font-bold mb-2"
-          style={{ color: "#111E2F" }}
+          className="text-lg md:text-xl font-bold mb-2 transition-colors"
+          style={{ color: themeColors.text1 }}
         >
           {title}
         </h3>
-        <p className="text-sm md:text-base" style={{ color: "#284366" }}>
+        <p
+          className="text-sm md:text-base transition-colors"
+          style={{ color: themeColors.text2 }}
+        >
           {description}
         </p>
       </div>
@@ -761,6 +871,7 @@ interface TestimonialCardProps {
   name: string;
   location: string;
   rating: number;
+  themeColors: any;
 }
 
 const TestimonialCard: React.FC<TestimonialCardProps> = ({
@@ -768,9 +879,13 @@ const TestimonialCard: React.FC<TestimonialCardProps> = ({
   name,
   location,
   rating,
+  themeColors,
 }) => {
   return (
-    <div className="bg-white rounded-2xl p-6 md:p-8 shadow-md hover:shadow-xl transition-shadow duration-300">
+    <div
+      className="rounded-2xl p-6 md:p-8 shadow-md hover:shadow-xl transition-all duration-300"
+      style={{ backgroundColor: themeColors.cardBg }}
+    >
       <div className="mb-6">
         <svg
           width="32"
@@ -781,12 +896,12 @@ const TestimonialCard: React.FC<TestimonialCardProps> = ({
         >
           <path
             d="M10 18C10 15.7909 8.20914 14 6 14V12C9.31371 12 12 9.31371 12 6H14C14 10.4183 10.4183 14 6 14C8.20914 14 10 15.7909 10 18ZM24 18C24 15.7909 22.2091 14 20 14V12C23.3137 12 26 9.31371 26 6H28C28 10.4183 24.4183 14 20 14C22.2091 14 24 15.7909 24 18Z"
-            fill="#111E2F"
+            fill={themeColors.text1}
           />
         </svg>
         <p
-          className="text-sm md:text-base leading-relaxed"
-          style={{ color: "#284366" }}
+          className="text-sm md:text-base leading-relaxed transition-colors"
+          style={{ color: themeColors.text2 }}
         >
           {quote}
         </p>
@@ -794,18 +909,21 @@ const TestimonialCard: React.FC<TestimonialCardProps> = ({
       <div className="flex items-center justify-between">
         <div>
           <div
-            className="font-semibold text-base md:text-lg"
-            style={{ color: "#111E2F" }}
+            className="font-semibold text-base md:text-lg transition-colors"
+            style={{ color: themeColors.text1 }}
           >
             {name}
           </div>
-          <div className="text-xs md:text-sm" style={{ color: "#94A3B8" }}>
+          <div
+            className="text-xs md:text-sm transition-colors"
+            style={{ color: themeColors.text3 }}
+          >
             {location}
           </div>
         </div>
         <div className="flex gap-0.5">
-          {[...Array(rating)].map((_, i) => (
-            <span key={i} className="text-yellow-400 text-lg">
+          {Array.from({ length: rating }, (_, i) => (
+            <span key={`star-${i}`} className="text-yellow-400 text-lg">
               ⭐
             </span>
           ))}

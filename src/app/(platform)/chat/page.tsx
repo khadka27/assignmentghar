@@ -4,10 +4,10 @@ import { useEffect, useState, useRef } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
+import { useTheme } from "@/hooks/use-theme";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { useSocket } from "@/contexts/socket-context";
 import {
@@ -16,8 +16,18 @@ import {
   FileText,
   Download,
   MessageSquare,
-  Users,
   Loader2,
+  CheckCheck,
+  Menu,
+  X,
+  Video,
+  UserPlus,
+  Heart,
+  Search,
+  Mic,
+  Image as ImageIcon,
+  Music,
+  Smile,
 } from "lucide-react";
 import { format } from "date-fns";
 
@@ -72,6 +82,8 @@ export default function ChatPage() {
   const { toast } = useToast();
   const { socket, isConnected } = useSocket();
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
 
   const [chatList, setChatList] = useState<ChatListItem[]>([]);
   const [selectedChat, setSelectedChat] = useState<ChatListItem | null>(null);
@@ -80,7 +92,23 @@ export default function ChatPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
+  const [showMobileSidebar, setShowMobileSidebar] = useState(false);
   const userRole = session?.user?.role;
+
+  // Brand colors
+  const themeColors = {
+    primary: "#0E52AC",
+    primaryHover: "#0A3D7F",
+    text1: isDark ? "#FFFFFF" : "#111E2F",
+    text2: isDark ? "#CBD5E1" : "#284366",
+    text3: isDark ? "#94A3B8" : "#64748B",
+    bg1: isDark ? "#0A0F1E" : "#FFFFFF",
+    bg2: isDark ? "#1E293B" : "#F8FBFF",
+    cardBg: isDark ? "#1E293B" : "#FFFFFF",
+    border: isDark ? "#475569" : "#E0EDFD",
+    inputBg: isDark ? "#0F172A" : "#F8FBFF",
+    messageBg: isDark ? "#334155" : "#FFFFFF",
+  };
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -225,6 +253,7 @@ export default function ChatPage() {
     // If conversation exists, load it
     if (chatItem.conversation) {
       setSelectedChat(chatItem);
+      setShowMobileSidebar(false); // Hide sidebar on mobile after selection
       fetchMessages(chatItem.conversation.id);
       if (socket && session?.user?.id) {
         socket.emit("join_conversation", {
@@ -409,281 +438,737 @@ export default function ChatPage() {
 
   if (status === "loading") {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+      <div
+        className="flex items-center justify-center min-h-screen"
+        style={{ backgroundColor: themeColors.bg1 }}
+      >
+        <Loader2
+          className="w-8 h-8 animate-spin"
+          style={{ color: themeColors.primary }}
+        />
       </div>
     );
   }
 
   return (
-    <div className="flex h-screen bg-white dark:bg-black">
-      <div className="w-full md:w-96 border-r border-gray-200 dark:border-gray-800 bg-white dark:bg-black flex flex-col">
-        <div className="p-6 border-b border-gray-200 dark:border-gray-800">
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-              <MessageSquare className="w-5 h-5 text-blue-600 dark:text-blue-500" />
-              Messages
-            </h2>
-          </div>
-          <div className="flex items-center gap-2 text-sm">
-            <div
-              className={`w-2 h-2 rounded-full ${
-                isConnected ? "bg-blue-600" : "bg-gray-400"
-              }`}
-            ></div>
-            <span className="text-gray-500 dark:text-gray-400">
-              {isConnected ? "Connected" : "Disconnected"}
-            </span>
-          </div>
+    <div
+      className="flex flex-col h-screen overflow-hidden transition-colors"
+      style={{ backgroundColor: themeColors.bg2 }}
+    >
+      {/* Sticky Top Navbar - Only on Mobile */}
+      <div
+        className="lg:hidden sticky top-0 z-30 px-4 py-3 border-b flex items-center justify-between"
+        style={{
+          backgroundColor: themeColors.bg1,
+          borderColor: themeColors.border,
+        }}
+      >
+        <div className="flex items-center gap-3">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setShowMobileSidebar(!showMobileSidebar)}
+            style={{ color: themeColors.text1 }}
+          >
+            <Menu className="w-5 h-5" />
+          </Button>
+          <h1
+            className="text-lg font-bold"
+            style={{ color: themeColors.text1 }}
+          >
+            Chat
+          </h1>
         </div>
-
-        <div className="flex-1 overflow-y-auto">
-          {isLoading && chatList.length === 0 ? (
-            <div className="flex items-center justify-center h-full">
-              <Loader2 className="w-5 h-5 animate-spin text-blue-600" />
-            </div>
-          ) : chatList.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-full p-8 text-center">
-              <MessageSquare className="w-12 h-12 text-gray-300 dark:text-gray-700 mb-3" />
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                {userRole === "ADMIN"
-                  ? "No students available"
-                  : "No admins available"}
-              </p>
-            </div>
-          ) : (
-            chatList.map((chatItem) => {
-              const lastMessage = chatItem.lastMessage;
-              const isSelected = selectedChat?.user.id === chatItem.user.id;
-
-              return (
-                <button
-                  key={chatItem.user.id}
-                  onClick={() => selectChat(chatItem)}
-                  className={`w-full p-4 border-b border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors ${
-                    isSelected
-                      ? "bg-gray-50 dark:bg-gray-900 border-l-2 border-l-blue-600"
-                      : ""
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <Avatar className="w-10 h-10">
-                      <AvatarImage src={chatItem.user.image} />
-                      <AvatarFallback className="bg-blue-600 text-white text-sm font-medium">
-                        {chatItem.user.name?.[0] || "U"}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1 text-left overflow-hidden">
-                      <div className="flex items-center justify-between mb-1">
-                        <p className="font-medium text-gray-900 dark:text-white truncate text-sm">
-                          {chatItem.user.name}
-                        </p>
-                        {lastMessage && (
-                          <span className="text-xs text-gray-500 dark:text-gray-400">
-                            {format(new Date(lastMessage.createdAt), "p")}
-                          </span>
-                        )}
-                      </div>
-                      {lastMessage ? (
-                        <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                          {lastMessage.content}
-                        </p>
-                      ) : (
-                        <p className="text-xs text-gray-400 dark:text-gray-500">
-                          Click to start chatting
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                </button>
-              );
-            })
-          )}
+        <div className="flex items-center gap-2 text-xs">
+          <div
+            className="w-2 h-2 rounded-full"
+            style={{
+              backgroundColor: isConnected
+                ? themeColors.primary
+                : themeColors.text3,
+            }}
+          ></div>
+          <span style={{ color: themeColors.text3 }}>
+            {isConnected ? "Connected" : "Offline"}
+          </span>
         </div>
       </div>
 
-      <div className="flex-1 flex flex-col bg-gray-50 dark:bg-gray-950">
-        {selectedChat ? (
-          <>
-            <div className="p-4 border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-black">
-              <div className="flex items-center gap-3">
-                <Avatar className="w-10 h-10">
-                  <AvatarImage src={selectedChat.user.image} />
-                  <AvatarFallback className="bg-blue-600 text-white text-sm font-medium">
-                    {selectedChat.user.name?.[0] || "U"}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="flex-1">
-                  <h3 className="font-medium text-gray-900 dark:text-white text-sm">
-                    {selectedChat.user.name}
-                  </h3>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
-                    {isTyping ? (
-                      <span className="text-blue-600 dark:text-blue-500">
-                        Typing...
-                      </span>
-                    ) : (
-                      <span className="flex items-center gap-1">
-                        <div
-                          className={`w-1.5 h-1.5 rounded-full ${
-                            isConnected ? "bg-blue-600" : "bg-gray-400"
-                          }`}
-                        ></div>
-                        {isConnected ? "Online" : "Offline"}
-                      </span>
-                    )}
-                  </p>
-                </div>
+      {/* Main Content Area */}
+      <div className="flex flex-1 overflow-hidden relative">
+        {/* Mobile Sidebar Overlay Backdrop */}
+        {showMobileSidebar && (
+          <div
+            className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+            onClick={() => setShowMobileSidebar(false)}
+          ></div>
+        )}
+
+        {/* Chat List Sidebar */}
+        <div
+          className={`${
+            showMobileSidebar ? "fixed inset-y-0 left-0 z-50 w-80" : "hidden"
+          } lg:flex lg:relative lg:w-96 border-r flex-col transition-all shadow-2xl lg:shadow-none`}
+          style={{
+            backgroundColor: themeColors.bg1,
+            borderColor: themeColors.border,
+          }}
+        >
+          {/* Sidebar Header */}
+          <div
+            className="p-4 md:p-6 border-b flex items-center justify-between flex-shrink-0"
+            style={{ borderColor: themeColors.border }}
+          >
+            <div className="flex-1">
+              <div className="flex items-center justify-between mb-4">
+                <h2
+                  className="text-lg md:text-xl font-bold flex items-center gap-2 transition-colors"
+                  style={{ color: themeColors.text1 }}
+                >
+                  <MessageSquare
+                    className="w-5 h-5"
+                    style={{ color: themeColors.primary }}
+                  />
+                  Messages
+                </h2>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setShowMobileSidebar(false)}
+                  className="lg:hidden"
+                  style={{ color: themeColors.text1 }}
+                >
+                  <X className="w-5 h-5" />
+                </Button>
+              </div>
+              <div className="flex items-center gap-2 text-xs md:text-sm">
+                <div
+                  className={`w-2 h-2 rounded-full transition-colors`}
+                  style={{
+                    backgroundColor: isConnected
+                      ? themeColors.primary
+                      : themeColors.text3,
+                  }}
+                ></div>
+                <span
+                  className="transition-colors"
+                  style={{ color: themeColors.text3 }}
+                >
+                  {isConnected ? "Connected" : "Disconnected"}
+                </span>
               </div>
             </div>
+          </div>
 
-            <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50 dark:bg-gray-950">
-              {messages.map((message) => {
-                const isOwn = message.sender.id === session?.user?.id;
-                const isSystem = message.messageType === "SYSTEM";
+          {/* Scrollable Chat List */}
+          <div className="flex-1 overflow-y-auto">
+            {isLoading && chatList.length === 0 ? (
+              <div className="flex items-center justify-center h-full">
+                <Loader2
+                  className="w-5 h-5 animate-spin"
+                  style={{ color: themeColors.primary }}
+                />
+              </div>
+            ) : chatList.length === 0 ? (
+              <div className="flex flex-col items-center justify-center h-full p-6 md:p-8 text-center">
+                <MessageSquare
+                  className="w-12 h-12 mb-3 transition-colors"
+                  style={{ color: themeColors.border }}
+                />
+                <p
+                  className="text-sm transition-colors"
+                  style={{ color: themeColors.text3 }}
+                >
+                  {userRole === "ADMIN"
+                    ? "No students available"
+                    : "No admins available"}
+                </p>
+              </div>
+            ) : (
+              chatList.map((chatItem) => {
+                const lastMessage = chatItem.lastMessage;
+                const isSelected = selectedChat?.user.id === chatItem.user.id;
 
-                if (isSystem) {
+                return (
+                  <button
+                    key={chatItem.user.id}
+                    onClick={() => selectChat(chatItem)}
+                    className={`w-full p-3 md:p-4 border-b transition-all hover:opacity-90 ${
+                      isSelected ? "border-l-4" : ""
+                    }`}
+                    style={{
+                      backgroundColor: isSelected
+                        ? themeColors.bg2
+                        : "transparent",
+                      borderColor: themeColors.border,
+                      borderLeftColor: isSelected
+                        ? themeColors.primary
+                        : "transparent",
+                    }}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="relative">
+                        <Avatar className="w-10 h-10 md:w-12 md:h-12">
+                          <AvatarImage src={chatItem.user.image} />
+                          <AvatarFallback
+                            className="text-white text-sm font-medium"
+                            style={{ backgroundColor: themeColors.primary }}
+                          >
+                            {chatItem.user.name?.[0] || "U"}
+                          </AvatarFallback>
+                        </Avatar>
+                        {isConnected && (
+                          <div
+                            className="absolute bottom-0 right-0 w-3 h-3 rounded-full border-2"
+                            style={{
+                              backgroundColor: themeColors.primary,
+                              borderColor: themeColors.bg1,
+                            }}
+                          ></div>
+                        )}
+                      </div>
+                      <div className="flex-1 text-left overflow-hidden">
+                        <div className="flex items-center justify-between mb-1">
+                          <p
+                            className="font-semibold truncate text-sm md:text-base transition-colors"
+                            style={{ color: themeColors.text1 }}
+                          >
+                            {chatItem.user.name}
+                          </p>
+                          {lastMessage && (
+                            <span
+                              className="text-xs transition-colors"
+                              style={{ color: themeColors.text3 }}
+                            >
+                              {format(new Date(lastMessage.createdAt), "p")}
+                            </span>
+                          )}
+                        </div>
+                        {lastMessage ? (
+                          <p
+                            className="text-xs truncate transition-colors"
+                            style={{ color: themeColors.text3 }}
+                          >
+                            {lastMessage.content}
+                          </p>
+                        ) : (
+                          <p
+                            className="text-xs transition-colors"
+                            style={{ color: themeColors.text3 }}
+                          >
+                            Click to start chatting
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </button>
+                );
+              })
+            )}
+          </div>
+        </div>
+
+        {/* Chat Area */}
+        <div
+          className="flex-1 flex flex-col overflow-hidden"
+          style={{ backgroundColor: themeColors.bg2 }}
+        >
+          {selectedChat ? (
+            <>
+              {/* Chat Header - Fixed */}
+              <div
+                className="flex-shrink-0 px-6 py-4 border-b flex items-center justify-between"
+                style={{
+                  backgroundColor: themeColors.bg1,
+                  borderColor: themeColors.border,
+                }}
+              >
+                <div className="flex items-center gap-3">
+                  <Avatar className="w-10 h-10">
+                    <AvatarImage src={selectedChat.user.image} />
+                    <AvatarFallback
+                      className="text-white text-sm font-medium"
+                      style={{ backgroundColor: themeColors.primary }}
+                    >
+                      {selectedChat.user.name?.[0] || "U"}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <h3
+                      className="font-semibold text-base transition-colors"
+                      style={{ color: themeColors.text1 }}
+                    >
+                      {selectedChat.user.name}
+                    </h3>
+                    <p
+                      className="text-xs transition-colors flex items-center gap-1.5"
+                      style={{ color: themeColors.text3 }}
+                    >
+                      {isTyping ? (
+                        <span style={{ color: themeColors.primary }}>
+                          Typing...
+                        </span>
+                      ) : (
+                        <>
+                          <div
+                            className="w-1.5 h-1.5 rounded-full"
+                            style={{
+                              backgroundColor: isConnected
+                                ? "#22C55E"
+                                : themeColors.text3,
+                            }}
+                          ></div>
+                          {isConnected ? "Online" : "Offline"}
+                        </>
+                      )}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="hidden md:flex"
+                    style={{ color: themeColors.text2 }}
+                  >
+                    <Search className="w-5 h-5" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="hidden md:flex"
+                    style={{ color: themeColors.text2 }}
+                  >
+                    <Heart className="w-5 h-5" />
+                  </Button>
+                </div>
+              </div>
+
+              {/* Messages Area - Scrollable ONLY */}
+              <div className="flex-1 overflow-y-auto px-6 py-4 space-y-3">
+                {messages.map((message) => {
+                  const isOwn = message.sender.id === session?.user?.id;
+                  const isSystem = message.messageType === "SYSTEM";
+
+                  if (isSystem) {
+                    return (
+                      <div
+                        key={message.id}
+                        className="flex justify-center my-4"
+                      >
+                        <div
+                          className="px-4 py-2 rounded-full"
+                          style={{ backgroundColor: themeColors.border }}
+                        >
+                          <p
+                            className="text-xs transition-colors"
+                            style={{ color: themeColors.text3 }}
+                          >
+                            {message.content}
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  }
+
                   return (
-                    <div key={message.id} className="flex justify-center my-4">
-                      <div className="bg-gray-100 dark:bg-gray-900 px-4 py-2 rounded-lg">
-                        <p className="text-xs text-gray-600 dark:text-gray-400 text-center">
+                    <div
+                      key={message.id}
+                      className={`flex ${
+                        isOwn ? "justify-end" : "justify-start"
+                      }`}
+                    >
+                      <div
+                        className={`max-w-[70%] rounded-2xl px-4 py-2.5 shadow-sm ${
+                          isOwn ? "rounded-br-md" : "rounded-bl-md"
+                        }`}
+                        style={{
+                          backgroundColor: isOwn
+                            ? themeColors.primary
+                            : themeColors.messageBg,
+                          color: isOwn ? "#FFFFFF" : themeColors.text1,
+                          border: isOwn
+                            ? "none"
+                            : `1px solid ${themeColors.border}`,
+                        }}
+                      >
+                        {message.attachments.length > 0 && (
+                          <div className="mb-3 space-y-2">
+                            {message.attachments.map((attachment) => {
+                              const isImage =
+                                attachment.fileType.startsWith("image/");
+                              return (
+                                <div
+                                  key={attachment.id}
+                                  className="rounded-lg overflow-hidden"
+                                  style={{
+                                    backgroundColor: isOwn
+                                      ? "rgba(255,255,255,0.1)"
+                                      : themeColors.bg2,
+                                  }}
+                                >
+                                  {isImage ? (
+                                    <img
+                                      src={attachment.fileUrl}
+                                      alt={attachment.fileName}
+                                      className="rounded-lg max-w-full h-auto max-h-64 object-cover"
+                                    />
+                                  ) : (
+                                    <a
+                                      href={attachment.fileUrl}
+                                      download
+                                      className="flex items-center gap-2 p-2 hover:opacity-80 transition-opacity text-xs"
+                                    >
+                                      <FileText className="w-4 h-4 flex-shrink-0" />
+                                      <span className="truncate flex-1">
+                                        {attachment.fileName}
+                                      </span>
+                                      <Download className="w-3 h-3 flex-shrink-0" />
+                                    </a>
+                                  )}
+                                </div>
+                              );
+                            })}
+                          </div>
+                        )}
+
+                        <p className="text-sm break-words leading-relaxed">
                           {message.content}
                         </p>
+
+                        <div className="flex items-center justify-between gap-2 mt-1">
+                          <p
+                            className="text-xs"
+                            style={{
+                              color: isOwn
+                                ? "rgba(255,255,255,0.7)"
+                                : themeColors.text3,
+                            }}
+                          >
+                            {format(new Date(message.createdAt), "p")}
+                          </p>
+                          {isOwn &&
+                            message.readReceipts &&
+                            message.readReceipts.length > 0 && (
+                              <CheckCheck
+                                className="w-3.5 h-3.5"
+                                style={{ color: "rgba(255,255,255,0.7)" }}
+                              />
+                            )}
+                        </div>
                       </div>
                     </div>
                   );
-                }
+                })}
+                <div ref={messagesEndRef} />
+              </div>
 
-                return (
-                  <div
-                    key={message.id}
-                    className={`flex ${
-                      isOwn ? "justify-end" : "justify-start"
-                    }`}
+              {/* Message Input - Fixed at Bottom */}
+              <div
+                className="flex-shrink-0 px-6 py-4 border-t"
+                style={{
+                  backgroundColor: themeColors.bg1,
+                  borderColor: themeColors.border,
+                }}
+              >
+                <div className="flex items-center gap-3">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="flex-shrink-0 text-gray-400 hover:text-gray-600"
                   >
-                    <div
-                      className={`max-w-md ${
-                        isOwn
-                          ? "bg-blue-600 text-white"
-                          : "bg-white dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-800"
-                      } rounded-lg p-3`}
-                    >
-                      {message.attachments.length > 0 && (
-                        <div className="mb-2 space-y-2">
-                          {message.attachments.map((attachment) => {
-                            const isImage =
-                              attachment.fileType.startsWith("image/");
-                            return (
-                              <div
-                                key={attachment.id}
-                                className={`${
-                                  isOwn
-                                    ? "bg-blue-700"
-                                    : "bg-gray-100 dark:bg-gray-800"
-                                } rounded-lg p-2`}
-                              >
-                                {isImage ? (
-                                  <img
-                                    src={attachment.fileUrl}
-                                    alt={attachment.fileName}
-                                    className="rounded-lg max-w-full h-auto max-h-64 object-cover"
-                                  />
-                                ) : (
-                                  <a
-                                    href={attachment.fileUrl}
-                                    download
-                                    className="flex items-center gap-2 hover:underline text-xs"
-                                  >
-                                    <FileText className="w-4 h-4" />
-                                    <span className="truncate">
-                                      {attachment.fileName}
-                                    </span>
-                                    <Download className="w-3 h-3 ml-auto flex-shrink-0" />
-                                  </a>
-                                )}
-                              </div>
-                            );
-                          })}
-                        </div>
-                      )}
+                    <Mic className="w-5 h-5" />
+                  </Button>
 
-                      <p className="text-sm break-words">{message.content}</p>
-
-                      <p
-                        className={`text-xs mt-1 ${
-                          isOwn
-                            ? "text-blue-100"
-                            : "text-gray-500 dark:text-gray-400"
-                        }`}
+                  <div
+                    className="flex-1 flex items-center gap-2 px-4 py-2.5 rounded-full border"
+                    style={{
+                      backgroundColor: themeColors.inputBg,
+                      borderColor: themeColors.border,
+                    }}
+                  >
+                    <Input
+                      value={messageInput}
+                      onChange={(e) => {
+                        setMessageInput(e.target.value);
+                        handleTyping();
+                      }}
+                      onKeyPress={(e) => {
+                        if (e.key === "Enter" && !e.shiftKey) {
+                          e.preventDefault();
+                          sendMessage();
+                        }
+                      }}
+                      placeholder="Write Something..."
+                      className="flex-1 border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 p-0 h-auto text-sm"
+                      style={{
+                        color: themeColors.text1,
+                      }}
+                    />
+                    <div className="flex items-center gap-1">
+                      <label className="cursor-pointer">
+                        <input
+                          type="file"
+                          className="hidden"
+                          onChange={handleFileUpload}
+                          accept="image/*,.pdf,.doc,.docx,.zip"
+                        />
+                        <button
+                          type="button"
+                          className="p-1 hover:bg-gray-100 rounded transition-colors"
+                        >
+                          <Paperclip
+                            className="w-4 h-4"
+                            style={{ color: themeColors.text3 }}
+                          />
+                        </button>
+                      </label>
+                      <button
+                        type="button"
+                        className="p-1 hover:bg-gray-100 rounded transition-colors"
                       >
-                        {format(new Date(message.createdAt), "p")}
-                      </p>
+                        <ImageIcon
+                          className="w-4 h-4"
+                          style={{ color: themeColors.text3 }}
+                        />
+                      </button>
+                      <button
+                        type="button"
+                        className="p-1 hover:bg-gray-100 rounded transition-colors"
+                      >
+                        <Smile
+                          className="w-4 h-4"
+                          style={{ color: themeColors.text3 }}
+                        />
+                      </button>
                     </div>
                   </div>
-                );
-              })}
-              <div ref={messagesEndRef} />
+
+                  <Button
+                    onClick={sendMessage}
+                    disabled={!messageInput.trim() || isSending}
+                    className="flex-shrink-0 w-11 h-11 p-0 rounded-full transition-all hover:opacity-90 disabled:opacity-50"
+                    style={{ backgroundColor: themeColors.primary }}
+                  >
+                    {isSending ? (
+                      <Loader2 className="w-5 h-5 animate-spin text-white" />
+                    ) : (
+                      <Send className="w-5 h-5 text-white" />
+                    )}
+                  </Button>
+                </div>
+              </div>
+            </>
+          ) : (
+            <div className="flex-1 flex flex-col items-center justify-center p-6 md:p-8 text-center">
+              <div
+                className="rounded-full p-6 mb-4"
+                style={{ backgroundColor: themeColors.bg1 }}
+              >
+                <MessageSquare
+                  className="w-16 h-16 md:w-20 md:h-20"
+                  style={{ color: themeColors.primary }}
+                />
+              </div>
+              <h3
+                className="text-xl md:text-2xl font-bold mb-2 transition-colors"
+                style={{ color: themeColors.text1 }}
+              >
+                Welcome to Chat
+              </h3>
+              <p
+                className="text-sm md:text-base max-w-md transition-colors"
+                style={{ color: themeColors.text3 }}
+              >
+                Select {userRole === "ADMIN" ? "a student" : "an admin"} from
+                the sidebar to start chatting
+              </p>
+            </div>
+          )}
+        </div>
+
+        {/* Right Sidebar - Profile & Actions (Desktop Only) */}
+        {selectedChat && (
+          <div
+            className="hidden xl:flex w-80 border-l flex-col"
+            style={{
+              backgroundColor: themeColors.bg1,
+              borderColor: themeColors.border,
+            }}
+          >
+            {/* Profile Section */}
+            <div
+              className="p-6 border-b text-center"
+              style={{ borderColor: themeColors.border }}
+            >
+              <Avatar className="w-24 h-24 mx-auto mb-4">
+                <AvatarImage src={selectedChat.user.image} />
+                <AvatarFallback
+                  className="text-white text-2xl font-medium"
+                  style={{ backgroundColor: themeColors.primary }}
+                >
+                  {selectedChat.user.name?.[0] || "U"}
+                </AvatarFallback>
+              </Avatar>
+              <h3
+                className="text-lg font-bold mb-1"
+                style={{ color: themeColors.text1 }}
+              >
+                {selectedChat.user.name}
+              </h3>
+              <p className="text-sm" style={{ color: themeColors.text3 }}>
+                {selectedChat.user.role === "ADMIN" ? "Admin" : "Student"}
+              </p>
             </div>
 
-            <div className="p-4 border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-black">
-              <div className="flex items-end gap-2">
-                <label className="cursor-pointer">
-                  <input
-                    type="file"
-                    className="hidden"
-                    onChange={handleFileUpload}
-                    accept="image/*,.pdf,.doc,.docx,.zip"
-                  />
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="icon"
-                    className="flex-shrink-0 h-11 w-11 border-gray-300 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-900"
-                  >
-                    <Paperclip className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-                  </Button>
-                </label>
-
-                <Input
-                  value={messageInput}
-                  onChange={(e) => {
-                    setMessageInput(e.target.value);
-                    handleTyping();
-                  }}
-                  onKeyPress={(e) => {
-                    if (e.key === "Enter" && !e.shiftKey) {
-                      e.preventDefault();
-                      sendMessage();
-                    }
-                  }}
-                  placeholder="Type a message..."
-                  className="flex-1 h-11 bg-gray-50 dark:bg-gray-900 border-gray-300 dark:border-gray-700 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
-                />
-
-                <Button
-                  onClick={sendMessage}
-                  disabled={!messageInput.trim() || isSending}
-                  className="bg-blue-600 hover:bg-blue-700 flex-shrink-0 h-11 w-11 p-0"
+            {/* Action Buttons */}
+            <div
+              className="p-6 border-b"
+              style={{ borderColor: themeColors.border }}
+            >
+              <div className="grid grid-cols-2 gap-4">
+                <button
+                  className="flex flex-col items-center gap-2 p-4 rounded-lg transition-colors hover:opacity-80"
+                  style={{ backgroundColor: themeColors.bg2 }}
                 >
-                  {isSending ? (
-                    <Loader2 className="w-5 h-5 animate-spin" />
-                  ) : (
-                    <Send className="w-5 h-5" />
-                  )}
-                </Button>
+                  <div
+                    className="w-12 h-12 rounded-full flex items-center justify-center"
+                    style={{ backgroundColor: themeColors.primary }}
+                  >
+                    <MessageSquare className="w-5 h-5 text-white" />
+                  </div>
+                  <span
+                    className="text-xs font-medium"
+                    style={{ color: themeColors.text1 }}
+                  >
+                    Chat
+                  </span>
+                </button>
+                <button
+                  className="flex flex-col items-center gap-2 p-4 rounded-lg transition-colors hover:opacity-80"
+                  style={{ backgroundColor: themeColors.bg2 }}
+                >
+                  <div
+                    className="w-12 h-12 rounded-full flex items-center justify-center"
+                    style={{ backgroundColor: themeColors.primary }}
+                  >
+                    <Video className="w-5 h-5 text-white" />
+                  </div>
+                  <span
+                    className="text-xs font-medium"
+                    style={{ color: themeColors.text1 }}
+                  >
+                    Video Call
+                  </span>
+                </button>
               </div>
             </div>
-          </>
-        ) : (
-          <div className="flex-1 flex flex-col items-center justify-center p-8 text-center bg-white dark:bg-black">
-            <MessageSquare className="w-16 h-16 text-gray-300 dark:text-gray-700 mb-4" />
-            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-              Welcome to Chat
-            </h3>
-            <p className="text-sm text-gray-500 dark:text-gray-400 max-w-md">
-              Select {userRole === "ADMIN" ? "a student" : "an admin"} from the
-              sidebar to start chatting
-            </p>
+
+            {/* Quick Actions */}
+            <div
+              className="p-6 border-b"
+              style={{ borderColor: themeColors.border }}
+            >
+              <button
+                className="w-full flex items-center gap-3 p-3 rounded-lg transition-colors hover:opacity-80 mb-2"
+                style={{ backgroundColor: themeColors.bg2 }}
+              >
+                <UserPlus
+                  className="w-5 h-5"
+                  style={{ color: themeColors.primary }}
+                />
+                <span
+                  className="text-sm font-medium"
+                  style={{ color: themeColors.text1 }}
+                >
+                  View Friends
+                </span>
+              </button>
+              <button
+                className="w-full flex items-center gap-3 p-3 rounded-lg transition-colors hover:opacity-80"
+                style={{ backgroundColor: themeColors.bg2 }}
+              >
+                <Heart
+                  className="w-5 h-5"
+                  style={{ color: themeColors.primary }}
+                />
+                <span
+                  className="text-sm font-medium"
+                  style={{ color: themeColors.text1 }}
+                >
+                  Add to Favorites
+                </span>
+              </button>
+            </div>
+
+            {/* Attachments */}
+            <div className="flex-1 p-6 overflow-y-auto">
+              <h4
+                className="font-semibold mb-4"
+                style={{ color: themeColors.text1 }}
+              >
+                Attachments
+              </h4>
+              <div className="grid grid-cols-4 gap-3">
+                <button
+                  className="flex flex-col items-center gap-2 p-3 rounded-lg transition-colors hover:opacity-80"
+                  style={{ backgroundColor: themeColors.bg2 }}
+                >
+                  <FileText className="w-6 h-6" style={{ color: "#DC2626" }} />
+                  <span
+                    className="text-xs"
+                    style={{ color: themeColors.text3 }}
+                  >
+                    PDF
+                  </span>
+                </button>
+                <button
+                  className="flex flex-col items-center gap-2 p-3 rounded-lg transition-colors hover:opacity-80"
+                  style={{ backgroundColor: themeColors.bg2 }}
+                >
+                  <Video className="w-6 h-6" style={{ color: "#2563EB" }} />
+                  <span
+                    className="text-xs"
+                    style={{ color: themeColors.text3 }}
+                  >
+                    VIDEO
+                  </span>
+                </button>
+                <button
+                  className="flex flex-col items-center gap-2 p-3 rounded-lg transition-colors hover:opacity-80"
+                  style={{ backgroundColor: themeColors.bg2 }}
+                >
+                  <Music className="w-6 h-6" style={{ color: "#9333EA" }} />
+                  <span
+                    className="text-xs"
+                    style={{ color: themeColors.text3 }}
+                  >
+                    MP3
+                  </span>
+                </button>
+                <button
+                  className="flex flex-col items-center gap-2 p-3 rounded-lg transition-colors hover:opacity-80"
+                  style={{ backgroundColor: themeColors.bg2 }}
+                >
+                  <ImageIcon className="w-6 h-6" style={{ color: "#16A34A" }} />
+                  <span
+                    className="text-xs"
+                    style={{ color: themeColors.text3 }}
+                  >
+                    IMAGE
+                  </span>
+                </button>
+              </div>
+              <button
+                className="w-full mt-4 py-2 px-4 rounded-full border text-sm font-medium transition-colors hover:opacity-80"
+                style={{
+                  borderColor: themeColors.border,
+                  color: themeColors.primary,
+                }}
+              >
+                View All
+              </button>
+            </div>
           </div>
         )}
       </div>

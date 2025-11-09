@@ -3,11 +3,7 @@
 import { useState, useEffect } from "react";
 import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import {
   Eye,
@@ -23,13 +19,25 @@ import {
   ArrowRight,
   ArrowLeft,
   AlertCircle,
+  Moon,
+  Sun,
 } from "lucide-react";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export default function RegisterPage() {
   const router = useRouter();
   const { data: session, status } = useSession();
   const { toast } = useToast();
+
+  const [isDark, setIsDark] = useState(false);
+  const themeColors = {
+    primary: "#0E52AC",
+    text1: isDark ? "#FFFFFF" : "#111E2F",
+    text2: isDark ? "#CBD5E1" : "#284366",
+    bg1: isDark ? "#0A0F1E" : "#F8FBFF",
+    bg2: isDark ? "#1E293B" : "#FFFFFF",
+    inputBg: isDark ? "#1E293B" : "#F8FBFF",
+    border: isDark ? "#475569" : "#CBD5E1",
+  };
 
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -391,27 +399,53 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-black">
-      <div className="container mx-auto px-4 py-8 lg:py-0">
+    <div
+      className="min-h-screen relative"
+      style={{ backgroundColor: themeColors.bg1 }}
+    >
+      {/* Theme Toggle */}
+      <button
+        onClick={() => setIsDark(!isDark)}
+        className="fixed top-6 right-6 z-50 p-3 rounded-full transition-all hover:scale-110"
+        style={{
+          backgroundColor: themeColors.bg2,
+          border: `1px solid ${themeColors.border}`,
+          color: themeColors.text1,
+        }}
+        aria-label="Toggle theme"
+      >
+        {isDark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+      </button>
+
+      <div className="container mx-auto px-4 md:px-6 py-6 md:py-8 lg:py-0">
         <div className="min-h-screen flex items-center justify-center">
-          <div className="w-full max-w-[1200px] grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+          <div className="w-full max-w-[1200px] grid lg:grid-cols-2 gap-8 md:gap-12 lg:gap-16 items-center">
             {/* Left Side - Hero Section */}
-            <div className="hidden lg:block space-y-8">
-              <div className="space-y-4">
+            <div className="hidden lg:block space-y-6 md:space-y-8">
+              <div className="space-y-3 md:space-y-4">
                 <div className="inline-block">
-                  <h1 className="text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-2">
+                  <h1
+                    className="text-4xl md:text-5xl lg:text-6xl font-bold mb-2"
+                    style={{ color: themeColors.text1 }}
+                  >
                     Join Us Today
                   </h1>
-                  <div className="h-1.5 bg-blue-600 rounded-full w-32"></div>
+                  <div
+                    className="h-1.5 rounded-full w-32"
+                    style={{ backgroundColor: themeColors.primary }}
+                  ></div>
                 </div>
-                <p className="text-lg text-gray-600 dark:text-gray-400 max-w-md">
+                <p
+                  className="text-base md:text-lg max-w-md"
+                  style={{ color: themeColors.text2 }}
+                >
                   Create your account and start managing your assignments
                   efficiently
                 </p>
               </div>
 
               {/* Feature Cards */}
-              <div className="space-y-4">
+              <div className="space-y-3 md:space-y-4">
                 {[
                   {
                     icon: "📚",
@@ -431,14 +465,30 @@ export default function RegisterPage() {
                 ].map((feature, idx) => (
                   <div
                     key={idx}
-                    className="flex items-start gap-4 p-4 rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 transition-all hover:border-blue-600 dark:hover:border-blue-600"
+                    className="flex items-start gap-3 md:gap-4 p-3 md:p-4 rounded-xl transition-all"
+                    style={{
+                      backgroundColor: themeColors.inputBg,
+                      border: `1px solid ${themeColors.border}`,
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.borderColor = themeColors.primary;
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.borderColor = themeColors.border;
+                    }}
                   >
-                    <div className="text-3xl">{feature.icon}</div>
+                    <div className="text-2xl md:text-3xl">{feature.icon}</div>
                     <div>
-                      <h3 className="font-semibold text-gray-900 dark:text-white mb-1">
+                      <h3
+                        className="font-semibold mb-1"
+                        style={{ color: themeColors.text1 }}
+                      >
                         {feature.title}
                       </h3>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                      <p
+                        className="text-xs md:text-sm"
+                        style={{ color: themeColors.text2 }}
+                      >
                         {feature.desc}
                       </p>
                     </div>
@@ -450,20 +500,38 @@ export default function RegisterPage() {
             {/* Right Side - Register Form */}
             <div className="w-full max-w-md mx-auto lg:mx-0">
               {/* Logo - Mobile Only */}
-              <div className="lg:hidden mb-8 text-center">
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-                  Assignment Hub
+              <div className="lg:hidden mb-6 md:mb-8 text-center">
+                <h1
+                  className="text-2xl md:text-3xl font-bold mb-2"
+                  style={{ color: themeColors.text1 }}
+                >
+                  Assignment Ghar
                 </h1>
-                <div className="h-1 bg-blue-600 rounded-full w-16 mx-auto"></div>
+                <div
+                  className="h-1 rounded-full w-16 mx-auto"
+                  style={{ backgroundColor: themeColors.primary }}
+                ></div>
               </div>
 
-              <div className="bg-white dark:bg-gray-950 rounded-2xl border border-gray-200 dark:border-gray-800 p-8 shadow-sm">
+              <div
+                className="rounded-2xl p-6 md:p-8 shadow-sm"
+                style={{
+                  backgroundColor: themeColors.bg2,
+                  border: `1px solid ${themeColors.border}`,
+                }}
+              >
                 {/* Header */}
-                <div className="mb-8">
-                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                <div className="mb-6 md:mb-8">
+                  <h2
+                    className="text-xl md:text-2xl font-bold mb-2"
+                    style={{ color: themeColors.text1 }}
+                  >
                     {currentStep === 3 ? "Verify Email" : "Create Account"}
                   </h2>
-                  <p className="text-gray-600 dark:text-gray-400">
+                  <p
+                    className="text-sm md:text-base"
+                    style={{ color: themeColors.text2 }}
+                  >
                     {currentStep === 3
                       ? "Enter the code sent to your email"
                       : "Fill in your details to get started"}
@@ -472,29 +540,39 @@ export default function RegisterPage() {
 
                 {/* Progress Indicator */}
                 {currentStep !== 3 && (
-                  <div className="mb-6">
+                  <div className="mb-4 md:mb-6">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                      <span
+                        className="text-xs md:text-sm font-medium"
+                        style={{ color: themeColors.text1 }}
+                      >
                         Step {currentStep} of 2
                       </span>
-                      <span className="text-xs text-gray-500">
+                      <span
+                        className="text-xs"
+                        style={{ color: themeColors.text2 }}
+                      >
                         {currentStep === 1 ? "Basic Info" : "Set Password"}
                       </span>
                     </div>
                     <div className="flex gap-2">
                       <div
-                        className={`h-1.5 flex-1 rounded-full transition-all ${
-                          currentStep >= 1
-                            ? "bg-blue-600"
-                            : "bg-gray-300 dark:bg-gray-700"
-                        }`}
+                        className="h-1.5 flex-1 rounded-full transition-all"
+                        style={{
+                          backgroundColor:
+                            currentStep >= 1
+                              ? themeColors.primary
+                              : themeColors.border,
+                        }}
                       ></div>
                       <div
-                        className={`h-1.5 flex-1 rounded-full transition-all ${
-                          currentStep >= 2
-                            ? "bg-blue-600"
-                            : "bg-gray-300 dark:bg-gray-700"
-                        }`}
+                        className="h-1.5 flex-1 rounded-full transition-all"
+                        style={{
+                          backgroundColor:
+                            currentStep >= 2
+                              ? themeColors.primary
+                              : themeColors.border,
+                        }}
                       ></div>
                     </div>
                   </div>
@@ -502,18 +580,22 @@ export default function RegisterPage() {
 
                 {/* Step 1: Basic Info */}
                 {currentStep === 1 && (
-                  <div className="space-y-5">
+                  <div className="space-y-4 md:space-y-5">
                     {/* Name */}
                     <div className="space-y-2">
-                      <Label
+                      <label
                         htmlFor="name"
-                        className="text-sm font-medium text-gray-900 dark:text-white"
+                        className="text-xs md:text-sm font-medium"
+                        style={{ color: themeColors.text1 }}
                       >
                         Full Name
-                      </Label>
+                      </label>
                       <div className="relative">
-                        <User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-                        <Input
+                        <User
+                          className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 md:h-5 md:w-5"
+                          style={{ color: themeColors.text2 }}
+                        />
+                        <input
                           id="name"
                           type="text"
                           placeholder="Enter your full name"
@@ -521,7 +603,20 @@ export default function RegisterPage() {
                           onChange={(e) =>
                             setFormData({ ...formData, name: e.target.value })
                           }
-                          className="pl-10 h-11 bg-gray-50 dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white placeholder:text-gray-500 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
+                          onFocus={(e) =>
+                            (e.currentTarget.style.borderColor =
+                              themeColors.primary)
+                          }
+                          onBlur={(e) =>
+                            (e.currentTarget.style.borderColor =
+                              themeColors.border)
+                          }
+                          className="w-full pl-9 md:pl-10 pr-3 py-2 md:py-2.5 rounded-lg text-sm md:text-base transition-colors"
+                          style={{
+                            backgroundColor: themeColors.inputBg,
+                            border: `1px solid ${themeColors.border}`,
+                            color: themeColors.text1,
+                          }}
                           required
                         />
                       </div>
@@ -529,15 +624,19 @@ export default function RegisterPage() {
 
                     {/* Username */}
                     <div className="space-y-2">
-                      <Label
+                      <label
                         htmlFor="username"
-                        className="text-sm font-medium text-gray-900 dark:text-white"
+                        className="text-xs md:text-sm font-medium"
+                        style={{ color: themeColors.text1 }}
                       >
                         Username
-                      </Label>
+                      </label>
                       <div className="relative">
-                        <User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-                        <Input
+                        <User
+                          className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 md:h-5 md:w-5"
+                          style={{ color: themeColors.text2 }}
+                        />
+                        <input
                           id="username"
                           type="text"
                           placeholder="Choose a username"
@@ -548,26 +647,47 @@ export default function RegisterPage() {
                               username: e.target.value.trim().toLowerCase(),
                             })
                           }
-                          className={`pl-10 pr-10 h-11 bg-gray-50 dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white placeholder:text-gray-500 focus:border-blue-600 focus:ring-1 focus:ring-blue-600 ${
-                            usernameStatus === "available"
-                              ? "border-green-600"
-                              : usernameStatus === "taken" ||
-                                usernameStatus === "invalid"
-                              ? "border-red-600"
-                              : ""
-                          }`}
+                          onFocus={(e) =>
+                            (e.currentTarget.style.borderColor =
+                              themeColors.primary)
+                          }
+                          onBlur={(e) =>
+                            (e.currentTarget.style.borderColor =
+                              usernameStatus === "available"
+                                ? "#10B981"
+                                : usernameStatus === "taken" ||
+                                  usernameStatus === "invalid"
+                                ? "#DC2626"
+                                : themeColors.border)
+                          }
+                          className="w-full pl-9 md:pl-10 pr-9 md:pr-10 py-2 md:py-2.5 rounded-lg text-sm md:text-base transition-colors"
+                          style={{
+                            backgroundColor: themeColors.inputBg,
+                            border: `1px solid ${
+                              usernameStatus === "available"
+                                ? "#10B981"
+                                : usernameStatus === "taken" ||
+                                  usernameStatus === "invalid"
+                                ? "#DC2626"
+                                : themeColors.border
+                            }`,
+                            color: themeColors.text1,
+                          }}
                           required
                           minLength={3}
                         />
                         {formData.username.length >= 3 && (
                           <div className="absolute right-3 top-1/2 -translate-y-1/2">
                             {usernameStatus === "checking" ? (
-                              <Loader2 className="h-5 w-5 text-gray-400 animate-spin" />
+                              <Loader2
+                                className="h-4 w-4 md:h-5 md:w-5 animate-spin"
+                                style={{ color: themeColors.text2 }}
+                              />
                             ) : usernameStatus === "available" ? (
-                              <Check className="h-5 w-5 text-green-600" />
+                              <Check className="h-4 w-4 md:h-5 md:w-5 text-green-600" />
                             ) : usernameStatus === "taken" ||
                               usernameStatus === "invalid" ? (
-                              <X className="h-5 w-5 text-red-600" />
+                              <X className="h-4 w-4 md:h-5 md:w-5 text-red-600" />
                             ) : null}
                           </div>
                         )}
@@ -594,15 +714,19 @@ export default function RegisterPage() {
 
                     {/* Email */}
                     <div className="space-y-2">
-                      <Label
+                      <label
                         htmlFor="email"
-                        className="text-sm font-medium text-gray-900 dark:text-white"
+                        className="text-xs md:text-sm font-medium"
+                        style={{ color: themeColors.text1 }}
                       >
                         Email Address
-                      </Label>
+                      </label>
                       <div className="relative">
-                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-                        <Input
+                        <Mail
+                          className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 md:h-5 md:w-5"
+                          style={{ color: themeColors.text2 }}
+                        />
+                        <input
                           id="email"
                           type="email"
                           placeholder="Enter your email"
@@ -610,25 +734,46 @@ export default function RegisterPage() {
                           onChange={(e) => {
                             setFormData({ ...formData, email: e.target.value });
                           }}
-                          className={`pl-10 pr-10 h-11 bg-gray-50 dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white placeholder:text-gray-500 focus:border-blue-600 focus:ring-1 focus:ring-blue-600 ${
-                            emailStatus === "available"
-                              ? "border-green-600"
-                              : emailStatus === "taken" ||
-                                emailStatus === "invalid"
-                              ? "border-red-600"
-                              : ""
-                          }`}
+                          onFocus={(e) =>
+                            (e.currentTarget.style.borderColor =
+                              themeColors.primary)
+                          }
+                          onBlur={(e) =>
+                            (e.currentTarget.style.borderColor =
+                              emailStatus === "available"
+                                ? "#10B981"
+                                : emailStatus === "taken" ||
+                                  emailStatus === "invalid"
+                                ? "#DC2626"
+                                : themeColors.border)
+                          }
+                          className="w-full pl-9 md:pl-10 pr-9 md:pr-10 py-2 md:py-2.5 rounded-lg text-sm md:text-base transition-colors"
+                          style={{
+                            backgroundColor: themeColors.inputBg,
+                            border: `1px solid ${
+                              emailStatus === "available"
+                                ? "#10B981"
+                                : emailStatus === "taken" ||
+                                  emailStatus === "invalid"
+                                ? "#DC2626"
+                                : themeColors.border
+                            }`,
+                            color: themeColors.text1,
+                          }}
                           required
                         />
                         {formData.email.length > 0 && (
                           <div className="absolute right-3 top-1/2 -translate-y-1/2">
                             {emailStatus === "checking" ? (
-                              <Loader2 className="h-5 w-5 text-gray-400 animate-spin" />
+                              <Loader2
+                                className="h-4 w-4 md:h-5 md:w-5 animate-spin"
+                                style={{ color: themeColors.text2 }}
+                              />
                             ) : emailStatus === "available" ? (
-                              <Check className="h-5 w-5 text-green-600" />
+                              <Check className="h-4 w-4 md:h-5 md:w-5 text-green-600" />
                             ) : emailStatus === "taken" ||
                               emailStatus === "invalid" ? (
-                              <X className="h-5 w-5 text-red-600" />
+                              <X className="h-4 w-4 md:h-5 md:w-5 text-red-600" />
                             ) : null}
                           </div>
                         )}
@@ -655,19 +800,33 @@ export default function RegisterPage() {
 
                     {/* Gender */}
                     <div className="space-y-2">
-                      <Label
+                      <label
                         htmlFor="gender"
-                        className="text-sm font-medium text-gray-900 dark:text-white"
+                        className="text-xs md:text-sm font-medium"
+                        style={{ color: themeColors.text1 }}
                       >
                         Gender
-                      </Label>
+                      </label>
                       <select
                         id="gender"
                         value={formData.gender}
                         onChange={(e) =>
                           setFormData({ ...formData, gender: e.target.value })
                         }
-                        className="w-full h-11 px-4 bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-lg focus:border-blue-600 focus:ring-1 focus:ring-blue-600 text-gray-900 dark:text-white"
+                        onFocus={(e) =>
+                          (e.currentTarget.style.borderColor =
+                            themeColors.primary)
+                        }
+                        onBlur={(e) =>
+                          (e.currentTarget.style.borderColor =
+                            themeColors.border)
+                        }
+                        className="w-full px-3 md:px-4 py-2 md:py-2.5 rounded-lg text-sm md:text-base transition-colors"
+                        style={{
+                          backgroundColor: themeColors.inputBg,
+                          border: `1px solid ${themeColors.border}`,
+                          color: themeColors.text1,
+                        }}
                         required
                       >
                         <option value="">Select your gender</option>
@@ -681,7 +840,7 @@ export default function RegisterPage() {
                     </div>
 
                     {/* Next Button */}
-                    <Button
+                    <button
                       type="button"
                       onClick={handleNextStep}
                       disabled={
@@ -690,33 +849,51 @@ export default function RegisterPage() {
                         usernameStatus !== "available" ||
                         emailStatus !== "available"
                       }
-                      className="w-full h-11 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                      className="w-full py-2.5 md:py-3 rounded-lg text-white text-sm md:text-base font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-90"
+                      style={{ backgroundColor: themeColors.primary }}
                     >
                       <span className="flex items-center justify-center gap-2">
-                        Next: Set Password <ArrowRight className="h-5 w-5" />
+                        Next: Set Password{" "}
+                        <ArrowRight className="h-4 w-4 md:h-5 md:w-5" />
                       </span>
-                    </Button>
+                    </button>
 
                     {/* Google Sign In */}
-                    <div className="relative my-6">
+                    <div className="relative my-4 md:my-6">
                       <div className="absolute inset-0 flex items-center">
-                        <div className="w-full border-t border-gray-200 dark:border-gray-800"></div>
+                        <div
+                          className="w-full border-t"
+                          style={{ borderColor: themeColors.border }}
+                        ></div>
                       </div>
                       <div className="relative flex justify-center text-xs">
-                        <span className="px-3 bg-white dark:bg-gray-950 text-gray-500">
+                        <span
+                          className="px-3"
+                          style={{
+                            backgroundColor: themeColors.bg2,
+                            color: themeColors.text2,
+                          }}
+                        >
                           OR CONTINUE WITH
                         </span>
                       </div>
                     </div>
 
-                    <Button
+                    <button
                       type="button"
                       onClick={handleGoogleSignIn}
                       disabled={isLoading}
-                      variant="outline"
-                      className="w-full h-11 border-gray-300 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-900 text-gray-900 dark:text-white font-medium rounded-lg"
+                      className="w-full py-2.5 md:py-3 rounded-lg text-sm md:text-base font-medium transition-all hover:opacity-90"
+                      style={{
+                        border: `1px solid ${themeColors.border}`,
+                        backgroundColor: themeColors.bg2,
+                        color: themeColors.text1,
+                      }}
                     >
-                      <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
+                      <svg
+                        className="w-4 h-4 md:w-5 md:h-5 mr-2 inline-block"
+                        viewBox="0 0 24 24"
+                      >
                         <path
                           fill="#4285F4"
                           d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -735,14 +912,18 @@ export default function RegisterPage() {
                         />
                       </svg>
                       Continue with Google
-                    </Button>
+                    </button>
 
                     {/* Login Link */}
-                    <p className="text-center text-sm text-gray-600 dark:text-gray-400 pt-4">
+                    <p
+                      className="text-center text-xs md:text-sm pt-3 md:pt-4"
+                      style={{ color: themeColors.text2 }}
+                    >
                       Already have an account?{" "}
                       <Link
                         href="/login"
-                        className="text-blue-600 hover:text-blue-700 dark:text-blue-500 dark:hover:text-blue-400 font-semibold"
+                        className="font-semibold hover:underline"
+                        style={{ color: themeColors.primary }}
                       >
                         Sign In
                       </Link>
@@ -752,36 +933,58 @@ export default function RegisterPage() {
 
                 {/* Step 2: Password */}
                 {currentStep === 2 && (
-                  <div className="space-y-5">
+                  <div className="space-y-4 md:space-y-5">
                     {/* Summary */}
-                    <Alert className="bg-blue-50 dark:bg-blue-950/30 border-blue-200 dark:border-blue-900">
-                      <AlertDescription className="text-sm text-gray-700 dark:text-gray-300">
-                        <p className="font-medium mb-2">Account Details:</p>
-                        <div className="space-y-1 text-xs">
-                          <p>
-                            <strong>Name:</strong> {formData.name}
-                          </p>
-                          <p>
-                            <strong>Username:</strong> @{formData.username}
-                          </p>
-                          <p>
-                            <strong>Email:</strong> {formData.email}
-                          </p>
-                        </div>
-                      </AlertDescription>
-                    </Alert>
+                    <div
+                      className="p-3 md:p-4 rounded-lg"
+                      style={{
+                        backgroundColor: isDark ? "#1E3A8A20" : "#DBEAFE",
+                        border: `1px solid ${isDark ? "#1E40AF" : "#93C5FD"}`,
+                      }}
+                    >
+                      <p
+                        className="font-medium mb-2 text-xs md:text-sm"
+                        style={{ color: themeColors.text1 }}
+                      >
+                        Account Details:
+                      </p>
+                      <div className="space-y-1 text-xs">
+                        <p style={{ color: themeColors.text2 }}>
+                          <strong style={{ color: themeColors.text1 }}>
+                            Name:
+                          </strong>{" "}
+                          {formData.name}
+                        </p>
+                        <p style={{ color: themeColors.text2 }}>
+                          <strong style={{ color: themeColors.text1 }}>
+                            Username:
+                          </strong>{" "}
+                          @{formData.username}
+                        </p>
+                        <p style={{ color: themeColors.text2 }}>
+                          <strong style={{ color: themeColors.text1 }}>
+                            Email:
+                          </strong>{" "}
+                          {formData.email}
+                        </p>
+                      </div>
+                    </div>
 
                     {/* Password */}
                     <div className="space-y-2">
-                      <Label
+                      <label
                         htmlFor="password"
-                        className="text-sm font-medium text-gray-900 dark:text-white"
+                        className="text-xs md:text-sm font-medium"
+                        style={{ color: themeColors.text1 }}
                       >
                         Password
-                      </Label>
+                      </label>
                       <div className="relative">
-                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-                        <Input
+                        <Lock
+                          className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 md:h-5 md:w-5"
+                          style={{ color: themeColors.text2 }}
+                        />
+                        <input
                           id="password"
                           type={showPassword ? "text" : "password"}
                           placeholder="Create a strong password"
@@ -793,19 +996,33 @@ export default function RegisterPage() {
                               calculatePasswordStrength(password)
                             );
                           }}
-                          className="pl-10 pr-10 h-11 bg-gray-50 dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white placeholder:text-gray-500 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
+                          onFocus={(e) =>
+                            (e.currentTarget.style.borderColor =
+                              themeColors.primary)
+                          }
+                          onBlur={(e) =>
+                            (e.currentTarget.style.borderColor =
+                              themeColors.border)
+                          }
+                          className="w-full pl-9 md:pl-10 pr-9 md:pr-10 py-2 md:py-2.5 rounded-lg text-sm md:text-base transition-colors"
+                          style={{
+                            backgroundColor: themeColors.inputBg,
+                            border: `1px solid ${themeColors.border}`,
+                            color: themeColors.text1,
+                          }}
                           required
                           minLength={8}
                         />
                         <button
                           type="button"
                           onClick={() => setShowPassword(!showPassword)}
-                          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                          className="absolute right-3 top-1/2 -translate-y-1/2 transition-colors"
+                          style={{ color: themeColors.text2 }}
                         >
                           {showPassword ? (
-                            <EyeOff className="h-5 w-5" />
+                            <EyeOff className="h-4 w-4 md:h-5 md:w-5" />
                           ) : (
-                            <Eye className="h-5 w-5" />
+                            <Eye className="h-4 w-4 md:h-5 md:w-5" />
                           )}
                         </button>
                       </div>
@@ -815,44 +1032,52 @@ export default function RegisterPage() {
                         <div className="space-y-1">
                           <div className="flex gap-1 h-1">
                             <div
-                              className={`flex-1 rounded-full transition-all ${
-                                passwordStrength === "weak"
-                                  ? "bg-red-600"
-                                  : passwordStrength === "medium"
-                                  ? "bg-yellow-500"
-                                  : passwordStrength === "strong"
-                                  ? "bg-green-600"
-                                  : "bg-gray-300"
-                              }`}
+                              className="flex-1 rounded-full transition-all"
+                              style={{
+                                backgroundColor:
+                                  passwordStrength === "weak"
+                                    ? "#DC2626"
+                                    : passwordStrength === "medium"
+                                    ? "#F59E0B"
+                                    : passwordStrength === "strong"
+                                    ? "#10B981"
+                                    : themeColors.border,
+                              }}
                             ></div>
                             <div
-                              className={`flex-1 rounded-full transition-all ${
-                                passwordStrength === "medium" ||
-                                passwordStrength === "strong"
-                                  ? passwordStrength === "medium"
-                                    ? "bg-yellow-500"
-                                    : "bg-green-600"
-                                  : "bg-gray-300"
-                              }`}
+                              className="flex-1 rounded-full transition-all"
+                              style={{
+                                backgroundColor:
+                                  passwordStrength === "medium" ||
+                                  passwordStrength === "strong"
+                                    ? passwordStrength === "medium"
+                                      ? "#F59E0B"
+                                      : "#10B981"
+                                    : themeColors.border,
+                              }}
                             ></div>
                             <div
-                              className={`flex-1 rounded-full transition-all ${
-                                passwordStrength === "strong"
-                                  ? "bg-green-600"
-                                  : "bg-gray-300"
-                              }`}
+                              className="flex-1 rounded-full transition-all"
+                              style={{
+                                backgroundColor:
+                                  passwordStrength === "strong"
+                                    ? "#10B981"
+                                    : themeColors.border,
+                              }}
                             ></div>
                           </div>
                           <p
-                            className={`text-xs font-medium ${
-                              passwordStrength === "weak"
-                                ? "text-red-600"
-                                : passwordStrength === "medium"
-                                ? "text-yellow-600"
-                                : passwordStrength === "strong"
-                                ? "text-green-600"
-                                : "text-gray-500"
-                            }`}
+                            className="text-xs font-medium"
+                            style={{
+                              color:
+                                passwordStrength === "weak"
+                                  ? "#DC2626"
+                                  : passwordStrength === "medium"
+                                  ? "#F59E0B"
+                                  : passwordStrength === "strong"
+                                  ? "#10B981"
+                                  : themeColors.text2,
+                            }}
                           >
                             {passwordStrength === "weak" && "Weak password"}
                             {passwordStrength === "medium" && "Medium strength"}
@@ -865,15 +1090,19 @@ export default function RegisterPage() {
 
                     {/* Confirm Password */}
                     <div className="space-y-2">
-                      <Label
+                      <label
                         htmlFor="confirmPassword"
-                        className="text-sm font-medium text-gray-900 dark:text-white"
+                        className="text-xs md:text-sm font-medium"
+                        style={{ color: themeColors.text1 }}
                       >
                         Confirm Password
-                      </Label>
+                      </label>
                       <div className="relative">
-                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-                        <Input
+                        <Lock
+                          className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 md:h-5 md:w-5"
+                          style={{ color: themeColors.text2 }}
+                        />
+                        <input
                           id="confirmPassword"
                           type={showConfirmPassword ? "text" : "password"}
                           placeholder="Re-enter your password"
@@ -884,15 +1113,34 @@ export default function RegisterPage() {
                               confirmPassword: e.target.value,
                             })
                           }
-                          className={`pl-10 pr-10 h-11 bg-gray-50 dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white placeholder:text-gray-500 focus:border-blue-600 focus:ring-1 focus:ring-blue-600 ${
-                            formData.confirmPassword &&
-                            formData.password !== formData.confirmPassword
-                              ? "border-red-600"
-                              : formData.confirmPassword &&
-                                formData.password === formData.confirmPassword
-                              ? "border-green-600"
-                              : ""
-                          }`}
+                          onFocus={(e) =>
+                            (e.currentTarget.style.borderColor =
+                              themeColors.primary)
+                          }
+                          onBlur={(e) =>
+                            (e.currentTarget.style.borderColor =
+                              formData.confirmPassword &&
+                              formData.password !== formData.confirmPassword
+                                ? "#DC2626"
+                                : formData.confirmPassword &&
+                                  formData.password === formData.confirmPassword
+                                ? "#10B981"
+                                : themeColors.border)
+                          }
+                          className="w-full pl-9 md:pl-10 pr-9 md:pr-10 py-2 md:py-2.5 rounded-lg text-sm md:text-base transition-colors"
+                          style={{
+                            backgroundColor: themeColors.inputBg,
+                            border: `1px solid ${
+                              formData.confirmPassword &&
+                              formData.password !== formData.confirmPassword
+                                ? "#DC2626"
+                                : formData.confirmPassword &&
+                                  formData.password === formData.confirmPassword
+                                ? "#10B981"
+                                : themeColors.border
+                            }`,
+                            color: themeColors.text1,
+                          }}
                           required
                         />
                         <button
@@ -900,12 +1148,13 @@ export default function RegisterPage() {
                           onClick={() =>
                             setShowConfirmPassword(!showConfirmPassword)
                           }
-                          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                          className="absolute right-3 top-1/2 -translate-y-1/2 transition-colors"
+                          style={{ color: themeColors.text2 }}
                         >
                           {showConfirmPassword ? (
-                            <EyeOff className="h-5 w-5" />
+                            <EyeOff className="h-4 w-4 md:h-5 md:w-5" />
                           ) : (
-                            <Eye className="h-5 w-5" />
+                            <Eye className="h-4 w-4 md:h-5 md:w-5" />
                           )}
                         </button>
                       </div>
@@ -926,17 +1175,21 @@ export default function RegisterPage() {
                     </div>
 
                     {/* Buttons */}
-                    <div className="flex gap-3">
-                      <Button
+                    <div className="flex gap-2 md:gap-3">
+                      <button
                         type="button"
                         onClick={() => setCurrentStep(1)}
-                        variant="outline"
-                        className="h-11 px-6 border-gray-300 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-900"
+                        className="px-4 md:px-6 py-2.5 md:py-3 rounded-lg text-sm md:text-base transition-all hover:opacity-90"
+                        style={{
+                          border: `1px solid ${themeColors.border}`,
+                          backgroundColor: themeColors.bg2,
+                          color: themeColors.text1,
+                        }}
                       >
-                        <ArrowLeft className="h-5 w-5 mr-2" />
+                        <ArrowLeft className="h-4 w-4 md:h-5 md:w-5 mr-2 inline-block" />
                         Back
-                      </Button>
-                      <Button
+                      </button>
+                      <button
                         type="button"
                         onClick={handleNextStep}
                         disabled={
@@ -945,33 +1198,51 @@ export default function RegisterPage() {
                           formData.password !== formData.confirmPassword ||
                           passwordStrength === "weak"
                         }
-                        className="flex-1 h-11 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="flex-1 py-2.5 md:py-3 rounded-lg text-white text-sm md:text-base font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-90"
+                        style={{ backgroundColor: themeColors.primary }}
                       >
                         {isLoading ? (
-                          <div className="flex items-center gap-2">
-                            <Loader2 className="h-5 w-5 animate-spin" />
+                          <div className="flex items-center justify-center gap-2">
+                            <Loader2 className="h-4 w-4 md:h-5 md:w-5 animate-spin" />
                             Creating...
                           </div>
                         ) : (
                           "Create Account"
                         )}
-                      </Button>
+                      </button>
                     </div>
                   </div>
                 )}
 
                 {/* Step 3: OTP Verification */}
                 {currentStep === 3 && (
-                  <form onSubmit={handleVerifyOTP} className="space-y-6">
+                  <form
+                    onSubmit={handleVerifyOTP}
+                    className="space-y-4 md:space-y-6"
+                  >
                     {/* OTP Info */}
-                    <div className="text-center space-y-3">
-                      <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-100 dark:bg-blue-950 rounded-full mb-2">
-                        <ShieldCheck className="w-8 h-8 text-blue-600" />
+                    <div className="text-center space-y-2 md:space-y-3">
+                      <div
+                        className="inline-flex items-center justify-center w-14 h-14 md:w-16 md:h-16 rounded-full mb-2"
+                        style={{
+                          backgroundColor: isDark ? "#1E3A8A" : "#DBEAFE",
+                        }}
+                      >
+                        <ShieldCheck
+                          className="w-7 h-7 md:w-8 md:h-8"
+                          style={{ color: themeColors.primary }}
+                        />
                       </div>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                      <p
+                        className="text-xs md:text-sm"
+                        style={{ color: themeColors.text2 }}
+                      >
                         We've sent a 6-digit code to
                         <br />
-                        <span className="font-semibold text-gray-900 dark:text-white">
+                        <span
+                          className="font-semibold"
+                          style={{ color: themeColors.text1 }}
+                        >
                           {formData.email}
                         </span>
                       </p>
@@ -979,13 +1250,14 @@ export default function RegisterPage() {
 
                     {/* OTP Input */}
                     <div className="space-y-2">
-                      <Label
+                      <label
                         htmlFor="otp"
-                        className="text-sm font-medium text-gray-900 dark:text-white"
+                        className="text-xs md:text-sm font-medium"
+                        style={{ color: themeColors.text1 }}
                       >
                         Verification Code
-                      </Label>
-                      <Input
+                      </label>
+                      <input
                         id="otp"
                         type="text"
                         placeholder="000000"
@@ -993,64 +1265,85 @@ export default function RegisterPage() {
                         onChange={(e) =>
                           setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))
                         }
-                        className="h-14 text-center text-2xl font-bold tracking-widest bg-gray-50 dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
+                        onFocus={(e) =>
+                          (e.currentTarget.style.borderColor =
+                            themeColors.primary)
+                        }
+                        onBlur={(e) =>
+                          (e.currentTarget.style.borderColor =
+                            themeColors.border)
+                        }
+                        className="w-full h-12 md:h-14 text-center text-xl md:text-2xl font-bold tracking-widest rounded-lg transition-colors"
+                        style={{
+                          backgroundColor: themeColors.inputBg,
+                          border: `1px solid ${themeColors.border}`,
+                          color: themeColors.text1,
+                        }}
                         required
                         maxLength={6}
                         pattern="\d{6}"
                       />
-                      <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
+                      <p
+                        className="text-xs text-center"
+                        style={{ color: themeColors.text2 }}
+                      >
                         Code expires in 10 minutes
                       </p>
                     </div>
 
                     {/* Verify Button */}
-                    <Button
+                    <button
                       type="submit"
                       disabled={isLoading || otp.length !== 6}
-                      className="w-full h-11 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="w-full py-2.5 md:py-3 rounded-lg text-white text-sm md:text-base font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-90"
+                      style={{ backgroundColor: themeColors.primary }}
                     >
                       {isLoading ? (
-                        <div className="flex items-center gap-2">
-                          <Loader2 className="h-5 w-5 animate-spin" />
+                        <div className="flex items-center justify-center gap-2">
+                          <Loader2 className="h-4 w-4 md:h-5 md:w-5 animate-spin" />
                           Verifying...
                         </div>
                       ) : (
                         "Verify Email"
                       )}
-                    </Button>
+                    </button>
 
                     {/* Resend OTP */}
-                    <div className="text-center space-y-3">
-                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                    <div className="text-center space-y-2 md:space-y-3">
+                      <p
+                        className="text-xs md:text-sm"
+                        style={{ color: themeColors.text2 }}
+                      >
                         Didn't receive the code?
                       </p>
-                      <Button
+                      <button
                         type="button"
                         onClick={handleResendOTP}
                         disabled={resendTimer > 0 || isLoading}
-                        variant="ghost"
-                        className="text-blue-600 hover:text-blue-700 dark:text-blue-500 dark:hover:text-blue-400 font-medium disabled:opacity-50"
+                        className="font-medium text-sm disabled:opacity-50 hover:underline"
+                        style={{ color: themeColors.primary }}
                       >
                         {resendTimer > 0 ? (
-                          <div className="flex items-center gap-2">
-                            <Clock className="w-4 h-4" />
+                          <div className="flex items-center justify-center gap-2">
+                            <Clock className="w-3 h-3 md:w-4 md:h-4" />
                             Resend in {resendTimer}s
                           </div>
                         ) : (
                           "Resend Code"
                         )}
-                      </Button>
+                      </button>
                     </div>
 
                     {/* Back Link */}
-                    <div className="text-center pt-4">
+                    <div className="text-center pt-3 md:pt-4">
                       <button
                         type="button"
                         onClick={() => {
                           setCurrentStep(1);
                           setOtp("");
                         }}
-                        className="text-sm text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition-colors"
+                        className="text-xs md:text-sm transition-colors hover:underline"
+                        style={{ color: themeColors.text2 }}
                       >
                         ← Change email address
                       </button>
