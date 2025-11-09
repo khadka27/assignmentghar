@@ -104,11 +104,10 @@ export default function RegisterPage() {
 
     const timer = setTimeout(async () => {
       try {
-        const res = await fetch(
+        const { data } = await axios.get(
           `/api/auth/check-email?email=${encodeURIComponent(email)}`
         );
         if (cancelled) return;
-        const data = await res.json();
         setEmailStatus(data.available ? "available" : "taken");
       } catch {
         if (!cancelled) setEmailStatus("idle");
@@ -138,11 +137,10 @@ export default function RegisterPage() {
 
     const timer = setTimeout(async () => {
       try {
-        const res = await fetch(
+        const { data } = await axios.get(
           `/api/auth/check-username?username=${encodeURIComponent(username)}`
         );
         if (cancelled) return;
-        const data = await res.json();
         setUsernameStatus(data.available ? "available" : "taken");
       } catch {
         if (!cancelled) setUsernameStatus("idle");
@@ -257,41 +255,38 @@ export default function RegisterPage() {
       setCurrentStep(3);
       setResendTimer(60);
     } catch (error: any) {
-      let errorMessage = error.response?.data?.message || "Something went wrong";
+      let errorMessage =
+        error.response?.data?.message || "Something went wrong";
       let errorTitle = "Registration Failed";
 
       if (error.response?.data?.code === "EMAIL_TAKEN") {
-          errorTitle = "Email Already Registered";
-          errorMessage =
-            "This email is already registered. Please login or use a different email.";
-        } else if (data.code === "USERNAME_TAKEN") {
-          errorTitle = "Username Taken";
-          errorMessage =
-            "This username is already taken. Please choose another.";
-        } else if (data.code === "WEAK_PASSWORD") {
-          errorTitle = "Weak Password";
-          errorMessage =
-            "Please use a stronger password (at least 8 characters with numbers and symbols).";
-        } else if (data.code === "INVALID_EMAIL") {
-          errorTitle = "Invalid Email";
-          errorMessage = "Please enter a valid email address.";
-        }
-
-        toast({
-          variant: "destructive",
-          title: errorTitle,
-          description: errorMessage,
-        });
-        if (data.code === "EMAIL_TAKEN" || data.code === "USERNAME_TAKEN") {
-          setCurrentStep(1);
-        }
+        errorTitle = "Email Already Registered";
+        errorMessage =
+          "This email is already registered. Please login or use a different email.";
+      } else if (error.response?.data?.code === "USERNAME_TAKEN") {
+        errorTitle = "Username Taken";
+        errorMessage = "This username is already taken. Please choose another.";
+      } else if (error.response?.data?.code === "WEAK_PASSWORD") {
+        errorTitle = "Weak Password";
+        errorMessage =
+          "Please use a stronger password (at least 8 characters with numbers and symbols).";
+      } else if (error.response?.data?.code === "INVALID_EMAIL") {
+        errorTitle = "Invalid Email";
+        errorMessage = "Please enter a valid email address.";
       }
-    } catch (error) {
+
       toast({
         variant: "destructive",
-        title: "Error",
-        description: "Something went wrong. Please try again.",
+        title: errorTitle,
+        description: errorMessage,
       });
+
+      if (
+        error.response?.data?.code === "EMAIL_TAKEN" ||
+        error.response?.data?.code === "USERNAME_TAKEN"
+      ) {
+        setCurrentStep(1);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -318,12 +313,6 @@ export default function RegisterPage() {
         variant: "destructive",
         title: "Verification Failed",
         description: error.response?.data?.error || "Invalid OTP",
-      });
-    } finally {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Something went wrong. Please try again.",
       });
     } finally {
       setIsLoading(false);
