@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import axios from "axios";
 import { useToast } from "@/hooks/use-toast";
 import {
   Eye,
@@ -241,32 +242,25 @@ export default function RegisterPage() {
     setIsLoading(true);
 
     try {
-      const res = await fetch("/api/auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: formData.name,
-          username: formData.username,
-          email: formData.email,
-          password: formData.password,
-        }),
+      const { data } = await axios.post("/api/auth/register", {
+        name: formData.name,
+        username: formData.username,
+        email: formData.email,
+        password: formData.password,
       });
 
-      const data = await res.json();
+      toast({
+        title: "✅ Account Created Successfully!",
+        description:
+          "We've sent a 6-digit verification code to your email. Please check your inbox (and spam folder).",
+      });
+      setCurrentStep(3);
+      setResendTimer(60);
+    } catch (error: any) {
+      let errorMessage = error.response?.data?.message || "Something went wrong";
+      let errorTitle = "Registration Failed";
 
-      if (res.ok) {
-        toast({
-          title: "✅ Account Created Successfully!",
-          description:
-            "We've sent a 6-digit verification code to your email. Please check your inbox (and spam folder).",
-        });
-        setCurrentStep(3);
-        setResendTimer(60);
-      } else {
-        let errorMessage = data.message || "Something went wrong";
-        let errorTitle = "Registration Failed";
-
-        if (data.code === "EMAIL_TAKEN") {
+      if (error.response?.data?.code === "EMAIL_TAKEN") {
           errorTitle = "Email Already Registered";
           errorMessage =
             "This email is already registered. Please login or use a different email.";
@@ -308,32 +302,24 @@ export default function RegisterPage() {
     setIsLoading(true);
 
     try {
-      const res = await fetch("/api/auth/verify-otp", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: formData.email,
-          otp: otp,
-        }),
+      const { data } = await axios.post("/api/auth/verify-otp", {
+        email: formData.email,
+        otp: otp,
       });
 
-      const data = await res.json();
-
-      if (res.ok) {
-        toast({
-          title: "Email Verified!",
-          description:
-            "Your account has been created successfully. Redirecting to login...",
-        });
-        setTimeout(() => router.push("/login"), 1500);
-      } else {
-        toast({
-          variant: "destructive",
-          title: "Verification Failed",
-          description: data.error || "Invalid OTP",
-        });
-      }
-    } catch (error) {
+      toast({
+        title: "Email Verified!",
+        description:
+          "Your account has been created successfully. Redirecting to login...",
+      });
+      setTimeout(() => router.push("/login"), 1500);
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Verification Failed",
+        description: error.response?.data?.error || "Invalid OTP",
+      });
+    } finally {
       toast({
         variant: "destructive",
         title: "Error",
@@ -349,35 +335,21 @@ export default function RegisterPage() {
 
     setIsLoading(true);
     try {
-      const res = await fetch("/api/auth/resend-otp", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: formData.email,
-        }),
+      const { data } = await axios.post("/api/auth/resend-otp", {
+        email: formData.email,
       });
 
-      const data = await res.json();
-
-      if (res.ok) {
-        toast({
-          title: "OTP Resent!",
-          description: "Please check your email for the new verification code.",
-        });
-        setResendTimer(60);
-        setOtp("");
-      } else {
-        toast({
-          variant: "destructive",
-          title: "Failed to Resend",
-          description: data.error || "Something went wrong",
-        });
-      }
-    } catch (error) {
+      toast({
+        title: "OTP Resent!",
+        description: "Please check your email for the new verification code.",
+      });
+      setResendTimer(60);
+      setOtp("");
+    } catch (error: any) {
       toast({
         variant: "destructive",
-        title: "Error",
-        description: "Something went wrong. Please try again.",
+        title: "Failed to Resend",
+        description: error.response?.data?.error || "Something went wrong",
       });
     } finally {
       setIsLoading(false);

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import axios from "axios";
 import { useToast } from "@/hooks/use-toast";
 import {
   Mail,
@@ -54,33 +55,21 @@ export default function RecoverPage() {
     setIsLoading(true);
 
     try {
-      const res = await fetch("/api/auth/forgot-password", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
+      const { data } = await axios.post("/api/auth/forgot-password", {
+        email,
       });
 
-      const data = await res.json();
-
-      if (res.ok) {
-        toast({
-          title: "Reset Code Sent!",
-          description: "Please check your email for the password reset code.",
-        });
-        setStep("verify");
-        setResendTimer(60);
-      } else {
-        toast({
-          variant: "destructive",
-          title: "Error",
-          description: data.error || "Failed to send reset code",
-        });
-      }
-    } catch (error) {
+      toast({
+        title: "Reset Code Sent!",
+        description: "Please check your email for the password reset code.",
+      });
+      setStep("verify");
+      setResendTimer(60);
+    } catch (error: any) {
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Something went wrong. Please try again.",
+        description: error.response?.data?.error || "Failed to send reset code",
       });
     } finally {
       setIsLoading(false);
@@ -124,36 +113,22 @@ export default function RecoverPage() {
     setIsLoading(true);
 
     try {
-      const res = await fetch("/api/auth/reset-password", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email,
-          otp,
-          newPassword,
-        }),
+      const { data } = await axios.post("/api/auth/reset-password", {
+        email,
+        otp,
+        newPassword,
       });
 
-      const data = await res.json();
-
-      if (res.ok) {
-        toast({
-          title: "Password Reset Successfully!",
-          description: "You can now login with your new password.",
-        });
-        setTimeout(() => router.push("/login"), 1500);
-      } else {
-        toast({
-          variant: "destructive",
-          title: "Error",
-          description: data.error || "Failed to reset password",
-        });
-      }
-    } catch (error) {
+      toast({
+        title: "Password Reset Successfully!",
+        description: "You can now login with your new password.",
+      });
+      setTimeout(() => router.push("/login"), 1500);
+    } catch (error: any) {
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Something went wrong. Please try again.",
+        description: error.response?.data?.error || "Failed to reset password",
       });
     } finally {
       setIsLoading(false);
@@ -165,33 +140,21 @@ export default function RecoverPage() {
 
     setIsLoading(true);
     try {
-      const res = await fetch("/api/auth/forgot-password", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
+      const { data } = await axios.post("/api/auth/forgot-password", {
+        email,
       });
 
-      const data = await res.json();
-
-      if (res.ok) {
-        toast({
-          title: "Code Resent!",
-          description: "Please check your email for the new reset code.",
-        });
-        setResendTimer(60);
-        setOtp("");
-      } else {
-        toast({
-          variant: "destructive",
-          title: "Error",
-          description: data.error || "Failed to resend code",
-        });
-      }
-    } catch (error) {
+      toast({
+        title: "Code Resent!",
+        description: "Please check your email for the new reset code.",
+      });
+      setResendTimer(60);
+      setOtp("");
+    } catch (error: any) {
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Something went wrong. Please try again.",
+        description: error.response?.data?.error || "Failed to resend code",
       });
     } finally {
       setIsLoading(false);
@@ -693,4 +656,3 @@ export default function RecoverPage() {
     </div>
   );
 }
- 

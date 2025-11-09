@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import axios from "axios";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -72,37 +73,30 @@ export default function MissingVerificationPage() {
 
     setIsLoading(true);
     try {
-      const response = await fetch("/api/auth/check-account-status", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: emailToCheck }),
+      const { data } = await axios.post("/api/auth/check-account-status", {
+        email: emailToCheck,
       });
 
-      const data = await response.json();
-
-      if (response.ok) {
-        if (data.exists) {
-          if (data.isVerified) {
-            setAccountStatus("verified");
-            toast({
-              title: "Account Already Verified",
-              description: "Redirecting to login...",
-            });
-            setTimeout(() => router.push("/login"), 2000);
-          } else {
-            setAccountStatus("unverified");
-          }
+      if (data.exists) {
+        if (data.isVerified) {
+          setAccountStatus("verified");
+          toast({
+            title: "Account Already Verified",
+            description: "Redirecting to login...",
+          });
+          setTimeout(() => router.push("/login"), 2000);
         } else {
-          setAccountStatus("not-found");
+          setAccountStatus("unverified");
         }
       } else {
-        throw new Error(data.error || "Failed to check account status");
+        setAccountStatus("not-found");
       }
     } catch (error: any) {
       toast({
         variant: "destructive",
         title: "Error",
-        description: error.message || "Failed to check account status",
+        description:
+          error.response?.data?.error || "Failed to check account status",
       });
       setAccountStatus("not-found");
     } finally {
@@ -126,30 +120,23 @@ export default function MissingVerificationPage() {
   const handleSendOTP = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch("/api/auth/resend-otp", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
+      const { data } = await axios.post("/api/auth/resend-otp", {
+        email,
       });
 
-      const data = await response.json();
-
-      if (response.ok) {
-        toast({
-          title: "Verification Code Sent",
-          description: "Check your email for the 6-digit code",
-        });
-        setShowOTPInput(true);
-        setAccountStatus("otp-sent");
-        setResendTimer(60);
-      } else {
-        throw new Error(data.error || "Failed to send verification code");
-      }
+      toast({
+        title: "Verification Code Sent",
+        description: "Check your email for the 6-digit code",
+      });
+      setShowOTPInput(true);
+      setAccountStatus("otp-sent");
+      setResendTimer(60);
     } catch (error: any) {
       toast({
         variant: "destructive",
         title: "Error",
-        description: error.message || "Failed to send verification code",
+        description:
+          error.response?.data?.error || "Failed to send verification code",
       });
     } finally {
       setIsLoading(false);
@@ -168,28 +155,22 @@ export default function MissingVerificationPage() {
 
     setIsLoading(true);
     try {
-      const response = await fetch("/api/auth/verify-otp", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, otp }),
+      const { data } = await axios.post("/api/auth/verify-otp", {
+        email,
+        otp,
       });
 
-      const data = await response.json();
-
-      if (response.ok) {
-        toast({
-          title: "Email Verified Successfully!",
-          description: "Redirecting to login...",
-        });
-        setTimeout(() => router.push("/login"), 2000);
-      } else {
-        throw new Error(data.error || "Failed to verify code");
-      }
+      toast({
+        title: "Email Verified Successfully!",
+        description: "Redirecting to login...",
+      });
+      setTimeout(() => router.push("/login"), 2000);
     } catch (error: any) {
       toast({
         variant: "destructive",
         title: "Verification Failed",
-        description: error.message || "Invalid or expired verification code",
+        description:
+          error.response?.data?.error || "Invalid or expired verification code",
       });
     } finally {
       setIsLoading(false);
