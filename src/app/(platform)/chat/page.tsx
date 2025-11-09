@@ -677,14 +677,14 @@ export default function ChatPage() {
             <>
               {/* Chat Header - Fixed */}
               <div
-                className="flex-shrink-0 px-6 py-4 border-b flex items-center justify-between"
+                className="flex-shrink-0 px-4 py-2 border-b flex items-center justify-between"
                 style={{
                   backgroundColor: themeColors.bg1,
                   borderColor: themeColors.border,
                 }}
               >
                 <div className="flex items-center gap-3">
-                  <Avatar className="w-10 h-10">
+                  <Avatar className="w-8 h-8">
                     <AvatarImage src={selectedChat.user.image} />
                     <AvatarFallback
                       className="text-white text-sm font-medium"
@@ -745,7 +745,10 @@ export default function ChatPage() {
               </div>
 
               {/* Messages Area - Scrollable ONLY */}
-              <div className="flex-1 overflow-y-auto px-6 py-4 space-y-3">
+              <div
+                className="flex-1 overflow-y-auto px-4 py-3 space-y-3"
+                style={{ minHeight: 0 }}
+              >
                 {messages.map((message) => {
                   const isOwn = message.sender.id === session?.user?.id;
                   const isSystem = message.messageType === "SYSTEM";
@@ -779,7 +782,7 @@ export default function ChatPage() {
                       }`}
                     >
                       <div
-                        className={`max-w-[70%] rounded-2xl px-4 py-2.5 shadow-sm ${
+                        className={`max-w-[70%] rounded-2xl px-3 py-2 shadow-sm ${
                           isOwn ? "rounded-br-md" : "rounded-bl-md"
                         }`}
                         style={{
@@ -865,13 +868,13 @@ export default function ChatPage() {
 
               {/* Message Input - Fixed at Bottom */}
               <div
-                className="flex-shrink-0 px-6 py-4 border-t"
+                className="flex-shrink-0 px-4 py-2 border-t"
                 style={{
                   backgroundColor: themeColors.bg1,
                   borderColor: themeColors.border,
                 }}
               >
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2">
                   <Button
                     variant="ghost"
                     size="icon"
@@ -881,7 +884,7 @@ export default function ChatPage() {
                   </Button>
 
                   <div
-                    className="flex-1 flex items-center gap-2 px-4 py-2.5 rounded-full border"
+                    className="flex-1 flex items-center gap-2 px-3 py-2 rounded-full border"
                     style={{
                       backgroundColor: themeColors.inputBg,
                       borderColor: themeColors.border,
@@ -893,14 +896,14 @@ export default function ChatPage() {
                         setMessageInput(e.target.value);
                         handleTyping();
                       }}
-                      onKeyPress={(e) => {
+                      onKeyDown={(e) => {
                         if (e.key === "Enter" && !e.shiftKey) {
                           e.preventDefault();
                           sendMessage();
                         }
                       }}
                       placeholder="Write Something..."
-                      className="flex-1 border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 p-0 h-auto text-sm"
+                      className="flex-1 border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 p-0 h-9 text-sm"
                       style={{
                         color: themeColors.text1,
                       }}
@@ -947,7 +950,7 @@ export default function ChatPage() {
                   <Button
                     onClick={sendMessage}
                     disabled={!messageInput.trim() || isSending}
-                    className="flex-shrink-0 w-11 h-11 p-0 rounded-full transition-all hover:opacity-90 disabled:opacity-50"
+                    className="flex-shrink-0 w-9 h-9 p-0 rounded-full transition-all hover:opacity-90 disabled:opacity-50"
                     style={{ backgroundColor: themeColors.primary }}
                   >
                     {isSending ? (

@@ -646,13 +646,13 @@ export default function AdminChatWithStudentsPage() {
             <>
               {/* Chat Header - Fixed */}
               <div
-                className="flex-shrink-0 p-4 border-b flex items-center gap-3"
+                className="flex-shrink-0 p-2 border-b flex items-center gap-2"
                 style={{
                   backgroundColor: themeColors.bg1,
                   borderColor: themeColors.border,
                 }}
               >
-                <Avatar className="w-10 h-10">
+                <Avatar className="w-8 h-8">
                   <AvatarImage src={selectedChat.user.image} />
                   <AvatarFallback
                     className="text-white text-sm font-medium"
@@ -694,11 +694,9 @@ export default function AdminChatWithStudentsPage() {
               </div>
 
               {/* Messages Area - Scrollable with flex-1 */}
-              <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-4"
-                style={{ 
-                  maxHeight: 'calc(100vh - 200px)', // Adjust based on header + input height
-                  minHeight: 0 // Important for flex scrolling
-                }}
+              <div
+                className="flex-1 overflow-y-auto px-4 py-3 space-y-3"
+                style={{ minHeight: 0 }}
               >
                 {messages.map((message) => {
                   const isOwn = message.sender.id === session?.user?.id;
@@ -733,7 +731,7 @@ export default function AdminChatWithStudentsPage() {
                       } animate-in fade-in slide-in-from-bottom-2 duration-300`}
                     >
                       <div
-                        className={`max-w-[85%] md:max-w-md rounded-2xl p-3 md:p-4 shadow-sm ${
+                        className={`max-w-[85%] md:max-w-md rounded-2xl p-2 md:p-3 shadow-sm ${
                           isOwn ? "rounded-br-sm" : "rounded-bl-sm"
                         }`}
                         style={{
@@ -819,13 +817,13 @@ export default function AdminChatWithStudentsPage() {
 
               {/* Message Input - Fixed at Bottom */}
               <div
-                className="flex-shrink-0 p-4 border-t"
+                className="flex-shrink-0 p-2 border-t"
                 style={{
                   backgroundColor: themeColors.bg1,
                   borderColor: themeColors.border,
                 }}
               >
-                <div className="flex items-end gap-2 md:gap-3">
+                <div className="flex items-end gap-2 md:gap-2">
                   <label className="cursor-pointer">
                     <input
                       type="file"
@@ -837,7 +835,7 @@ export default function AdminChatWithStudentsPage() {
                       type="button"
                       variant="outline"
                       size="icon"
-                      className="flex-shrink-0 h-10 w-10 md:h-11 md:w-11 border transition-all hover:opacity-80"
+                      className="flex-shrink-0 h-9 w-9 md:h-9 md:w-9 border transition-all hover:opacity-80"
                       style={{
                         borderColor: themeColors.border,
                         backgroundColor: themeColors.inputBg,
@@ -854,14 +852,14 @@ export default function AdminChatWithStudentsPage() {
                       setMessageInput(e.target.value);
                       handleTyping();
                     }}
-                    onKeyPress={(e) => {
+                    onKeyDown={(e) => {
                       if (e.key === "Enter" && !e.shiftKey) {
                         e.preventDefault();
                         sendMessage();
                       }
                     }}
                     placeholder="Type a message..."
-                    className="flex-1 h-10 md:h-11 rounded-xl border transition-all focus:ring-2"
+                    className="flex-1 h-9 rounded-xl border transition-all focus:ring-2"
                     style={{
                       backgroundColor: themeColors.inputBg,
                       borderColor: themeColors.border,
@@ -872,7 +870,7 @@ export default function AdminChatWithStudentsPage() {
                   <Button
                     onClick={sendMessage}
                     disabled={!messageInput.trim() || isSending}
-                    className="flex-shrink-0 h-10 w-10 md:h-11 md:w-11 p-0 rounded-xl transition-all hover:opacity-90 disabled:opacity-50"
+                    className="flex-shrink-0 h-9 w-9 p-0 rounded-xl transition-all hover:opacity-90 disabled:opacity-50"
                     style={{ backgroundColor: themeColors.primary }}
                   >
                     {isSending ? (
