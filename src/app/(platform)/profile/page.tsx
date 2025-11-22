@@ -331,20 +331,30 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen py-8 px-4 sm:px-6 lg:px-8 transition-colors bg-[#F8FBFF] dark:bg-[#1E293B]">
-      <div className="max-w-4xl mx-auto">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold mb-2 transition-colors text-[#111E2F] dark:text-white">
-            My Profile
-          </h1>
-          <p className="text-base transition-colors text-[#64748B] dark:text-[#94A3B8]">
-            Manage your account settings and preferences
-          </p>
+    <div className="min-h-screen bg-gradient-to-br from-white via-[#F0F7FF] to-[#E8F4FF] dark:from-[#0F172A] dark:via-[#1E293B] dark:to-[#0F172A]">
+      {/* Hero Section */}
+      <div className="relative bg-gradient-to-r from-[#0E52AC] to-[#60A5FA] overflow-hidden">
+        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div>
+        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
+          <div className="flex items-center gap-4">
+            <div className="w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center shadow-lg">
+              <User className="w-7 h-7 md:w-8 md:h-8 text-white" />
+            </div>
+            <div>
+              <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
+                My Profile
+              </h1>
+              <p className="text-white/90 text-sm md:text-base">
+                Manage your account settings and preferences
+              </p>
+            </div>
+          </div>
         </div>
+      </div>
 
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 pb-16">
         {/* Profile Card */}
-        <div className="border rounded-2xl p-6 md:p-8 shadow-lg mb-6 transition-colors bg-white dark:bg-[#1E293B] border-[#E0EDFD] dark:border-[#475569]">
+        <div className="border rounded-2xl p-6 md:p-8 shadow-2xl mb-6 transition-all hover:shadow-3xl bg-white dark:bg-[#1E293B] border-[#E0EDFD] dark:border-[#475569]">
           {/* Avatar Section */}
           <div className="flex flex-col items-center mb-8">
             <div className="relative">

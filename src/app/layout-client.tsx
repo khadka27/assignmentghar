@@ -19,8 +19,10 @@ export function RootLayoutClient({ children }: { children: React.ReactNode }) {
     pathname === "/recover";
 
   const isAdminPage = pathname?.startsWith("/admin");
+  const isChatPage = pathname === "/chat";
 
   const showNavAndFooter = !isAuthPage && !isAdminPage;
+  const showFooter = showNavAndFooter && !isChatPage;
 
   return (
     <SessionProvider>
@@ -36,7 +38,7 @@ export function RootLayoutClient({ children }: { children: React.ReactNode }) {
           >
             {children}
           </main>
-          {showNavAndFooter && <Footer />}
+          {showFooter && <Footer />}
           <Toaster />
         </ThemeProvider>
       </SocketProvider>

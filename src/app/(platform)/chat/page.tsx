@@ -105,7 +105,15 @@ export default function ChatPage() {
   }, [session]);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    // Scroll to bottom whenever messages change
+    const scrollToBottom = () => {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    };
+
+    // Small delay to ensure DOM is updated
+    const timeoutId = setTimeout(scrollToBottom, 100);
+
+    return () => clearTimeout(timeoutId);
   }, [messages]);
 
   useEffect(() => {
@@ -337,6 +345,11 @@ export default function ChatPage() {
 
       // Don't add to messages here - let the socket listener handle it
       // This prevents duplicate messages
+
+      // Scroll to bottom after sending
+      setTimeout(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+      }, 150);
     } catch (error) {
       // Restore message on error
       setMessageInput(tempMessage);
@@ -427,30 +440,35 @@ export default function ChatPage() {
   }
 
   return (
-    <div className="flex flex-col h-screen overflow-hidden transition-colors bg-[#F8FBFF] dark:bg-[#1E293B]">
+    <div className="flex flex-col h-screen overflow-hidden overflow-x-hidden transition-colors bg-[#F8FBFF] dark:bg-[#1E293B]">
       {/* Sticky Top Navbar - Only on Mobile */}
-      <div className="lg:hidden sticky top-0 z-30 px-4 py-3 border-b flex items-center justify-between bg-white dark:bg-[#0A0F1E] border-[#E0EDFD] dark:border-[#475569]">
+      <div className="lg:hidden sticky top-0 z-30 px-4 py-3.5 border-b flex items-center justify-between bg-gradient-to-r from-white to-[#F8FBFF] dark:from-[#0A0F1E] dark:to-[#1E293B] border-[#E0EDFD] dark:border-[#475569] shadow-sm backdrop-blur-sm">
         <div className="flex items-center gap-3">
           <Button
             variant="ghost"
             size="icon"
             onClick={() => setShowMobileSidebar(!showMobileSidebar)}
-            className="text-[#111E2F] dark:text-white"
+            className="text-[#111E2F] dark:text-white hover:bg-[#0E52AC]/10 dark:hover:bg-[#60A5FA]/10 transition-colors"
           >
             <Menu className="w-5 h-5" />
           </Button>
-          <h1 className="text-lg font-bold text-[#111E2F] dark:text-white">
-            Chat
-          </h1>
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#0E52AC] to-[#60A5FA] flex items-center justify-center">
+              <MessageSquare className="w-4 h-4 text-white" />
+            </div>
+            <h1 className="text-lg font-bold text-[#111E2F] dark:text-white">
+              Messages
+            </h1>
+          </div>
         </div>
-        <div className="flex items-center gap-2 text-xs">
+        <div className="flex items-center gap-2 px-2.5 py-1 rounded-full bg-white/50 dark:bg-[#1E293B]/50 backdrop-blur-sm">
           <div
-            className={`w-2 h-2 rounded-full ${
-              isConnected ? "bg-[#0E52AC]" : "bg-[#64748B] dark:bg-[#94A3B8]"
+            className={`w-2 h-2 rounded-full animate-pulse ${
+              isConnected ? "bg-green-500" : "bg-gray-400"
             }`}
           ></div>
-          <span className="text-[#64748B] dark:text-[#94A3B8]">
-            {isConnected ? "Connected" : "Offline"}
+          <span className="text-xs font-medium text-[#64748B] dark:text-[#94A3B8]">
+            {isConnected ? "Online" : "Offline"}
           </span>
         </div>
       </div>
@@ -472,31 +490,33 @@ export default function ChatPage() {
           } lg:flex lg:relative lg:w-96 border-r flex-col transition-all shadow-2xl lg:shadow-none bg-white dark:bg-[#0A0F1E] border-[#E0EDFD] dark:border-[#475569]`}
         >
           {/* Sidebar Header */}
-          <div className="p-4 md:p-6 border-b flex items-center justify-between flex-shrink-0 border-[#E0EDFD] dark:border-[#475569]">
+          <div className="p-4 md:p-6 border-b flex items-center justify-between flex-shrink-0 border-[#E0EDFD] dark:border-[#475569] bg-gradient-to-br from-white to-[#F8FBFF] dark:from-[#0A0F1E] dark:to-[#1E293B]">
             <div className="flex-1">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg md:text-xl font-bold flex items-center gap-2 transition-colors text-[#111E2F] dark:text-white">
-                  <MessageSquare className="w-5 h-5 text-[#0E52AC]" />
-                  Messages
-                </h2>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#0E52AC] to-[#60A5FA] flex items-center justify-center shadow-lg">
+                    <MessageSquare className="w-5 h-5 text-white" />
+                  </div>
+                  <h2 className="text-lg md:text-xl font-bold transition-colors text-[#111E2F] dark:text-white">
+                    Messages
+                  </h2>
+                </div>
                 <Button
                   variant="ghost"
                   size="icon"
                   onClick={() => setShowMobileSidebar(false)}
-                  className="lg:hidden text-[#111E2F] dark:text-white"
+                  className="lg:hidden text-[#111E2F] dark:text-white hover:bg-[#0E52AC]/10 dark:hover:bg-[#60A5FA]/10 transition-colors"
                 >
                   <X className="w-5 h-5" />
                 </Button>
               </div>
-              <div className="flex items-center gap-2 text-xs md:text-sm">
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/50 dark:bg-[#0A0F1E]/50 backdrop-blur-sm border border-[#E0EDFD] dark:border-[#475569]">
                 <div
-                  className={`w-2 h-2 rounded-full transition-colors ${
-                    isConnected
-                      ? "bg-[#0E52AC]"
-                      : "bg-[#64748B] dark:bg-[#94A3B8]"
+                  className={`w-2 h-2 rounded-full transition-colors animate-pulse ${
+                    isConnected ? "bg-green-500" : "bg-gray-400"
                   }`}
                 ></div>
-                <span className="transition-colors text-[#64748B] dark:text-[#94A3B8]">
+                <span className="text-xs md:text-sm font-medium transition-colors text-[#64748B] dark:text-[#94A3B8]">
                   {isConnected ? "Connected" : "Disconnected"}
                 </span>
               </div>
@@ -527,22 +547,28 @@ export default function ChatPage() {
                   <button
                     key={chatItem.user.id}
                     onClick={() => selectChat(chatItem)}
-                    className={`w-full p-3 md:p-4 border-b transition-all hover:opacity-90 ${
+                    className={`w-full p-3 md:p-4 border-b transition-all duration-200 hover:bg-[#F8FBFF]/50 dark:hover:bg-[#1E293B]/50 ${
                       isSelected
-                        ? "border-l-4 bg-[#F8FBFF] dark:bg-[#1E293B] border-l-[#0E52AC]"
-                        : "bg-transparent"
+                        ? "border-l-4 bg-gradient-to-r from-[#F8FBFF] to-transparent dark:from-[#1E293B] dark:to-transparent border-l-[#0E52AC] shadow-sm"
+                        : "bg-transparent hover:shadow-sm"
                     } border-[#E0EDFD] dark:border-[#475569]`}
                   >
                     <div className="flex items-center gap-3">
                       <div className="relative">
-                        <Avatar className="w-10 h-10 md:w-12 md:h-12">
+                        <Avatar
+                          className={`w-10 h-10 md:w-12 md:h-12 transition-transform duration-200 ${
+                            isSelected
+                              ? "ring-2 ring-[#0E52AC] ring-offset-2 dark:ring-offset-[#0A0F1E]"
+                              : ""
+                          }`}
+                        >
                           <AvatarImage src={chatItem.user.image} />
-                          <AvatarFallback className="text-white text-sm font-medium bg-[#0E52AC]">
+                          <AvatarFallback className="text-white text-sm font-medium bg-gradient-to-br from-[#0E52AC] to-[#60A5FA]">
                             {chatItem.user.name?.[0] || "U"}
                           </AvatarFallback>
                         </Avatar>
                         {isConnected && (
-                          <div className="absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 bg-[#0E52AC] border-white dark:border-[#0A0F1E]"></div>
+                          <div className="absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full border-2 bg-green-500 border-white dark:border-[#0A0F1E] animate-pulse"></div>
                         )}
                       </div>
                       <div className="flex-1 text-left overflow-hidden">
@@ -575,52 +601,68 @@ export default function ChatPage() {
         </div>
 
         {/* Chat Area */}
-        <div className="flex-1 flex flex-col overflow-hidden bg-[#F8FBFF] dark:bg-[#1E293B]">
+        <div className="flex-1 flex flex-col overflow-hidden overflow-y-hidden bg-[#F8FBFF] dark:bg-[#1E293B]">
           {selectedChat ? (
             <>
               {/* Chat Header - Fixed */}
-              <div className="flex-shrink-0 px-4 py-2 border-b flex items-center justify-between bg-white dark:bg-[#0A0F1E] border-[#E0EDFD] dark:border-[#475569]">
-                <div className="flex items-center gap-3">
-                  <Avatar className="w-8 h-8">
-                    <AvatarImage src={selectedChat.user.image} />
-                    <AvatarFallback className="text-white text-sm font-medium bg-[#0E52AC]">
-                      {selectedChat.user.name?.[0] || "U"}
-                    </AvatarFallback>
-                  </Avatar>
+              <div className="flex-shrink-0 px-4 md:px-6 py-3 md:py-4 border-b flex items-center justify-between bg-gradient-to-r from-white to-[#F8FBFF] dark:from-[#0A0F1E] dark:to-[#1E293B] border-[#E0EDFD] dark:border-[#475569] shadow-sm backdrop-blur-sm">
+                <div className="flex items-center gap-3 md:gap-4">
+                  <div className="relative">
+                    <Avatar className="w-10 h-10 md:w-12 md:h-12 ring-2 ring-[#0E52AC]/20 dark:ring-[#60A5FA]/20">
+                      <AvatarImage src={selectedChat.user.image} />
+                      <AvatarFallback className="text-white text-sm font-medium bg-gradient-to-br from-[#0E52AC] to-[#60A5FA]">
+                        {selectedChat.user.name?.[0] || "U"}
+                      </AvatarFallback>
+                    </Avatar>
+                    {isConnected && (
+                      <div className="absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 bg-green-500 border-white dark:border-[#0A0F1E] animate-pulse"></div>
+                    )}
+                  </div>
                   <div>
-                    <h3 className="font-semibold text-base transition-colors text-[#111E2F] dark:text-white">
+                    <h3 className="font-bold text-base md:text-lg transition-colors text-[#111E2F] dark:text-white">
                       {selectedChat.user.name}
                     </h3>
                     <p className="text-xs transition-colors flex items-center gap-1.5 text-[#64748B] dark:text-[#94A3B8]">
                       {isTyping ? (
-                        <span className="text-[#0E52AC]">Typing...</span>
+                        <span className="text-[#0E52AC] dark:text-[#60A5FA] font-medium animate-pulse flex items-center gap-1">
+                          <span className="w-1 h-1 rounded-full bg-[#0E52AC] dark:bg-[#60A5FA] animate-bounce"></span>
+                          <span
+                            className="w-1 h-1 rounded-full bg-[#0E52AC] dark:bg-[#60A5FA] animate-bounce"
+                            style={{ animationDelay: "0.2s" }}
+                          ></span>
+                          <span
+                            className="w-1 h-1 rounded-full bg-[#0E52AC] dark:bg-[#60A5FA] animate-bounce"
+                            style={{ animationDelay: "0.4s" }}
+                          ></span>
+                          Typing
+                        </span>
                       ) : (
                         <>
                           <div
-                            className={`w-1.5 h-1.5 rounded-full ${
-                              isConnected
-                                ? "bg-[#22C55E]"
-                                : "bg-[#64748B] dark:bg-[#94A3B8]"
+                            className={`w-2 h-2 rounded-full animate-pulse ${
+                              isConnected ? "bg-green-500" : "bg-gray-400"
                             }`}
                           ></div>
-                          {isConnected ? "Online" : "Offline"}
+                          <span className="font-medium">
+                            {isConnected ? "Active now" : "Offline"}
+                          </span>
                         </>
                       )}
                     </p>
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1 md:gap-2">
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="hidden md:flex text-[#284366] dark:text-[#CBD5E1]"
+                    className="hidden md:flex text-[#284366] dark:text-[#CBD5E1] hover:bg-[#0E52AC]/10 dark:hover:bg-[#60A5FA]/10 hover:text-[#0E52AC] dark:hover:text-[#60A5FA] transition-all"
                   >
                     <Search className="w-5 h-5" />
                   </Button>
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="hidden md:flex text-[#284366] dark:text-[#CBD5E1]"
+                    className="hidden md:flex text-[#284366] dark:text-[#CBD5E1] hover:bg-[#0E52AC]/10 dark:hover:bg-[#60A5FA]/10 hover:text-red-500 transition-all"
                   >
                     <Heart className="w-5 h-5" />
                   </Button>
@@ -629,8 +671,12 @@ export default function ChatPage() {
 
               {/* Messages Area - Scrollable ONLY */}
               <div
-                className="flex-1 overflow-y-auto px-4 py-3 space-y-3"
-                style={{ minHeight: 0 }}
+                className="flex-1 overflow-y-auto overflow-x-hidden px-4 py-3 space-y-3 overscroll-contain scroll-smooth"
+                style={{
+                  minHeight: 0,
+                  maxHeight: "calc(100vh - 280px)",
+                  scrollBehavior: "smooth",
+                }}
               >
                 {messages.map((message) => {
                   const isOwn = message.sender.id === session?.user?.id;
@@ -659,9 +705,9 @@ export default function ChatPage() {
                       }`}
                     >
                       <div
-                        className={`max-w-[70%] rounded-2xl px-3 py-2 shadow-sm ${
+                        className={`max-w-[70%] rounded-2xl px-4 py-2.5 shadow-md transition-all hover:shadow-lg ${
                           isOwn
-                            ? "rounded-br-md bg-[#0E52AC] text-white"
+                            ? "rounded-br-md bg-gradient-to-br from-[#0E52AC] to-[#0A3D7A] dark:from-[#60A5FA] dark:to-[#0E52AC] text-white"
                             : "rounded-bl-md bg-white dark:bg-[#334155] text-[#111E2F] dark:text-white border border-[#E0EDFD] dark:border-[#475569]"
                         }`}
                       >
@@ -732,17 +778,17 @@ export default function ChatPage() {
               </div>
 
               {/* Message Input - Fixed at Bottom */}
-              <div className="flex-shrink-0 px-4 py-2 border-t bg-white dark:bg-[#0A0F1E] border-[#E0EDFD] dark:border-[#475569]">
+              <div className="flex-shrink-0 px-3 md:px-4 py-2 md:py-3 border-t bg-gradient-to-r from-white to-[#F8FBFF] dark:from-[#0A0F1E] dark:to-[#1E293B] border-[#E0EDFD] dark:border-[#475569] shadow-lg">
                 <div className="flex items-center gap-2">
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="flex-shrink-0 text-gray-400 hover:text-gray-600"
+                    className="hidden sm:flex flex-shrink-0 text-[#64748B] dark:text-[#94A3B8] hover:text-[#0E52AC] dark:hover:text-[#60A5FA] hover:bg-[#0E52AC]/10 dark:hover:bg-[#60A5FA]/10 transition-all"
                   >
-                    <Mic className="w-5 h-5" />
+                    <Mic className="w-4 h-4 md:w-5 md:h-5" />
                   </Button>
 
-                  <div className="flex-1 flex items-center gap-2 px-3 py-2 rounded-full border bg-[#F8FBFF] dark:bg-[#0F172A] border-[#E0EDFD] dark:border-[#475569]">
+                  <div className="flex-1 flex items-center gap-2 px-3 md:px-4 py-2 md:py-2.5 rounded-2xl border-2 bg-white dark:bg-[#0F172A] border-[#E0EDFD] dark:border-[#475569] focus-within:border-[#0E52AC] dark:focus-within:border-[#60A5FA] transition-all shadow-sm hover:shadow-md">
                     <Input
                       value={messageInput}
                       onChange={(e) => {
@@ -755,10 +801,10 @@ export default function ChatPage() {
                           sendMessage();
                         }
                       }}
-                      placeholder="Write Something..."
-                      className="flex-1 border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 p-0 h-9 text-sm text-[#111E2F] dark:text-white"
+                      placeholder="Type your message..."
+                      className="flex-1 border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 p-0 h-7 md:h-8 text-sm md:text-base text-[#111E2F] dark:text-white placeholder:text-[#94A3B8] dark:placeholder:text-[#64748B]"
                     />
-                    <div className="flex items-center gap-1">
+                    <div className="flex items-center gap-0.5 md:gap-1">
                       <label className="cursor-pointer">
                         <input
                           type="file"
@@ -768,37 +814,51 @@ export default function ChatPage() {
                         />
                         <button
                           type="button"
-                          className="p-1 hover:bg-gray-100 rounded transition-colors"
+                          className="p-1.5 md:p-2 hover:bg-[#0E52AC]/10 dark:hover:bg-[#60A5FA]/10 rounded-lg transition-all text-[#64748B] dark:text-[#94A3B8] hover:text-[#0E52AC] dark:hover:text-[#60A5FA]"
                         >
-                          <Paperclip className="w-4 h-4 text-[#64748B] dark:text-[#94A3B8]" />
+                          <Paperclip className="w-4 h-4" />
                         </button>
                       </label>
                       <button
                         type="button"
-                        className="p-1 hover:bg-gray-100 rounded transition-colors"
+                        className="hidden sm:block p-1.5 md:p-2 hover:bg-[#0E52AC]/10 dark:hover:bg-[#60A5FA]/10 rounded-lg transition-all text-[#64748B] dark:text-[#94A3B8] hover:text-[#0E52AC] dark:hover:text-[#60A5FA]"
                       >
-                        <ImageIcon className="w-4 h-4 text-[#64748B] dark:text-[#94A3B8]" />
+                        <ImageIcon className="w-4 h-4" />
                       </button>
                       <button
                         type="button"
-                        className="p-1 hover:bg-gray-100 rounded transition-colors"
+                        className="hidden sm:block p-1.5 md:p-2 hover:bg-[#0E52AC]/10 dark:hover:bg-[#60A5FA]/10 rounded-lg transition-all text-[#64748B] dark:text-[#94A3B8] hover:text-[#0E52AC] dark:hover:text-[#60A5FA]"
                       >
-                        <Smile className="w-4 h-4 text-[#64748B] dark:text-[#94A3B8]" />
+                        <Smile className="w-4 h-4" />
                       </button>
                     </div>
                   </div>
 
-                  <Button
+                  <button
                     onClick={sendMessage}
                     disabled={!messageInput.trim() || isSending}
-                    className="flex-shrink-0 w-9 h-9 p-0 rounded-full transition-all hover:opacity-90 disabled:opacity-50 bg-[#0E52AC]"
+                    className="flex-shrink-0 w-9 h-9 md:w-10 md:h-10 p-0 transition-all hover:scale-110 disabled:opacity-50 disabled:hover:scale-100"
                   >
                     {isSending ? (
-                      <Loader2 className="w-5 h-5 animate-spin text-white" />
+                      <Loader2 className="w-5 h-5 md:w-6 md:h-6 animate-spin text-[#0E52AC] dark:text-[#60A5FA]" />
                     ) : (
-                      <Send className="w-5 h-5 text-white" />
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="w-5 h-5 md:w-6 md:h-6 text-[#0E52AC] dark:text-[#60A5FA]"
+                      >
+                        <path d="M3.714 3.048a.498.498 0 0 0-.683.627l2.843 7.627a2 2 0 0 1 0 1.396l-2.842 7.627a.498.498 0 0 0 .682.627l18-8.5a.5.5 0 0 0 0-.904z" />
+                        <path d="M6 12h16" />
+                      </svg>
                     )}
-                  </Button>
+                  </button>
                 </div>
               </div>
             </>
