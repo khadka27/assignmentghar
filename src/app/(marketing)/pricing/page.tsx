@@ -1,10 +1,48 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import type { Metadata } from "next";
 
-export const metadata = {
-  title: "Pricing - AssignmentGhar",
-  description: "Transparent pricing for assignment help services.",
+export const metadata: Metadata = {
+  title: "Pricing - Affordable Assignment Help Services",
+  description:
+    "Transparent and affordable pricing for professional assignment help. Get quality academic writing services at competitive rates. No hidden fees. Free revisions included.",
+  keywords: [
+    "assignment help pricing",
+    "affordable assignment services",
+    "academic writing cost",
+    "homework help prices",
+    "student discounts",
+  ],
+  openGraph: {
+    title: "Pricing - Affordable Assignment Help Services | AssignmentGhar",
+    description:
+      "Transparent and affordable pricing for professional assignment help. Quality academic writing at competitive rates.",
+    type: "website",
+    url: `${
+      process.env.NEXT_PUBLIC_APP_URL || "https://assignmentghar.com"
+    }/pricing`,
+    images: [
+      {
+        url: "/og-pricing.png",
+        width: 1200,
+        height: 630,
+        alt: "AssignmentGhar Pricing",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Pricing - Affordable Assignment Help Services",
+    description:
+      "Transparent and affordable pricing for professional assignment help. Quality academic writing at competitive rates.",
+    images: ["/og-pricing.png"],
+  },
+  alternates: {
+    canonical: `${
+      process.env.NEXT_PUBLIC_APP_URL || "https://assignmentghar.com"
+    }/pricing`,
+  },
 };
 
 export default function PricingPage() {

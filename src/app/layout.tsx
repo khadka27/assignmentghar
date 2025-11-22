@@ -1,36 +1,111 @@
-"use client";
-
 import type React from "react";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { Navbar } from "@/components/navbar";
-import { Footer } from "@/components/footer";
-import { ThemeProvider } from "@/components/theme-provider";
-import { Toaster } from "@/components/ui/toaster";
-import { SessionProvider } from "next-auth/react";
-import { SocketProvider } from "@/contexts/socket-context";
-import { usePathname } from "next/navigation";
+import { RootLayoutClient } from "./layout-client";
 
 const geistSans = Geist({ subsets: ["latin"] });
 const geistMono = Geist_Mono({ subsets: ["latin"] });
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#0a0a0a" },
+  ],
+};
+
+export const metadata: Metadata = {
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_APP_URL || "https://assignmentghar.com"
+  ),
+  title: {
+    default:
+      "AssignmentGhar - Expert Assignment Help & Academic Writing Services",
+    template: "%s | AssignmentGhar",
+  },
+  description:
+    "Get professional assignment help from expert writers. Quality academic writing services for students. Fast delivery, plagiarism-free, 24/7 support. AssignmentGhar - Your trusted assignment partner.",
+  keywords: [
+    "assignment help",
+    "academic writing",
+    "homework help",
+    "essay writing",
+    "research paper",
+    "dissertation help",
+    "thesis writing",
+    "online tutoring",
+    "student services",
+    "assignment writing",
+  ],
+  authors: [{ name: "AssignmentGhar Team" }],
+  creator: "AssignmentGhar",
+  publisher: "AssignmentGhar",
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: process.env.NEXT_PUBLIC_APP_URL || "https://assignmentghar.com",
+    siteName: "AssignmentGhar",
+    title:
+      "AssignmentGhar - Expert Assignment Help & Academic Writing Services",
+    description:
+      "Get professional assignment help from expert writers. Quality academic writing services for students. Fast delivery, plagiarism-free, 24/7 support.",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "AssignmentGhar - Expert Assignment Help",
+        type: "image/png",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title:
+      "AssignmentGhar - Expert Assignment Help & Academic Writing Services",
+    description:
+      "Get professional assignment help from expert writers. Quality academic writing services for students. Fast delivery, plagiarism-free, 24/7 support.",
+    images: ["/og-image.png"],
+    creator: "@assignmentghar",
+    site: "@assignmentghar",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  icons: {
+    icon: [
+      { url: "/favicon.ico", type: "image/x-icon" },
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+    ],
+    apple: [
+      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+    ],
+  },
+  manifest: "/site.webmanifest",
+  alternates: {
+    canonical: process.env.NEXT_PUBLIC_APP_URL || "https://assignmentghar.com",
+  },
+  verification: {
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
+  },
+};
 
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const pathname = usePathname();
-
-  // Hide navbar and footer on auth pages and admin pages
-  const isAuthPage =
-    pathname === "/login" ||
-    pathname === "/register" ||
-    pathname === "/recover";
-
-  const isAdminPage = pathname?.startsWith("/admin");
-
-  const showNavAndFooter = !isAuthPage && !isAdminPage;
-
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -51,24 +126,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.className} bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors`}
       >
-        <SessionProvider>
-          <SocketProvider>
-            <ThemeProvider>
-              <a href="#main-content" className="sr-only focus:not-sr-only">
-                Skip to main content
-              </a>
-              {showNavAndFooter && <Navbar />}
-              <main
-                id="main-content"
-                className={showNavAndFooter ? "min-h-screen" : ""}
-              >
-                {children}
-              </main>
-              {showNavAndFooter && <Footer />}
-              <Toaster />
-            </ThemeProvider>
-          </SocketProvider>
-        </SessionProvider>
+        <RootLayoutClient>{children}</RootLayoutClient>
       </body>
     </html>
   );

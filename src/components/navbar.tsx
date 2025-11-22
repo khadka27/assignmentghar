@@ -27,7 +27,7 @@ export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
-  const { theme, toggleTheme } = useTheme();
+  const { theme, toggleTheme, mounted } = useTheme();
   const { data: session, status } = useSession();
   const router = useRouter();
   const { toast } = useToast();
@@ -128,11 +128,9 @@ export function Navbar() {
               className="p-2 text-gray-600 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-500 hover:bg-gray-50 dark:hover:bg-gray-900 rounded-lg transition-colors"
               aria-label="Toggle theme"
             >
-              {theme === "dark" ? (
-                <Sun className="w-5 h-5" />
-              ) : (
-                <Moon className="w-5 h-5" />
-              )}
+              {mounted && theme === "dark" && <Sun className="w-5 h-5" />}
+              {mounted && theme === "light" && <Moon className="w-5 h-5" />}
+              {!mounted && <div className="w-5 h-5" />}
             </button>
 
             {/* Authenticated User */}

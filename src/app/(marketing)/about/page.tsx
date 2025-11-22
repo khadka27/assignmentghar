@@ -2,11 +2,48 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { CheckCircle } from "lucide-react";
+import type { Metadata } from "next";
 
-export const metadata = {
+export const metadata: Metadata = {
   title: "About AssignmentGhar - Our Mission & Values",
   description:
-    "Learn about our mission to help students succeed with expert assignment consultancy.",
+    "Learn about AssignmentGhar's mission to help students succeed with expert assignment consultancy. Trusted by thousands of students worldwide for academic excellence.",
+  keywords: [
+    "about assignmentghar",
+    "our mission",
+    "academic consultancy",
+    "student success",
+    "assignment help company",
+  ],
+  openGraph: {
+    title: "About AssignmentGhar - Our Mission & Values",
+    description:
+      "Learn about AssignmentGhar's mission to help students succeed with expert assignment consultancy. Trusted by thousands of students worldwide.",
+    type: "website",
+    url: `${
+      process.env.NEXT_PUBLIC_APP_URL || "https://assignmentghar.com"
+    }/about`,
+    images: [
+      {
+        url: "/og-about.png",
+        width: 1200,
+        height: 630,
+        alt: "About AssignmentGhar",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "About AssignmentGhar - Our Mission & Values",
+    description:
+      "Learn about AssignmentGhar's mission to help students succeed with expert assignment consultancy.",
+    images: ["/og-about.png"],
+  },
+  alternates: {
+    canonical: `${
+      process.env.NEXT_PUBLIC_APP_URL || "https://assignmentghar.com"
+    }/about`,
+  },
 };
 
 export default function AboutPage() {

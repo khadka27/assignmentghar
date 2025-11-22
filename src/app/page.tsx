@@ -4,10 +4,81 @@ import Link from "next/link";
 import Image from "next/image";
 import { Check } from "lucide-react";
 import React from "react";
+import Script from "next/script";
 
 export default function Home() {
+  // JSON-LD Structured Data
+  const organizationSchema = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "AssignmentGhar",
+    url: "https://assignmentghar.com",
+    logo: {
+      "@type": "ImageObject",
+      url: "https://assignmentghar.com/logo.png",
+    },
+    description:
+      "Professional assignment help and academic writing services for students worldwide.",
+    sameAs: [
+      "https://twitter.com/assignmentghar",
+      "https://facebook.com/assignmentghar",
+    ],
+    contactPoint: {
+      "@type": "ContactPoint",
+      contactType: "Customer Service",
+      email: "support@assignmentghar.com",
+    },
+  };
+
+  const websiteSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "AssignmentGhar",
+    url: "https://assignmentghar.com",
+    description:
+      "Get professional assignment help from expert writers. Quality academic writing services for students.",
+    potentialAction: {
+      "@type": "SearchAction",
+      target: {
+        "@type": "EntryPoint",
+        urlTemplate: "https://assignmentghar.com/search?q={search_term_string}",
+      },
+      "query-input": "required name=search_term_string",
+    },
+  };
+
+  const serviceSchema = {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    name: "Assignment Writing Service",
+    description: "Professional assignment help and academic writing services",
+    provider: {
+      "@type": "Organization",
+      name: "AssignmentGhar",
+      url: "https://assignmentghar.com",
+    },
+    serviceType: "Academic Writing Service",
+    areaServed: "Worldwide",
+  };
+
   return (
     <div className="min-h-screen relative transition-colors bg-white dark:bg-[#0A0F1E]">
+      {/* JSON-LD Structured Data */}
+      <Script
+        id="organization-schema"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
+      />
+      <Script
+        id="website-schema"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
+      />
+      <Script
+        id="service-schema"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceSchema) }}
+      />
       {/* Hero Section */}
       <div className="container mx-auto px-6 md:px-8 lg:px-12 py-8 md:py-12 lg:py-16">
         <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">

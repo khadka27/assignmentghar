@@ -1,48 +1,63 @@
 import type { MetadataRoute } from "next";
 
 export default function sitemap(): MetadataRoute.Sitemap {
+  const baseUrl =
+    process.env.NEXT_PUBLIC_APP_URL || "https://assignmentghar.com";
+
   return [
     {
-      url: "https://assignmentghar.com",
+      url: baseUrl,
       lastModified: new Date(),
-      changeFrequency: "weekly",
+      changeFrequency: "daily",
       priority: 1,
     },
     {
-      url: "https://assignmentghar.com/chat",
+      url: `${baseUrl}/about`,
       lastModified: new Date(),
-      changeFrequency: "daily",
+      changeFrequency: "monthly",
       priority: 0.9,
     },
     {
-      url: "https://assignmentghar.com/submit",
+      url: `${baseUrl}/contact`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/pricing`,
       lastModified: new Date(),
       changeFrequency: "weekly",
+      priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/blog`,
+      lastModified: new Date(),
+      changeFrequency: "daily",
       priority: 0.8,
     },
     {
-      url: "https://assignmentghar.com/about",
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.7,
-    },
-    {
-      url: "https://assignmentghar.com/contact",
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.7,
-    },
-    {
-      url: "https://assignmentghar.com/testimonials",
+      url: `${baseUrl}/testimonials`,
       lastModified: new Date(),
       changeFrequency: "weekly",
       priority: 0.7,
     },
     {
-      url: "https://assignmentghar.com/privacy",
+      url: `${baseUrl}/privacy`,
       lastModified: new Date(),
       changeFrequency: "monthly",
       priority: 0.5,
+    },
+    {
+      url: `${baseUrl}/login`,
+      lastModified: new Date(),
+      changeFrequency: "yearly",
+      priority: 0.4,
+    },
+    {
+      url: `${baseUrl}/register`,
+      lastModified: new Date(),
+      changeFrequency: "yearly",
+      priority: 0.4,
     },
   ];
 }
