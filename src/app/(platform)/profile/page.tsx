@@ -357,10 +357,10 @@ export default function ProfilePage() {
         <div className="border rounded-2xl p-6 md:p-8 shadow-2xl mb-6 transition-all hover:shadow-3xl bg-white dark:bg-[#1E293B] border-[#E0EDFD] dark:border-[#475569]">
           {/* Avatar Section */}
           <div className="flex flex-col items-center mb-8">
-            <div className="relative">
-              <Avatar className="w-24 h-24 md:w-32 md:h-32">
+            <div className="relative group">
+              <Avatar className="w-28 h-28 md:w-32 md:h-32 ring-4 ring-[#0E52AC]/20 group-hover:ring-[#0E52AC]/40 transition-all shadow-xl">
                 <AvatarImage src={profileData.image} />
-                <AvatarFallback className="text-3xl font-bold text-white bg-[#0E52AC]">
+                <AvatarFallback className="text-3xl md:text-4xl font-bold text-white bg-gradient-to-br from-[#0E52AC] to-[#60A5FA]">
                   {profileData.name?.[0]?.toUpperCase() || "U"}
                 </AvatarFallback>
               </Avatar>
@@ -370,16 +370,16 @@ export default function ProfilePage() {
                 </div>
               )}
               <label
-                className={`absolute bottom-0 right-0 p-2 rounded-full transition-all bg-[#0E52AC] ${
+                className={`absolute bottom-0 right-0 w-10 h-10 rounded-full flex items-center justify-center transition-all bg-gradient-to-br from-[#0E52AC] to-[#60A5FA] shadow-lg hover:shadow-xl border-3 border-white dark:border-[#1E293B] ${
                   isUploadingImage
                     ? "cursor-not-allowed opacity-50"
-                    : "cursor-pointer hover:opacity-90"
+                    : "cursor-pointer hover:scale-110"
                 }`}
               >
                 {isUploadingImage ? (
-                  <Loader2 className="w-4 h-4 md:w-5 md:h-5 text-white animate-spin" />
+                  <Loader2 className="w-5 h-5 text-white animate-spin" />
                 ) : (
-                  <Camera className="w-4 h-4 md:w-5 md:h-5 text-white" />
+                  <Camera className="w-5 h-5 text-white" />
                 )}
                 <input
                   type="file"
@@ -393,19 +393,19 @@ export default function ProfilePage() {
             <h2 className="mt-4 text-xl md:text-2xl font-bold transition-colors text-[#111E2F] dark:text-white">
               {profileData.name}
             </h2>
-            <p className="text-sm transition-colors text-[#64748B] dark:text-[#94A3B8]">
-              @{profileData.username}
+            <p className="text-sm transition-colors text-[#64748B] dark:text-[#94A3B8] flex items-center gap-1 mt-1">
+              <Mail className="w-3.5 h-3.5" />@{profileData.username}
             </p>
           </div>
 
           {/* Tabs */}
-          <div className="flex gap-4 mb-6 border-b border-[#E0EDFD] dark:border-[#475569]">
+          <div className="flex gap-2 mb-8 p-1 bg-[#F8FBFF] dark:bg-[#0F172A] rounded-xl">
             <button
               onClick={() => setActiveTab("profile")}
-              className={`pb-3 px-4 font-semibold transition-all ${
+              className={`flex-1 py-3 px-4 font-semibold rounded-lg transition-all ${
                 activeTab === "profile"
-                  ? "text-[#0E52AC] border-b-2 border-[#0E52AC]"
-                  : "text-[#64748B] dark:text-[#94A3B8]"
+                  ? "bg-white dark:bg-[#1E293B] text-[#0E52AC] dark:text-[#60A5FA] shadow-md"
+                  : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0E52AC] dark:hover:text-[#60A5FA]"
               }`}
             >
               <User className="w-4 h-4 inline-block mr-2" />
@@ -413,10 +413,10 @@ export default function ProfilePage() {
             </button>
             <button
               onClick={() => setActiveTab("password")}
-              className={`pb-3 px-4 font-semibold transition-all ${
+              className={`flex-1 py-3 px-4 font-semibold rounded-lg transition-all ${
                 activeTab === "password"
-                  ? "text-[#0E52AC] border-b-2 border-[#0E52AC]"
-                  : "text-[#64748B] dark:text-[#94A3B8]"
+                  ? "bg-white dark:bg-[#1E293B] text-[#0E52AC] dark:text-[#60A5FA] shadow-md"
+                  : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0E52AC] dark:hover:text-[#60A5FA]"
               }`}
             >
               <Lock className="w-4 h-4 inline-block mr-2" />
@@ -448,10 +448,10 @@ export default function ProfilePage() {
                       });
                     }
                   }}
-                  className={`h-11 transition-colors bg-[#F8FBFF] dark:bg-[#0F172A] text-[#111E2F] dark:text-white ${
+                  className={`h-12 transition-all focus:ring-2 focus:ring-[#0E52AC]/20 bg-[#F8FBFF] dark:bg-[#0F172A] text-[#111E2F] dark:text-white ${
                     profileErrors.name
-                      ? "border-red-500"
-                      : "border-[#E0EDFD] dark:border-[#475569]"
+                      ? "border-red-500 focus:border-red-500"
+                      : "border-[#E0EDFD] dark:border-[#475569] focus:border-[#0E52AC]"
                   }`}
                 />
                 {profileErrors.name && (
@@ -483,10 +483,10 @@ export default function ProfilePage() {
                       });
                     }
                   }}
-                  className={`h-11 transition-colors bg-[#F8FBFF] dark:bg-[#0F172A] text-[#111E2F] dark:text-white ${
+                  className={`h-12 transition-all focus:ring-2 focus:ring-[#0E52AC]/20 bg-[#F8FBFF] dark:bg-[#0F172A] text-[#111E2F] dark:text-white ${
                     profileErrors.email
-                      ? "border-red-500"
-                      : "border-[#E0EDFD] dark:border-[#475569]"
+                      ? "border-red-500 focus:border-red-500"
+                      : "border-[#E0EDFD] dark:border-[#475569] focus:border-[#0E52AC]"
                   }`}
                 />
                 {profileErrors.email && (
@@ -514,16 +514,16 @@ export default function ProfilePage() {
               <Button
                 type="submit"
                 disabled={isUpdating}
-                className="w-full h-11 text-white font-semibold rounded-xl transition-all hover:opacity-90 disabled:opacity-50 bg-[#0E52AC]"
+                className="w-full h-12 text-white font-semibold rounded-xl transition-all hover:shadow-lg hover:scale-[1.02] hover:opacity-90 disabled:opacity-50 disabled:hover:scale-100 disabled:cursor-not-allowed bg-gradient-to-r from-[#0E52AC] to-[#60A5FA] border-0 flex items-center justify-center"
               >
                 {isUpdating ? (
                   <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
                     Updating Profile...
                   </>
                 ) : (
                   <>
-                    <Save className="w-4 h-4 mr-2" />
+                    <Save className="w-5 h-5 mr-2" />
                     Save Changes
                   </>
                 )}
@@ -550,10 +550,10 @@ export default function ProfilePage() {
                         e.target.value
                       )
                     }
-                    className={`h-11 pr-10 transition-colors bg-[#F8FBFF] dark:bg-[#0F172A] text-[#111E2F] dark:text-white ${
+                    className={`h-12 pr-10 transition-all focus:ring-2 focus:ring-[#0E52AC]/20 bg-[#F8FBFF] dark:bg-[#0F172A] text-[#111E2F] dark:text-white ${
                       passwordErrors.currentPassword
-                        ? "border-red-500"
-                        : "border-[#E0EDFD] dark:border-[#475569]"
+                        ? "border-red-500 focus:border-red-500"
+                        : "border-[#E0EDFD] dark:border-[#475569] focus:border-[#0E52AC]"
                     }`}
                   />
                   <button
@@ -589,10 +589,10 @@ export default function ProfilePage() {
                     onChange={(e) =>
                       handlePasswordInputChange("newPassword", e.target.value)
                     }
-                    className={`h-11 pr-10 transition-colors bg-[#F8FBFF] dark:bg-[#0F172A] text-[#111E2F] dark:text-white ${
+                    className={`h-12 pr-10 transition-all focus:ring-2 focus:ring-[#0E52AC]/20 bg-[#F8FBFF] dark:bg-[#0F172A] text-[#111E2F] dark:text-white ${
                       passwordErrors.newPassword
-                        ? "border-red-500"
-                        : "border-[#E0EDFD] dark:border-[#475569]"
+                        ? "border-red-500 focus:border-red-500"
+                        : "border-[#E0EDFD] dark:border-[#475569] focus:border-[#0E52AC]"
                     }`}
                   />
                   <button
@@ -614,12 +614,20 @@ export default function ProfilePage() {
                   </p>
                 )}
                 {passwordData.newPassword && (
-                  <div className="mt-2">
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-xs text-[#64748B] dark:text-[#94A3B8]">
+                  <div className="mt-3 p-3 rounded-lg bg-[#F8FBFF] dark:bg-[#0F172A] border border-[#E0EDFD] dark:border-[#475569]">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-xs font-medium text-[#64748B] dark:text-[#94A3B8]">
                         Password Strength
                       </span>
-                      <span className="text-xs font-semibold text-[#284366] dark:text-[#CBD5E1]">
+                      <span
+                        className={`text-xs font-bold px-2 py-0.5 rounded ${
+                          passwordStrength < 40
+                            ? "bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400"
+                            : passwordStrength < 70
+                            ? "bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400"
+                            : "bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400"
+                        }`}
+                      >
                         {passwordStrength < 40
                           ? "Weak"
                           : passwordStrength < 70
@@ -627,9 +635,9 @@ export default function ProfilePage() {
                           : "Strong"}
                       </span>
                     </div>
-                    <div className="w-full h-2 rounded-full bg-[#E0EDFD] dark:bg-[#475569]">
+                    <div className="w-full h-2.5 rounded-full bg-[#E0EDFD] dark:bg-[#475569] overflow-hidden shadow-inner">
                       <div
-                        className="h-full rounded-full transition-all"
+                        className="h-full rounded-full transition-all duration-300 shadow-sm"
                         style={{
                           width: `${passwordStrength}%`,
                           backgroundColor:
@@ -661,10 +669,10 @@ export default function ProfilePage() {
                         e.target.value
                       )
                     }
-                    className={`h-11 pr-10 transition-colors bg-[#F8FBFF] dark:bg-[#0F172A] text-[#111E2F] dark:text-white ${
+                    className={`h-12 pr-10 transition-all focus:ring-2 focus:ring-[#0E52AC]/20 bg-[#F8FBFF] dark:bg-[#0F172A] text-[#111E2F] dark:text-white ${
                       passwordErrors.confirmPassword
-                        ? "border-red-500"
-                        : "border-[#E0EDFD] dark:border-[#475569]"
+                        ? "border-red-500 focus:border-red-500"
+                        : "border-[#E0EDFD] dark:border-[#475569] focus:border-[#0E52AC]"
                     }`}
                   />
                   <button
@@ -690,16 +698,16 @@ export default function ProfilePage() {
               <Button
                 type="submit"
                 disabled={isChangingPassword}
-                className="w-full h-11 text-white font-semibold rounded-xl transition-all hover:opacity-90 disabled:opacity-50 bg-[#0E52AC]"
+                className="w-full h-12 text-white font-semibold rounded-xl transition-all hover:shadow-lg hover:scale-[1.02] hover:opacity-90 disabled:opacity-50 disabled:hover:scale-100 disabled:cursor-not-allowed bg-gradient-to-r from-[#0E52AC] to-[#60A5FA] border-0 flex items-center justify-center"
               >
                 {isChangingPassword ? (
                   <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
                     Changing Password...
                   </>
                 ) : (
                   <>
-                    <Lock className="w-4 h-4 mr-2" />
+                    <Lock className="w-5 h-5 mr-2" />
                     Change Password
                   </>
                 )}
@@ -709,15 +717,22 @@ export default function ProfilePage() {
         </div>
 
         {/* Info Box */}
-        <div className="border rounded-xl p-4 transition-colors bg-white dark:bg-[#1E293B] border-[#E0EDFD] dark:border-[#475569]">
-          <p className="text-sm transition-colors text-[#64748B] dark:text-[#94A3B8]">
-            <strong className="text-[#284366] dark:text-[#CBD5E1]">
-              Security Note:
-            </strong>{" "}
-            Your password should be at least 8 characters long and include a mix
-            of uppercase, lowercase, numbers, and special characters for better
-            security.
-          </p>
+        <div className="border rounded-xl p-5 transition-all bg-gradient-to-br from-[#F0F7FF] to-white dark:from-[#1E293B] dark:to-[#0F172A] border-[#0E52AC]/20 dark:border-[#60A5FA]/20 shadow-md">
+          <div className="flex items-start gap-3">
+            <div className="w-10 h-10 rounded-lg bg-[#0E52AC]/10 dark:bg-[#60A5FA]/10 flex items-center justify-center flex-shrink-0">
+              <Lock className="w-5 h-5 text-[#0E52AC] dark:text-[#60A5FA]" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-[#284366] dark:text-[#CBD5E1] mb-1">
+                Security Note
+              </h3>
+              <p className="text-sm transition-colors text-[#64748B] dark:text-[#94A3B8] leading-relaxed">
+                Your password should be at least 8 characters long and include a
+                mix of uppercase, lowercase, numbers, and special characters for
+                better security.
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </div>

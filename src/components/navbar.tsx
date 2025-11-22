@@ -92,11 +92,14 @@ export function Navbar() {
   };
 
   return (
-    <nav className="sticky top-0 z-50 bg-white dark:bg-black border-b border-gray-200 dark:border-gray-800">
+    <nav className="sticky top-0 z-50 bg-white/80 dark:bg-[#0F172A]/80 backdrop-blur-xl border-b border-[#E0EDFD] dark:border-[#475569] shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center">
+          <Link
+            href="/"
+            className="flex items-center transition-transform hover:scale-105"
+          >
             <Image
               src="/Images/nav_logo.png"
               alt="AssignmentGhar"
@@ -108,12 +111,12 @@ export function Navbar() {
           </Link>
 
           {/* Desktop Links */}
-          <div className="hidden md:flex items-center gap-6">
+          <div className="hidden md:flex items-center gap-1">
             {links.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className="text-sm font-medium text-gray-600 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-500 transition-colors"
+                className="text-sm font-semibold text-[#284366] hover:text-[#0E52AC] dark:text-[#CBD5E1] dark:hover:text-[#60A5FA] px-3 py-2 rounded-lg hover:bg-[#F0F7FF] dark:hover:bg-[#1E293B] transition-all"
               >
                 {link.label}
               </Link>
@@ -125,7 +128,7 @@ export function Navbar() {
             {/* Theme Toggle */}
             <button
               onClick={toggleTheme}
-              className="p-2 text-gray-600 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-500 hover:bg-gray-50 dark:hover:bg-gray-900 rounded-lg transition-colors"
+              className="p-2 text-[#284366] hover:text-[#0E52AC] dark:text-[#CBD5E1] dark:hover:text-[#60A5FA] hover:bg-[#F0F7FF] dark:hover:bg-[#1E293B] rounded-lg transition-all hover:scale-110"
               aria-label="Toggle theme"
             >
               {mounted && theme === "dark" && <Sun className="w-5 h-5" />}
@@ -140,12 +143,12 @@ export function Navbar() {
                   onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                   className="flex items-center focus:outline-none"
                 >
-                  <Avatar className="h-9 w-9 border-2 border-gray-200 dark:border-gray-800 hover:border-blue-600 dark:hover:border-blue-500 transition-colors">
+                  <Avatar className="h-9 w-9 border-2 border-[#E0EDFD] dark:border-[#475569] hover:border-[#0E52AC] dark:hover:border-[#60A5FA] transition-all hover:scale-110 shadow-md hover:shadow-lg">
                     <AvatarImage
                       src={session?.user?.image || undefined}
                       alt={session?.user?.name || "User"}
                     />
-                    <AvatarFallback className="bg-blue-600 text-white text-sm font-medium">
+                    <AvatarFallback className="bg-gradient-to-br from-[#0E52AC] to-[#60A5FA] text-white text-sm font-semibold">
                       {getUserInitials()}
                     </AvatarFallback>
                   </Avatar>
@@ -159,13 +162,13 @@ export function Navbar() {
                       onClick={() => setIsDropdownOpen(false)}
                     />
 
-                    <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-black border border-gray-200 dark:border-gray-800 rounded-lg shadow-sm z-40">
+                    <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-[#1E293B] border border-[#E0EDFD] dark:border-[#475569] rounded-xl shadow-2xl z-40">
                       {/* User Info */}
-                      <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-800">
-                        <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                      <div className="px-4 py-3 border-b border-[#E0EDFD] dark:border-[#475569] bg-gradient-to-br from-[#F0F7FF] to-white dark:from-[#0F172A] dark:to-[#1E293B] rounded-t-xl">
+                        <p className="text-sm font-semibold text-[#111E2F] dark:text-white truncate">
                           {session?.user?.name}
                         </p>
-                        <p className="text-xs text-gray-500 dark:text-gray-500 truncate">
+                        <p className="text-xs text-[#64748B] dark:text-[#94A3B8] truncate">
                           {session?.user?.email}
                         </p>
                       </div>
@@ -175,7 +178,7 @@ export function Navbar() {
                         <Link
                           href="/profile"
                           onClick={() => setIsDropdownOpen(false)}
-                          className="flex items-center px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-900 hover:text-blue-600 dark:hover:text-blue-500 transition-colors"
+                          className="flex items-center px-4 py-2.5 text-sm font-medium text-[#284366] dark:text-[#CBD5E1] hover:bg-[#F0F7FF] dark:hover:bg-[#0F172A] hover:text-[#0E52AC] dark:hover:text-[#60A5FA] transition-all"
                         >
                           <User className="mr-3 h-4 w-4" />
                           Profile
@@ -184,7 +187,7 @@ export function Navbar() {
                         <Link
                           href="/settings"
                           onClick={() => setIsDropdownOpen(false)}
-                          className="flex items-center px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-900 hover:text-blue-600 dark:hover:text-blue-500 transition-colors"
+                          className="flex items-center px-4 py-2.5 text-sm font-medium text-[#284366] dark:text-[#CBD5E1] hover:bg-[#F0F7FF] dark:hover:bg-[#0F172A] hover:text-[#0E52AC] dark:hover:text-[#60A5FA] transition-all"
                         >
                           <Settings className="mr-3 h-4 w-4" />
                           Settings
@@ -194,7 +197,7 @@ export function Navbar() {
                           <Link
                             href="/admin"
                             onClick={() => setIsDropdownOpen(false)}
-                            className="flex items-center px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-900 hover:text-blue-600 dark:hover:text-blue-500 transition-colors"
+                            className="flex items-center px-4 py-2.5 text-sm font-medium text-[#284366] dark:text-[#CBD5E1] hover:bg-[#F0F7FF] dark:hover:bg-[#0F172A] hover:text-[#0E52AC] dark:hover:text-[#60A5FA] transition-all"
                           >
                             <LayoutDashboard className="mr-3 h-4 w-4" />
                             Dashboard
@@ -203,14 +206,14 @@ export function Navbar() {
                       </div>
 
                       {/* Logout */}
-                      <div className="border-t border-gray-200 dark:border-gray-800 py-1">
+                      <div className="border-t border-[#E0EDFD] dark:border-[#475569] py-1">
                         <button
                           onClick={() => {
                             setIsDropdownOpen(false);
                             handleLogout();
                           }}
                           disabled={isLoggingOut}
-                          className="w-full flex items-center px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-900 hover:text-blue-600 dark:hover:text-blue-500 transition-colors disabled:opacity-50"
+                          className="w-full flex items-center px-4 py-2.5 text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all disabled:opacity-50 rounded-b-xl"
                         >
                           <LogOut className="mr-3 h-4 w-4" />
                           {isLoggingOut ? "Signing out..." : "Sign out"}
@@ -225,14 +228,14 @@ export function Navbar() {
               <>
                 <Link
                   href="/login"
-                  className="hidden sm:inline-block px-4 py-2 text-sm font-medium text-gray-600 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-500 transition-colors"
+                  className="hidden sm:inline-block px-4 py-2 text-sm font-semibold text-[#284366] hover:text-[#0E52AC] dark:text-[#CBD5E1] dark:hover:text-[#60A5FA] hover:bg-[#F0F7FF] dark:hover:bg-[#1E293B] rounded-lg transition-all"
                 >
                   Login
                 </Link>
 
                 <Link
                   href="/register"
-                  className="hidden sm:inline-block px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors"
+                  className="hidden sm:inline-block px-5 py-2 bg-gradient-to-r from-[#0E52AC] to-[#60A5FA] hover:shadow-lg text-white text-sm font-semibold rounded-lg transition-all hover:scale-105"
                 >
                   Register
                 </Link>
@@ -242,7 +245,7 @@ export function Navbar() {
             {/* Mobile Menu Button */}
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="md:hidden p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-900 rounded-lg transition-colors"
+              className="md:hidden p-2 text-[#284366] dark:text-[#CBD5E1] hover:bg-[#F0F7FF] dark:hover:bg-[#1E293B] rounded-lg transition-all hover:scale-110"
               aria-label="Toggle menu"
             >
               {isOpen ? (
@@ -256,12 +259,12 @@ export function Navbar() {
 
         {/* Mobile Menu */}
         {isOpen && (
-          <div className="md:hidden border-t border-gray-200 dark:border-gray-800 py-4 space-y-1">
+          <div className="md:hidden border-t border-[#E0EDFD] dark:border-[#475569] py-4 space-y-1 bg-gradient-to-b from-[#F8FBFF] to-white dark:from-[#0F172A] dark:to-[#1E293B]">
             {links.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className="block px-4 py-2 text-sm font-medium text-gray-600 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-500 hover:bg-gray-50 dark:hover:bg-gray-900 rounded-lg transition-colors"
+                className="block px-4 py-2.5 text-sm font-semibold text-[#284366] hover:text-[#0E52AC] dark:text-[#CBD5E1] dark:hover:text-[#60A5FA] hover:bg-white dark:hover:bg-[#0F172A] rounded-lg transition-all mx-2"
                 onClick={() => setIsOpen(false)}
               >
                 {link.label}
@@ -269,23 +272,23 @@ export function Navbar() {
             ))}
 
             {isAuthenticated ? (
-              <div className="border-t border-gray-200 dark:border-gray-800 pt-4 mt-4 space-y-1">
+              <div className="border-t border-[#E0EDFD] dark:border-[#475569] pt-4 mt-4 space-y-1">
                 <div className="px-4 py-2 mb-2">
                   <div className="flex items-center gap-3">
-                    <Avatar className="h-10 w-10 border-2 border-gray-200 dark:border-gray-800">
+                    <Avatar className="h-10 w-10 border-2 border-[#E0EDFD] dark:border-[#475569] shadow-md">
                       <AvatarImage
                         src={session?.user?.image || undefined}
                         alt={session?.user?.name || "User"}
                       />
-                      <AvatarFallback className="bg-blue-600 text-white font-medium">
+                      <AvatarFallback className="bg-gradient-to-br from-[#0E52AC] to-[#60A5FA] text-white font-semibold">
                         {getUserInitials()}
                       </AvatarFallback>
                     </Avatar>
                     <div>
-                      <p className="text-sm font-medium text-gray-900 dark:text-white">
+                      <p className="text-sm font-semibold text-[#111E2F] dark:text-white">
                         {session?.user?.name}
                       </p>
-                      <p className="text-xs text-gray-500">
+                      <p className="text-xs text-[#64748B] dark:text-[#94A3B8]">
                         {session?.user?.email}
                       </p>
                     </div>
@@ -294,7 +297,7 @@ export function Navbar() {
 
                 <Link
                   href="/profile"
-                  className="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-900 rounded-lg transition-colors"
+                  className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-[#284366] dark:text-[#CBD5E1] hover:bg-white dark:hover:bg-[#0F172A] hover:text-[#0E52AC] dark:hover:text-[#60A5FA] rounded-lg transition-all mx-2"
                   onClick={() => setIsOpen(false)}
                 >
                   <User className="w-4 h-4" />
@@ -303,7 +306,7 @@ export function Navbar() {
 
                 <Link
                   href="/settings"
-                  className="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-900 rounded-lg transition-colors"
+                  className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-[#284366] dark:text-[#CBD5E1] hover:bg-white dark:hover:bg-[#0F172A] hover:text-[#0E52AC] dark:hover:text-[#60A5FA] rounded-lg transition-all mx-2"
                   onClick={() => setIsOpen(false)}
                 >
                   <Settings className="w-4 h-4" />
@@ -313,7 +316,7 @@ export function Navbar() {
                 {isAdmin && (
                   <Link
                     href="/admin"
-                    className="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-900 rounded-lg transition-colors"
+                    className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-[#284366] dark:text-[#CBD5E1] hover:bg-white dark:hover:bg-[#0F172A] hover:text-[#0E52AC] dark:hover:text-[#60A5FA] rounded-lg transition-all mx-2"
                     onClick={() => setIsOpen(false)}
                   >
                     <LayoutDashboard className="w-4 h-4" />
@@ -327,7 +330,7 @@ export function Navbar() {
                     handleLogout();
                   }}
                   disabled={isLoggingOut}
-                  className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-900 rounded-lg transition-colors disabled:opacity-50"
+                  className="w-full flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all disabled:opacity-50 mx-2"
                 >
                   <LogOut className="w-4 h-4" />
                   {isLoggingOut ? "Signing out..." : "Sign out"}
@@ -337,7 +340,7 @@ export function Navbar() {
               <div className="border-t border-gray-200 dark:border-gray-800 pt-4 mt-4 space-y-2">
                 <Link
                   href="/login"
-                  className="block px-4 py-2 text-sm font-medium text-gray-600 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-500 hover:bg-gray-50 dark:hover:bg-gray-900 rounded-lg transition-colors"
+                  className="block px-4 py-2.5 text-sm font-semibold text-[#284366] hover:text-[#0E52AC] dark:text-[#CBD5E1] dark:hover:text-[#60A5FA] hover:bg-white dark:hover:bg-[#0F172A] rounded-lg transition-all mx-2"
                   onClick={() => setIsOpen(false)}
                 >
                   Login
@@ -345,7 +348,7 @@ export function Navbar() {
 
                 <Link
                   href="/register"
-                  className="block mx-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium text-center rounded-lg transition-colors"
+                  className="block mx-4 py-2.5 bg-gradient-to-r from-[#0E52AC] to-[#60A5FA] hover:shadow-lg text-white text-sm font-semibold text-center rounded-lg transition-all hover:scale-[1.02]"
                   onClick={() => setIsOpen(false)}
                 >
                   Register

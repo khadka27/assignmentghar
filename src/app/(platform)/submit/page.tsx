@@ -158,270 +158,404 @@ export default function SubmitPage() {
   };
 
   return (
-    <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8 transition-colors bg-[#F8FBFF] dark:bg-[#1E293B]">
-      <div className="max-w-3xl mx-auto">
-        {/* Header */}
-        <div className="mb-8 text-center">
-          <h1 className="text-3xl md:text-4xl font-bold mb-3 transition-colors text-[#111E2F] dark:text-white">
-            Submit Your Assignment
-          </h1>
-          <p className="text-base md:text-lg max-w-2xl mx-auto transition-colors text-[#64748B] dark:text-[#94A3B8]">
-            Upload your assignment guide and our expert team will review it and
-            provide personalized assistance
-          </p>
+    <div className="min-h-screen bg-gradient-to-br from-white via-[#F0F7FF] to-[#E8F4FF] dark:from-[#0F172A] dark:via-[#1E293B] dark:to-[#0F172A]">
+      {/* Hero Section */}
+      <div className="relative bg-gradient-to-r from-[#0E52AC] to-[#60A5FA] overflow-hidden">
+        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div>
+        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
+          <div className="text-center">
+            <div className="inline-flex items-center justify-center w-16 h-16 md:w-20 md:h-20 rounded-2xl bg-white/20 backdrop-blur-sm mb-6 shadow-lg">
+              <Upload className="w-8 h-8 md:w-10 md:h-10 text-white" />
+            </div>
+            <h1 className="text-3xl md:text-5xl font-bold text-white mb-4">
+              Submit Your Assignment
+            </h1>
+            <p className="text-lg md:text-xl max-w-2xl mx-auto text-white/90">
+              Upload your assignment guide and our expert team will provide
+              personalized assistance
+            </p>
+          </div>
         </div>
+      </div>
 
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-16">
         {!submitted ? (
-          <div className="border rounded-2xl p-6 md:p-8 shadow-lg transition-colors bg-white dark:bg-[#1E293B] border-[#E0EDFD] dark:border-[#475569]">
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Name and Email Row */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="text-sm font-semibold mb-2 flex items-center gap-2 transition-colors text-[#284366] dark:text-[#CBD5E1]">
-                    <User className="w-4 h-4 text-[#0E52AC]" />
-                    Full Name
-                  </label>
-                  <Input
-                    placeholder="John Doe"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    className={`h-11 transition-colors bg-[#F8FBFF] dark:bg-[#0F172A] text-[#111E2F] dark:text-white ${
-                      errors.name
-                        ? "border-red-500"
-                        : "border-[#E0EDFD] dark:border-[#475569]"
-                    }`}
-                  />
-                  {errors.name && (
-                    <p className="text-red-500 text-xs mt-1.5 flex items-center gap-1">
-                      <span>⚠</span> {errors.name}
-                    </p>
-                  )}
-                </div>
-
-                <div>
-                  <label className="text-sm font-semibold mb-2 flex items-center gap-2 transition-colors text-[#284366] dark:text-[#CBD5E1]">
-                    <Mail className="w-4 h-4 text-[#0E52AC]" />
-                    Email Address
-                  </label>
-                  <Input
-                    type="email"
-                    placeholder="you@example.com"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    className={`h-11 transition-colors bg-[#F8FBFF] dark:bg-[#0F172A] text-[#111E2F] dark:text-white ${
-                      errors.email
-                        ? "border-red-500"
-                        : "border-[#E0EDFD] dark:border-[#475569]"
-                    }`}
-                  />
-                  {errors.email && (
-                    <p className="text-red-500 text-xs mt-1.5 flex items-center gap-1">
-                      <span>⚠</span> {errors.email}
-                    </p>
-                  )}
-                </div>
-              </div>
-
-              {/* Course Selection */}
-              <div>
-                <label className="block text-sm font-semibold mb-2 transition-colors text-[#284366] dark:text-[#CBD5E1]">
-                  Course
-                </label>
-                <select
-                  name="course"
-                  value={formData.course}
-                  onChange={handleChange}
-                  className={`w-full h-11 px-4 rounded-lg border transition-all focus:outline-none focus:ring-2 bg-[#F8FBFF] dark:bg-[#0F172A] text-[#111E2F] dark:text-white ${
-                    errors.course
-                      ? "border-red-500"
-                      : "border-[#E0EDFD] dark:border-[#475569]"
-                  }`}
-                >
-                  <option value="">Select a course</option>
-                  {courses.map((course) => (
-                    <option key={course.value} value={course.value}>
-                      {course.label}
-                    </option>
-                  ))}
-                </select>
-                {errors.course && (
-                  <p className="text-red-500 text-xs mt-1.5 flex items-center gap-1">
-                    <span>⚠</span> {errors.course}
-                  </p>
-                )}
-              </div>
-
-              {/* Custom Course Input */}
-              {formData.course === "custom" && (
-                <div>
-                  <label className="block text-sm font-semibold mb-2 transition-colors text-[#284366] dark:text-[#CBD5E1]">
-                    Specify Your Course
-                  </label>
-                  <Input
-                    placeholder="e.g., Engineering, Medicine, Arts"
-                    name="customCourse"
-                    value={formData.customCourse}
-                    onChange={handleChange}
-                    className={`h-11 transition-colors bg-[#F8FBFF] dark:bg-[#0F172A] text-[#111E2F] dark:text-white ${
-                      errors.customCourse
-                        ? "border-red-500"
-                        : "border-[#E0EDFD] dark:border-[#475569]"
-                    }`}
-                  />
-                  {errors.customCourse && (
-                    <p className="text-red-500 text-xs mt-1.5 flex items-center gap-1">
-                      <span>⚠</span> {errors.customCourse}
-                    </p>
-                  )}
-                </div>
-              )}
-
-              {/* Subject and Deadline Row */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm font-semibold mb-2 transition-colors text-[#284366] dark:text-[#CBD5E1]">
-                    Subject{" "}
-                    <span className="text-[#64748B] dark:text-[#94A3B8]">
-                      (Optional)
-                    </span>
-                  </label>
-                  <Input
-                    placeholder="e.g., Database Systems"
-                    name="subject"
-                    value={formData.subject}
-                    onChange={handleChange}
-                    className="h-11 transition-colors bg-[#F8FBFF] dark:bg-[#0F172A] border-[#E0EDFD] dark:border-[#475569] text-[#111E2F] dark:text-white"
-                  />
-                </div>
-
-                <div>
-                  <label className="text-sm font-semibold mb-2 flex items-center gap-2 transition-colors text-[#284366] dark:text-[#CBD5E1]">
-                    <Calendar className="w-4 h-4 text-[#0E52AC]" />
-                    Deadline
-                  </label>
-                  <Input
-                    type="date"
-                    name="deadline"
-                    value={formData.deadline}
-                    onChange={handleChange}
-                    className={`h-11 transition-colors bg-[#F8FBFF] dark:bg-[#0F172A] text-[#111E2F] dark:text-white ${
-                      errors.deadline
-                        ? "border-red-500"
-                        : "border-[#E0EDFD] dark:border-[#475569]"
-                    }`}
-                  />
-                  {errors.deadline && (
-                    <p className="text-red-500 text-xs mt-1.5 flex items-center gap-1">
-                      <span>⚠</span> {errors.deadline}
-                    </p>
-                  )}
-                </div>
-              </div>
-
-              {/* File Upload */}
-              <div>
-                <label className="text-sm font-semibold mb-2 flex items-center gap-2 transition-colors text-[#284366] dark:text-[#CBD5E1]">
-                  <FileText className="w-4 h-4 text-[#0E52AC]" />
-                  Module Guide (PDF or Word)
-                </label>
-                <div
-                  className={`relative border-2 border-dashed rounded-xl p-6 transition-all hover:border-opacity-80 bg-[#F8FBFF] dark:bg-[#0F172A] ${
-                    errors.file
-                      ? "border-red-500"
-                      : "border-[#E0EDFD] dark:border-[#475569]"
-                  }`}
-                >
-                  <input
-                    type="file"
-                    accept=".pdf,.doc,.docx"
-                    onChange={handleFileChange}
-                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                  />
-                  <div className="text-center">
-                    <Upload className="w-10 h-10 mx-auto mb-3 text-[#0E52AC]" />
-                    <p className="text-sm font-medium mb-1 transition-colors text-[#284366] dark:text-[#CBD5E1]">
-                      Click to upload or drag and drop
-                    </p>
-                    <p className="text-xs transition-colors text-[#64748B] dark:text-[#94A3B8]">
-                      PDF, DOC, or DOCX (MAX. 10MB)
-                    </p>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Left Side - Tips & Info */}
+            <div className="lg:col-span-1 space-y-6">
+              {/* Quick Tips Card */}
+              <div className="border rounded-2xl p-6 shadow-xl bg-gradient-to-br from-[#F0F7FF] to-white dark:from-[#1E293B] dark:to-[#0F172A] border-[#E0EDFD] dark:border-[#475569]">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-lg bg-[#0E52AC]/10 dark:bg-[#60A5FA]/10 flex items-center justify-center">
+                    <FileText className="w-5 h-5 text-[#0E52AC] dark:text-[#60A5FA]" />
                   </div>
+                  <h3 className="text-lg font-bold text-[#111E2F] dark:text-white">
+                    Quick Tips
+                  </h3>
                 </div>
-                {errors.file && (
-                  <p className="text-red-500 text-xs mt-1.5 flex items-center gap-1">
-                    <span>⚠</span> {errors.file}
-                  </p>
-                )}
-                {file && (
-                  <div className="mt-3 p-4 rounded-lg border flex items-center gap-3 transition-colors bg-[#0E52AC]/10 border-[#0E52AC]">
-                    <FileText className="w-5 h-5 flex-shrink-0 text-[#0E52AC]" />
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium truncate transition-colors text-[#111E2F] dark:text-white">
-                        {file.name}
+                <ul className="space-y-3">
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-green-600 dark:text-green-400 mt-0.5 flex-shrink-0" />
+                    <span className="text-sm text-[#64748B] dark:text-[#94A3B8]">
+                      Upload your complete module guide for accurate assistance
+                    </span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-green-600 dark:text-green-400 mt-0.5 flex-shrink-0" />
+                    <span className="text-sm text-[#64748B] dark:text-[#94A3B8]">
+                      Provide a realistic deadline to ensure quality work
+                    </span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-green-600 dark:text-green-400 mt-0.5 flex-shrink-0" />
+                    <span className="text-sm text-[#64748B] dark:text-[#94A3B8]">
+                      Include any specific requirements in the message box
+                    </span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-green-600 dark:text-green-400 mt-0.5 flex-shrink-0" />
+                    <span className="text-sm text-[#64748B] dark:text-[#94A3B8]">
+                      Our experts will review and respond within 24 hours
+                    </span>
+                  </li>
+                </ul>
+              </div>
+
+              {/* What Happens Next Card */}
+              <div className="border rounded-2xl p-6 shadow-xl bg-gradient-to-br from-[#F0F7FF] to-white dark:from-[#1E293B] dark:to-[#0F172A] border-[#E0EDFD] dark:border-[#475569]">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-lg bg-[#0E52AC]/10 dark:bg-[#60A5FA]/10 flex items-center justify-center">
+                    <Calendar className="w-5 h-5 text-[#0E52AC] dark:text-[#60A5FA]" />
+                  </div>
+                  <h3 className="text-lg font-bold text-[#111E2F] dark:text-white">
+                    What Happens Next?
+                  </h3>
+                </div>
+                <div className="space-y-4">
+                  <div className="flex gap-3">
+                    <div className="w-8 h-8 rounded-full bg-[#0E52AC] text-white flex items-center justify-center text-sm font-bold flex-shrink-0">
+                      1
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-[#284366] dark:text-[#CBD5E1]">
+                        Instant Confirmation
                       </p>
-                      <p className="text-xs transition-colors text-[#64748B] dark:text-[#94A3B8]">
-                        {(file.size / 1024).toFixed(2)} KB
+                      <p className="text-xs text-[#64748B] dark:text-[#94A3B8] mt-1">
+                        Receive immediate confirmation of your submission
                       </p>
                     </div>
-                    <CheckCircle2 className="w-5 h-5 flex-shrink-0 text-[#0E52AC]" />
                   </div>
-                )}
+                  <div className="flex gap-3">
+                    <div className="w-8 h-8 rounded-full bg-[#0E52AC] text-white flex items-center justify-center text-sm font-bold flex-shrink-0">
+                      2
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-[#284366] dark:text-[#CBD5E1]">
+                        Expert Review
+                      </p>
+                      <p className="text-xs text-[#64748B] dark:text-[#94A3B8] mt-1">
+                        Our team analyzes your requirements
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex gap-3">
+                    <div className="w-8 h-8 rounded-full bg-[#0E52AC] text-white flex items-center justify-center text-sm font-bold flex-shrink-0">
+                      3
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-[#284366] dark:text-[#CBD5E1]">
+                        Direct Chat
+                      </p>
+                      <p className="text-xs text-[#64748B] dark:text-[#94A3B8] mt-1">
+                        Get personalized assistance via chat
+                      </p>
+                    </div>
+                  </div>
+                </div>
               </div>
 
-              {/* Additional Message */}
-              <div>
-                <label className="block text-sm font-semibold mb-2 transition-colors text-[#284366] dark:text-[#CBD5E1]">
-                  Additional Message{" "}
-                  <span className="text-[#64748B] dark:text-[#94A3B8]">
-                    (Optional)
-                  </span>
-                </label>
-                <Textarea
-                  placeholder="Tell us more about your assignment or any specific requirements..."
-                  name="message"
-                  value={formData.message}
-                  onChange={handleChange}
-                  rows={4}
-                  className="resize-none transition-colors bg-[#F8FBFF] dark:bg-[#0F172A] border-[#E0EDFD] dark:border-[#475569] text-[#111E2F] dark:text-white"
-                />
+              {/* Support Card */}
+              <div className="border rounded-2xl p-6 shadow-xl bg-gradient-to-br from-[#F0F7FF] to-white dark:from-[#1E293B] dark:to-[#0F172A] border-[#E0EDFD] dark:border-[#475569]">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-10 h-10 rounded-lg bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
+                    <CheckCircle2 className="w-5 h-5 text-green-600 dark:text-green-400" />
+                  </div>
+                  <h3 className="text-lg font-bold text-[#111E2F] dark:text-white">
+                    Need Help?
+                  </h3>
+                </div>
+                <p className="text-sm text-[#64748B] dark:text-[#94A3B8] mb-4">
+                  Our support team is available 24/7 to assist you with any
+                  questions.
+                </p>
+                <Link href="/contact">
+                  <Button className="w-full h-10 text-[#0E52AC] dark:text-[#60A5FA] font-semibold rounded-lg border-2 border-[#0E52AC] dark:border-[#60A5FA] bg-transparent hover:bg-[#0E52AC] hover:text-white dark:hover:bg-[#60A5FA] dark:hover:text-white transition-all">
+                    Contact Support
+                  </Button>
+                </Link>
               </div>
+            </div>
 
-              {/* Submit Button */}
-              <Button
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full h-12 text-white font-semibold text-base rounded-xl transition-all hover:opacity-90 disabled:opacity-50 bg-[#0E52AC]"
-              >
-                {isSubmitting ? (
-                  <>
-                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                    Submitting Assignment...
-                  </>
-                ) : (
-                  <>
-                    <Upload className="w-5 h-5 mr-2" />
-                    Submit Assignment
-                  </>
-                )}
-              </Button>
-            </form>
+            {/* Right Side - Form */}
+            <div className="lg:col-span-2">
+              <div className="border rounded-2xl p-6 md:p-8 shadow-2xl transition-all hover:shadow-3xl bg-white dark:bg-[#1E293B] border-[#E0EDFD] dark:border-[#475569]">
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  {/* Name and Email Row */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="text-sm font-semibold mb-2 flex items-center gap-2 transition-colors text-[#284366] dark:text-[#CBD5E1]">
+                        <User className="w-4 h-4 text-[#0E52AC]" />
+                        Full Name
+                      </label>
+                      <Input
+                        placeholder="John Doe"
+                        name="name"
+                        value={formData.name}
+                        onChange={handleChange}
+                        className={`h-12 transition-all focus:ring-2 focus:ring-[#0E52AC]/20 bg-[#F8FBFF] dark:bg-[#0F172A] text-[#111E2F] dark:text-white ${
+                          errors.name
+                            ? "border-red-500 focus:border-red-500"
+                            : "border-[#E0EDFD] dark:border-[#475569] focus:border-[#0E52AC]"
+                        }`}
+                      />
+                      {errors.name && (
+                        <p className="text-red-500 text-xs mt-1.5 flex items-center gap-1">
+                          <span>⚠</span> {errors.name}
+                        </p>
+                      )}
+                    </div>
+
+                    <div>
+                      <label className="text-sm font-semibold mb-2 flex items-center gap-2 transition-colors text-[#284366] dark:text-[#CBD5E1]">
+                        <Mail className="w-4 h-4 text-[#0E52AC]" />
+                        Email Address
+                      </label>
+                      <Input
+                        type="email"
+                        placeholder="you@example.com"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        className={`h-12 transition-all focus:ring-2 focus:ring-[#0E52AC]/20 bg-[#F8FBFF] dark:bg-[#0F172A] text-[#111E2F] dark:text-white ${
+                          errors.email
+                            ? "border-red-500 focus:border-red-500"
+                            : "border-[#E0EDFD] dark:border-[#475569] focus:border-[#0E52AC]"
+                        }`}
+                      />
+                      {errors.email && (
+                        <p className="text-red-500 text-xs mt-1.5 flex items-center gap-1">
+                          <span>⚠</span> {errors.email}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Course Selection */}
+                  <div>
+                    <label className="block text-sm font-semibold mb-2 transition-colors text-[#284366] dark:text-[#CBD5E1]">
+                      Course
+                    </label>
+                    <select
+                      name="course"
+                      value={formData.course}
+                      onChange={handleChange}
+                      className={`w-full h-12 px-4 rounded-lg border transition-all focus:outline-none focus:ring-2 focus:ring-[#0E52AC]/20 bg-[#F8FBFF] dark:bg-[#0F172A] text-[#111E2F] dark:text-white ${
+                        errors.course
+                          ? "border-red-500 focus:border-red-500"
+                          : "border-[#E0EDFD] dark:border-[#475569] focus:border-[#0E52AC]"
+                      }`}
+                    >
+                      <option value="">Select a course</option>
+                      {courses.map((course) => (
+                        <option key={course.value} value={course.value}>
+                          {course.label}
+                        </option>
+                      ))}
+                    </select>
+                    {errors.course && (
+                      <p className="text-red-500 text-xs mt-1.5 flex items-center gap-1">
+                        <span>⚠</span> {errors.course}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Custom Course Input */}
+                  {formData.course === "custom" && (
+                    <div>
+                      <label className="block text-sm font-semibold mb-2 transition-colors text-[#284366] dark:text-[#CBD5E1]">
+                        Specify Your Course
+                      </label>
+                      <Input
+                        placeholder="e.g., Engineering, Medicine, Arts"
+                        name="customCourse"
+                        value={formData.customCourse}
+                        onChange={handleChange}
+                        className={`h-12 transition-all focus:ring-2 focus:ring-[#0E52AC]/20 bg-[#F8FBFF] dark:bg-[#0F172A] text-[#111E2F] dark:text-white ${
+                          errors.customCourse
+                            ? "border-red-500 focus:border-red-500"
+                            : "border-[#E0EDFD] dark:border-[#475569] focus:border-[#0E52AC]"
+                        }`}
+                      />
+                      {errors.customCourse && (
+                        <p className="text-red-500 text-xs mt-1.5 flex items-center gap-1">
+                          <span>⚠</span> {errors.customCourse}
+                        </p>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Subject and Deadline Row */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-sm font-semibold mb-2 transition-colors text-[#284366] dark:text-[#CBD5E1]">
+                        Subject{" "}
+                        <span className="text-[#64748B] dark:text-[#94A3B8]">
+                          (Optional)
+                        </span>
+                      </label>
+                      <Input
+                        placeholder="e.g., Database Systems"
+                        name="subject"
+                        value={formData.subject}
+                        onChange={handleChange}
+                        className="h-12 transition-all focus:ring-2 focus:ring-[#0E52AC]/20 bg-[#F8FBFF] dark:bg-[#0F172A] border-[#E0EDFD] dark:border-[#475569] focus:border-[#0E52AC] text-[#111E2F] dark:text-white"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-sm font-semibold mb-2 flex items-center gap-2 transition-colors text-[#284366] dark:text-[#CBD5E1]">
+                        <Calendar className="w-4 h-4 text-[#0E52AC]" />
+                        Deadline
+                      </label>
+                      <Input
+                        type="date"
+                        name="deadline"
+                        value={formData.deadline}
+                        onChange={handleChange}
+                        className={`h-12 transition-all focus:ring-2 focus:ring-[#0E52AC]/20 bg-[#F8FBFF] dark:bg-[#0F172A] text-[#111E2F] dark:text-white ${
+                          errors.deadline
+                            ? "border-red-500 focus:border-red-500"
+                            : "border-[#E0EDFD] dark:border-[#475569] focus:border-[#0E52AC]"
+                        }`}
+                      />
+                      {errors.deadline && (
+                        <p className="text-red-500 text-xs mt-1.5 flex items-center gap-1">
+                          <span>⚠</span> {errors.deadline}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* File Upload */}
+                  <div>
+                    <label className="text-sm font-semibold mb-2 flex items-center gap-2 transition-colors text-[#284366] dark:text-[#CBD5E1]">
+                      <FileText className="w-4 h-4 text-[#0E52AC]" />
+                      Module Guide (PDF or Word)
+                    </label>
+                    <div
+                      className={`relative border-2 border-dashed rounded-xl p-8 transition-all hover:border-[#0E52AC] hover:bg-[#F0F7FF] dark:hover:bg-[#0F172A] group cursor-pointer bg-gradient-to-br from-[#F8FBFF] to-white dark:from-[#0F172A] dark:to-[#1E293B] ${
+                        errors.file
+                          ? "border-red-500"
+                          : "border-[#E0EDFD] dark:border-[#475569]"
+                      }`}
+                    >
+                      <input
+                        type="file"
+                        accept=".pdf,.doc,.docx"
+                        onChange={handleFileChange}
+                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                      />
+                      <div className="text-center relative z-0">
+                        <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-[#0E52AC]/10 dark:bg-[#60A5FA]/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+                          <Upload className="w-8 h-8 text-[#0E52AC] dark:text-[#60A5FA]" />
+                        </div>
+                        <p className="text-base font-semibold mb-2 transition-colors text-[#284366] dark:text-[#CBD5E1]">
+                          Click to upload or drag and drop
+                        </p>
+                        <p className="text-sm transition-colors text-[#64748B] dark:text-[#94A3B8]">
+                          PDF, DOC, or DOCX (MAX. 10MB)
+                        </p>
+                      </div>
+                    </div>
+                    {errors.file && (
+                      <p className="text-red-500 text-xs mt-1.5 flex items-center gap-1">
+                        <span>⚠</span> {errors.file}
+                      </p>
+                    )}
+                    {file && (
+                      <div className="mt-3 p-4 rounded-xl border-2 flex items-center gap-3 transition-all bg-gradient-to-br from-[#0E52AC]/10 to-[#60A5FA]/5 border-[#0E52AC] dark:border-[#60A5FA] shadow-md">
+                        <div className="w-10 h-10 rounded-lg bg-[#0E52AC]/20 dark:bg-[#60A5FA]/20 flex items-center justify-center flex-shrink-0">
+                          <FileText className="w-5 h-5 text-[#0E52AC] dark:text-[#60A5FA]" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-semibold truncate transition-colors text-[#111E2F] dark:text-white">
+                            {file.name}
+                          </p>
+                          <p className="text-xs transition-colors text-[#64748B] dark:text-[#94A3B8]">
+                            {(file.size / 1024).toFixed(2)} KB
+                          </p>
+                        </div>
+                        <div className="w-8 h-8 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center flex-shrink-0">
+                          <CheckCircle2 className="w-5 h-5 text-green-600 dark:text-green-400" />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Additional Message */}
+                  <div>
+                    <label className="block text-sm font-semibold mb-2 transition-colors text-[#284366] dark:text-[#CBD5E1]">
+                      Additional Message{" "}
+                      <span className="text-[#64748B] dark:text-[#94A3B8]">
+                        (Optional)
+                      </span>
+                    </label>
+                    <Textarea
+                      placeholder="Tell us more about your assignment or any specific requirements..."
+                      name="message"
+                      value={formData.message}
+                      onChange={handleChange}
+                      rows={4}
+                      className="resize-none transition-all focus:ring-2 focus:ring-[#0E52AC]/20 bg-[#F8FBFF] dark:bg-[#0F172A] border-[#E0EDFD] dark:border-[#475569] focus:border-[#0E52AC] text-[#111E2F] dark:text-white"
+                    />
+                  </div>
+
+                  {/* Submit Button */}
+                  <Button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="w-full h-14 text-white font-bold text-base rounded-xl transition-all hover:shadow-2xl hover:scale-[1.02] disabled:opacity-50 disabled:hover:scale-100 disabled:cursor-not-allowed bg-gradient-to-r from-[#0E52AC] to-[#60A5FA] border-0 flex items-center justify-center"
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                        Submitting Assignment...
+                      </>
+                    ) : (
+                      <>
+                        <Upload className="w-5 h-5 mr-2" />
+                        Submit Assignment
+                      </>
+                    )}
+                  </Button>
+                </form>
+              </div>
+            </div>
           </div>
         ) : (
-          <div className="border rounded-2xl p-8 md:p-12 text-center shadow-lg transition-colors bg-[#0E52AC]/10 border-[#0E52AC]">
-            <div className="w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center mx-auto mb-4 bg-[#0E52AC]">
-              <CheckCircle2 className="w-10 h-10 md:w-12 md:h-12 text-white" />
+          <div className="border-2 rounded-2xl p-8 md:p-12 text-center shadow-2xl transition-all animate-in fade-in zoom-in duration-500 bg-gradient-to-br from-green-50 to-[#F0F7FF] dark:from-green-900/10 dark:to-[#1E293B] border-green-500 dark:border-green-400 max-w-3xl mx-auto">
+            <div className="w-20 h-20 md:w-24 md:h-24 rounded-full flex items-center justify-center mx-auto mb-6 bg-gradient-to-br from-green-500 to-green-600 shadow-xl animate-bounce">
+              <CheckCircle2 className="w-12 h-12 md:w-14 md:h-14 text-white" />
             </div>
-            <h2 className="text-2xl md:text-3xl font-bold mb-3 transition-colors text-[#111E2F] dark:text-white">
+            <h2 className="text-2xl md:text-4xl font-bold mb-4 transition-colors text-[#111E2F] dark:text-white">
               Submission Successful!
             </h2>
-            <p className="text-base md:text-lg mb-6 transition-colors text-[#284366] dark:text-[#CBD5E1]">
+            <p className="text-base md:text-lg mb-8 transition-colors text-[#284366] dark:text-[#CBD5E1] max-w-md mx-auto">
               Your assignment has been submitted successfully. Our expert team
               will review it and get back to you shortly via chat.
             </p>
             <Link href="/chat">
-              <Button className="h-12 px-8 text-white font-semibold text-base rounded-xl transition-all hover:opacity-90 bg-[#0E52AC]">
+              <Button className="h-14 px-10 text-white font-bold text-base rounded-xl transition-all hover:shadow-2xl hover:scale-105 bg-gradient-to-r from-[#0E52AC] to-[#60A5FA] border-0 flex items-center justify-center">
                 Go to Chat Now
               </Button>
             </Link>
@@ -429,16 +563,23 @@ export default function SubmitPage() {
         )}
 
         {/* Info Box */}
-        <div className="mt-6 p-4 md:p-5 border rounded-xl transition-colors bg-white dark:bg-[#1E293B] border-[#E0EDFD] dark:border-[#475569]">
-          <p className="text-sm transition-colors text-[#64748B] dark:text-[#94A3B8]">
-            <strong className="text-[#284366] dark:text-[#CBD5E1]">
-              Note:
-            </strong>{" "}
-            After submitting your assignment, you'll be redirected to the chat
-            where you can communicate directly with our experts. Make sure to
-            provide all necessary details about your assignment for better
-            assistance.
-          </p>
+        <div className="mt-6 p-5 md:p-6 border rounded-xl transition-all bg-gradient-to-br from-[#F0F7FF] to-white dark:from-[#1E293B] dark:to-[#0F172A] border-[#0E52AC]/20 dark:border-[#60A5FA]/20 shadow-md">
+          <div className="flex items-start gap-3">
+            <div className="w-10 h-10 rounded-lg bg-[#0E52AC]/10 dark:bg-[#60A5FA]/10 flex items-center justify-center flex-shrink-0">
+              <FileText className="w-5 h-5 text-[#0E52AC] dark:text-[#60A5FA]" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-[#284366] dark:text-[#CBD5E1] mb-1">
+                Important Note
+              </h3>
+              <p className="text-sm transition-colors text-[#64748B] dark:text-[#94A3B8] leading-relaxed">
+                After submitting your assignment, you'll be redirected to the
+                chat where you can communicate directly with our experts. Make
+                sure to provide all necessary details about your assignment for
+                better assistance.
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
