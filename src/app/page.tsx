@@ -80,20 +80,22 @@ export default function Home() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceSchema) }}
       />
       {/* Hero Section */}
-      <div className="container mx-auto px-6 md:px-8 lg:px-12 py-8 md:py-12 lg:py-16">
-        <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+      <div className="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12 py-12 sm:py-16 md:py-20 lg:py-24">
+        <div className="grid lg:grid-cols-2 gap-8 sm:gap-10 md:gap-12 lg:gap-16 items-center">
           {/* Left Content */}
-          <div className="space-y-6 md:space-y-8">
+          <div className="space-y-6 sm:space-y-8 md:space-y-10">
             {/* Brand Name */}
-            <div className="text-sm md:text-base font-medium transition-colors text-[#284366] dark:text-[#CBD5E1]">
-              Assignment Ghar
+            <div className="inline-block">
+              <span className="text-xs sm:text-sm font-semibold tracking-wide uppercase transition-colors text-[#0E52AC] dark:text-[#60A5FA] bg-[#E0EDFD] dark:bg-[#0E52AC]/10 px-3 py-1.5 rounded-full">
+                ✨ Assignment Ghar
+              </span>
             </div>
 
             {/* Main Heading */}
-            <div className="space-y-2">
-              <h1 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight transition-colors text-[#111E2F] dark:text-white">
+            <div className="space-y-3 sm:space-y-4">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold leading-tight sm:leading-tight md:leading-tight lg:leading-tight transition-colors text-[#111E2F] dark:text-white">
                 A{" "}
-                <span className="relative inline-block text-[#0E52AC]">
+                <span className="relative inline-block text-[#0E52AC] dark:text-[#60A5FA]">
                   Trusted Partner
                   <svg
                     className="absolute -bottom-1 left-0 w-full"
@@ -110,11 +112,11 @@ export default function Home() {
                   </svg>
                 </span>
               </h1>
-              <h1 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight transition-colors text-[#111E2F] dark:text-white">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold leading-tight sm:leading-tight md:leading-tight lg:leading-tight transition-colors text-[#111E2F] dark:text-white">
                 for your Academic
               </h1>
-              <h1 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight">
-                <span className="relative inline-block text-[#0E52AC]">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold leading-tight sm:leading-tight md:leading-tight lg:leading-tight">
+                <span className="relative inline-block text-[#0E52AC] dark:text-[#60A5FA]">
                   Success
                   <svg
                     className="absolute -bottom-1 left-0 w-full"
@@ -134,7 +136,7 @@ export default function Home() {
             </div>
 
             {/* Features List */}
-            <div className="space-y-4 md:space-y-5">
+            <div className="space-y-3 sm:space-y-4">
               <FeatureItem text="Get quick and reliable help with your college or university assignments" />
 
               <FeatureItem text="No matter where you study or how close your deadline is, we connect you directly with expert consultants who understand your subject and your struggles." />
@@ -143,14 +145,14 @@ export default function Home() {
             </div>
 
             {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-3 md:gap-4 pt-2 md:pt-4">
-              <Link href="/chat">
-                <button className="w-full sm:w-auto px-6 md:px-8 py-3 md:py-3.5 rounded-lg font-semibold text-white text-sm md:text-base transition-all hover:opacity-90 hover:shadow-lg bg-[#0E52AC]">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-4 sm:pt-6">
+              <Link href="/chat" className="w-full sm:w-auto">
+                <button className="w-full min-h-[48px] sm:min-h-[52px] px-6 sm:px-8 py-3 sm:py-3.5 rounded-lg sm:rounded-xl font-semibold text-white text-sm sm:text-base transition-all duration-300 hover:opacity-90 hover:shadow-xl hover:scale-105 active:scale-95 bg-[#0E52AC] dark:bg-[#60A5FA] shadow-lg">
                   Start Chat Now
                 </button>
               </Link>
-              <Link href="/submit">
-                <button className="w-full sm:w-auto px-6 md:px-8 py-3 md:py-3.5 rounded-lg font-semibold text-sm md:text-base border-2 transition-all hover:shadow-lg text-[#0E52AC] border-[#0E52AC] bg-white dark:bg-[#0A0F1E]">
+              <Link href="/submit" className="w-full sm:w-auto">
+                <button className="w-full min-h-[48px] sm:min-h-[52px] px-6 sm:px-8 py-3 sm:py-3.5 rounded-lg sm:rounded-xl font-semibold text-sm sm:text-base border-2 transition-all duration-300 hover:shadow-xl hover:scale-105 active:scale-95 text-[#0E52AC] dark:text-[#60A5FA] border-[#0E52AC] dark:border-[#60A5FA] bg-white dark:bg-[#0A0F1E] hover:bg-[#F8FBFF] dark:hover:bg-[#1E293B]">
                   Submit your Assignment
                 </button>
               </Link>
@@ -158,8 +160,8 @@ export default function Home() {
           </div>
 
           {/* Right Image */}
-          <div className="relative order-first lg:order-last">
-            <div className="relative rounded-2xl overflow-hidden shadow-2xl h-[400px] md:h-[500px] lg:h-[600px]">
+          <div className="relative order-first lg:order-last mt-8 lg:mt-0">
+            <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl h-[300px] sm:h-[400px] md:h-[500px] lg:h-[600px] transition-transform duration-300 hover:shadow-[#0E52AC]/20 hover:shadow-3xl">
               <Image
                 src="/Images/landing/hero.jpg"
                 alt="Student studying with laptop"
@@ -179,15 +181,15 @@ export default function Home() {
       </div>
 
       {/* Why Students Trust Us Section */}
-      <div className="py-12 md:py-16 lg:py-20 transition-colors bg-[#F8FBFF] dark:bg-[#1E293B]">
-        <div className="container mx-auto px-6 md:px-8 lg:px-12">
+      <div className="py-16 sm:py-20 md:py-24 lg:py-28 transition-colors bg-[#F8FBFF] dark:bg-[#1E293B]">
+        <div className="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
           {/* Section Header */}
-          <div className="text-center mb-8 md:mb-12">
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 md:mb-6">
+          <div className="text-center mb-10 sm:mb-12 md:mb-16">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 sm:mb-5 md:mb-6">
               <span className="transition-colors text-[#111E2F] dark:text-white">
                 Why Students{" "}
               </span>
-              <span className="relative inline-block text-[#0E52AC]">
+              <span className="relative inline-block text-[#0E52AC] dark:text-[#60A5FA]">
                 Trust Us
                 <svg
                   className="absolute -bottom-1 left-0 w-full"
@@ -204,9 +206,9 @@ export default function Home() {
                 </svg>
               </span>
             </h2>
-            <p className="text-sm md:text-base lg:text-lg max-w-4xl mx-auto transition-colors text-[#284366] dark:text-[#CBD5E1]">
+            <p className="text-sm sm:text-base md:text-lg lg:text-xl max-w-4xl mx-auto leading-relaxed transition-colors text-[#284366] dark:text-[#CBD5E1] px-4">
               We built{" "}
-              <span className="font-semibold text-[#0E52AC]">
+              <span className="font-semibold text-[#0E52AC] dark:text-[#60A5FA]">
                 Assignment Ghar
               </span>{" "}
               for students who deserve stress-free academic support, not another
@@ -217,7 +219,7 @@ export default function Home() {
           </div>
 
           {/* Features Grid */}
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8 md:mb-12">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 md:gap-6 mb-10 sm:mb-12 md:mb-16">
             <FeatureCard
               image="/Images/landing/1.png"
               title="Chat System"
@@ -608,13 +610,16 @@ interface FeatureItemProps {
 
 const FeatureItem: React.FC<FeatureItemProps> = ({ text }) => {
   return (
-    <div className="flex gap-3 md:gap-4">
-      <div className="flex-shrink-0 mt-1">
-        <div className="w-5 h-5 md:w-6 md:h-6 rounded-full flex items-center justify-center transition-colors bg-[#0E52AC]">
-          <Check className="w-3 h-3 md:w-4 md:h-4 text-white" strokeWidth={3} />
+    <div className="flex gap-3 sm:gap-4 group animate-fadeIn">
+      <div className="flex-shrink-0 mt-0.5 sm:mt-1">
+        <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center transition-all duration-300 group-hover:scale-110 bg-[#0E52AC] dark:bg-[#60A5FA] shadow-md group-hover:shadow-lg">
+          <Check
+            className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white"
+            strokeWidth={3}
+          />
         </div>
       </div>
-      <p className="text-sm md:text-base lg:text-lg transition-colors text-[#284366] dark:text-[#CBD5E1]">
+      <p className="text-sm sm:text-base lg:text-lg leading-relaxed transition-colors text-[#284366] dark:text-[#CBD5E1]">
         {text}
       </p>
     </div>
@@ -633,15 +638,21 @@ const FeatureCard: React.FC<FeatureCardProps> = ({
   description,
 }) => {
   return (
-    <div className="rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 bg-white dark:bg-[#1E293B]">
-      <div className="relative h-48 md:h-56 overflow-hidden">
-        <Image src={image} alt={title} fill className="object-cover" />
+    <div className="group rounded-xl sm:rounded-2xl shadow-md overflow-hidden hover:shadow-2xl transition-all duration-500 bg-white dark:bg-[#1E293B] border border-transparent hover:border-[#0E52AC]/20 dark:hover:border-[#60A5FA]/20 transform hover:-translate-y-2">
+      <div className="relative h-44 sm:h-48 md:h-56 overflow-hidden">
+        <Image
+          src={image}
+          alt={title}
+          fill
+          className="object-cover transition-transform duration-500 group-hover:scale-110"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
       </div>
-      <div className="p-6 md:p-8 text-center">
-        <h3 className="text-lg md:text-xl font-bold mb-2 transition-colors text-[#111E2F] dark:text-white">
+      <div className="p-5 sm:p-6 md:p-8 text-center">
+        <h3 className="text-base sm:text-lg md:text-xl font-bold mb-2 sm:mb-3 transition-colors text-[#111E2F] dark:text-white group-hover:text-[#0E52AC] dark:group-hover:text-[#60A5FA]">
           {title}
         </h3>
-        <p className="text-sm md:text-base transition-colors text-[#284366] dark:text-[#CBD5E1]">
+        <p className="text-sm sm:text-base leading-relaxed transition-colors text-[#284366] dark:text-[#CBD5E1]">
           {description}
         </p>
       </div>
