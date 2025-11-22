@@ -27,22 +27,6 @@ export default function ProfilePage() {
   const { data: session, status, update } = useSession();
   const router = useRouter();
   const { toast } = useToast();
-  const { theme } = useTheme();
-  const isDark = theme === "dark";
-
-  // Brand theme colors
-  const themeColors = {
-    primary: "#0E52AC",
-    primaryHover: "#0A3D7F",
-    text1: isDark ? "#FFFFFF" : "#111E2F",
-    text2: isDark ? "#CBD5E1" : "#284366",
-    text3: isDark ? "#94A3B8" : "#64748B",
-    bg1: isDark ? "#0A0F1E" : "#FFFFFF",
-    bg2: isDark ? "#1E293B" : "#F8FBFF",
-    cardBg: isDark ? "#1E293B" : "#FFFFFF",
-    border: isDark ? "#475569" : "#E0EDFD",
-    inputBg: isDark ? "#0F172A" : "#F8FBFF",
-  };
 
   // Profile form state
   const [profileData, setProfileData] = useState({
@@ -336,14 +320,8 @@ export default function ProfilePage() {
 
   if (status === "loading") {
     return (
-      <div
-        className="flex items-center justify-center min-h-screen"
-        style={{ backgroundColor: themeColors.bg2 }}
-      >
-        <Loader2
-          className="w-8 h-8 animate-spin"
-          style={{ color: themeColors.primary }}
-        />
+      <div className="flex items-center justify-center min-h-screen bg-[#F8FBFF] dark:bg-[#1E293B]">
+        <Loader2 className="w-8 h-8 animate-spin text-[#0E52AC]" />
       </div>
     );
   }
@@ -353,62 +331,40 @@ export default function ProfilePage() {
   }
 
   return (
-    <div
-      className="min-h-screen py-8 px-4 sm:px-6 lg:px-8 transition-colors"
-      style={{ backgroundColor: themeColors.bg2 }}
-    >
+    <div className="min-h-screen py-8 px-4 sm:px-6 lg:px-8 transition-colors bg-[#F8FBFF] dark:bg-[#1E293B]">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h1
-            className="text-3xl md:text-4xl font-bold mb-2 transition-colors"
-            style={{ color: themeColors.text1 }}
-          >
+          <h1 className="text-3xl md:text-4xl font-bold mb-2 transition-colors text-[#111E2F] dark:text-white">
             My Profile
           </h1>
-          <p
-            className="text-base transition-colors"
-            style={{ color: themeColors.text3 }}
-          >
+          <p className="text-base transition-colors text-[#64748B] dark:text-[#94A3B8]">
             Manage your account settings and preferences
           </p>
         </div>
 
         {/* Profile Card */}
-        <div
-          className="border rounded-2xl p-6 md:p-8 shadow-lg mb-6 transition-colors"
-          style={{
-            backgroundColor: themeColors.cardBg,
-            borderColor: themeColors.border,
-          }}
-        >
+        <div className="border rounded-2xl p-6 md:p-8 shadow-lg mb-6 transition-colors bg-white dark:bg-[#1E293B] border-[#E0EDFD] dark:border-[#475569]">
           {/* Avatar Section */}
           <div className="flex flex-col items-center mb-8">
             <div className="relative">
               <Avatar className="w-24 h-24 md:w-32 md:h-32">
                 <AvatarImage src={profileData.image} />
-                <AvatarFallback
-                  className="text-3xl font-bold text-white"
-                  style={{ backgroundColor: themeColors.primary }}
-                >
+                <AvatarFallback className="text-3xl font-bold text-white bg-[#0E52AC]">
                   {profileData.name?.[0]?.toUpperCase() || "U"}
                 </AvatarFallback>
               </Avatar>
               {isUploadingImage && (
-                <div
-                  className="absolute inset-0 rounded-full flex items-center justify-center"
-                  style={{ backgroundColor: "rgba(0,0,0,0.6)" }}
-                >
+                <div className="absolute inset-0 rounded-full flex items-center justify-center bg-black/60">
                   <Loader2 className="w-8 h-8 animate-spin text-white" />
                 </div>
               )}
               <label
-                className={`absolute bottom-0 right-0 p-2 rounded-full transition-all ${
+                className={`absolute bottom-0 right-0 p-2 rounded-full transition-all bg-[#0E52AC] ${
                   isUploadingImage
                     ? "cursor-not-allowed opacity-50"
                     : "cursor-pointer hover:opacity-90"
                 }`}
-                style={{ backgroundColor: themeColors.primary }}
               >
                 {isUploadingImage ? (
                   <Loader2 className="w-4 h-4 md:w-5 md:h-5 text-white animate-spin" />
@@ -424,55 +380,34 @@ export default function ProfilePage() {
                 />
               </label>
             </div>
-            <h2
-              className="mt-4 text-xl md:text-2xl font-bold transition-colors"
-              style={{ color: themeColors.text1 }}
-            >
+            <h2 className="mt-4 text-xl md:text-2xl font-bold transition-colors text-[#111E2F] dark:text-white">
               {profileData.name}
             </h2>
-            <p
-              className="text-sm transition-colors"
-              style={{ color: themeColors.text3 }}
-            >
+            <p className="text-sm transition-colors text-[#64748B] dark:text-[#94A3B8]">
               @{profileData.username}
             </p>
           </div>
 
           {/* Tabs */}
-          <div
-            className="flex gap-4 mb-6 border-b"
-            style={{ borderColor: themeColors.border }}
-          >
+          <div className="flex gap-4 mb-6 border-b border-[#E0EDFD] dark:border-[#475569]">
             <button
               onClick={() => setActiveTab("profile")}
-              className="pb-3 px-4 font-semibold transition-all"
-              style={{
-                color:
-                  activeTab === "profile"
-                    ? themeColors.primary
-                    : themeColors.text3,
-                borderBottom:
-                  activeTab === "profile"
-                    ? `2px solid ${themeColors.primary}`
-                    : "none",
-              }}
+              className={`pb-3 px-4 font-semibold transition-all ${
+                activeTab === "profile"
+                  ? "text-[#0E52AC] border-b-2 border-[#0E52AC]"
+                  : "text-[#64748B] dark:text-[#94A3B8]"
+              }`}
             >
               <User className="w-4 h-4 inline-block mr-2" />
               Profile Info
             </button>
             <button
               onClick={() => setActiveTab("password")}
-              className="pb-3 px-4 font-semibold transition-all"
-              style={{
-                color:
-                  activeTab === "password"
-                    ? themeColors.primary
-                    : themeColors.text3,
-                borderBottom:
-                  activeTab === "password"
-                    ? `2px solid ${themeColors.primary}`
-                    : "none",
-              }}
+              className={`pb-3 px-4 font-semibold transition-all ${
+                activeTab === "password"
+                  ? "text-[#0E52AC] border-b-2 border-[#0E52AC]"
+                  : "text-[#64748B] dark:text-[#94A3B8]"
+              }`}
             >
               <Lock className="w-4 h-4 inline-block mr-2" />
               Security
@@ -483,14 +418,8 @@ export default function ProfilePage() {
           {activeTab === "profile" && (
             <form onSubmit={handleProfileUpdate} className="space-y-6">
               <div>
-                <label
-                  className="text-sm font-semibold mb-2 flex items-center gap-2 transition-colors"
-                  style={{ color: themeColors.text2 }}
-                >
-                  <User
-                    className="w-4 h-4"
-                    style={{ color: themeColors.primary }}
-                  />
+                <label className="text-sm font-semibold mb-2 flex items-center gap-2 transition-colors text-[#284366] dark:text-[#CBD5E1]">
+                  <User className="w-4 h-4 text-[#0E52AC]" />
                   Full Name
                 </label>
                 <Input
@@ -509,14 +438,11 @@ export default function ProfilePage() {
                       });
                     }
                   }}
-                  className="h-11 transition-colors"
-                  style={{
-                    backgroundColor: themeColors.inputBg,
-                    borderColor: profileErrors.name
-                      ? "#EF4444"
-                      : themeColors.border,
-                    color: themeColors.text1,
-                  }}
+                  className={`h-11 transition-colors bg-[#F8FBFF] dark:bg-[#0F172A] text-[#111E2F] dark:text-white ${
+                    profileErrors.name
+                      ? "border-red-500"
+                      : "border-[#E0EDFD] dark:border-[#475569]"
+                  }`}
                 />
                 {profileErrors.name && (
                   <p className="text-red-500 text-xs mt-1.5 flex items-center gap-1">
@@ -526,14 +452,8 @@ export default function ProfilePage() {
               </div>
 
               <div>
-                <label
-                  className="text-sm font-semibold mb-2 flex items-center gap-2 transition-colors"
-                  style={{ color: themeColors.text2 }}
-                >
-                  <Mail
-                    className="w-4 h-4"
-                    style={{ color: themeColors.primary }}
-                  />
+                <label className="text-sm font-semibold mb-2 flex items-center gap-2 transition-colors text-[#284366] dark:text-[#CBD5E1]">
+                  <Mail className="w-4 h-4 text-[#0E52AC]" />
                   Email Address
                 </label>
                 <Input
@@ -553,14 +473,11 @@ export default function ProfilePage() {
                       });
                     }
                   }}
-                  className="h-11 transition-colors"
-                  style={{
-                    backgroundColor: themeColors.inputBg,
-                    borderColor: profileErrors.email
-                      ? "#EF4444"
-                      : themeColors.border,
-                    color: themeColors.text1,
-                  }}
+                  className={`h-11 transition-colors bg-[#F8FBFF] dark:bg-[#0F172A] text-[#111E2F] dark:text-white ${
+                    profileErrors.email
+                      ? "border-red-500"
+                      : "border-[#E0EDFD] dark:border-[#475569]"
+                  }`}
                 />
                 {profileErrors.email && (
                   <p className="text-red-500 text-xs mt-1.5 flex items-center gap-1">
@@ -570,30 +487,16 @@ export default function ProfilePage() {
               </div>
 
               <div>
-                <label
-                  className="text-sm font-semibold mb-2 flex items-center gap-2 transition-colors"
-                  style={{ color: themeColors.text2 }}
-                >
-                  <Shield
-                    className="w-4 h-4"
-                    style={{ color: themeColors.primary }}
-                  />
+                <label className="text-sm font-semibold mb-2 flex items-center gap-2 transition-colors text-[#284366] dark:text-[#CBD5E1]">
+                  <Shield className="w-4 h-4 text-[#0E52AC]" />
                   Username
                 </label>
                 <Input
                   value={profileData.username}
                   disabled
-                  className="h-11 transition-colors cursor-not-allowed opacity-60"
-                  style={{
-                    backgroundColor: themeColors.inputBg,
-                    borderColor: themeColors.border,
-                    color: themeColors.text3,
-                  }}
+                  className="h-11 transition-colors cursor-not-allowed opacity-60 bg-[#F8FBFF] dark:bg-[#0F172A] border-[#E0EDFD] dark:border-[#475569] text-[#64748B] dark:text-[#94A3B8]"
                 />
-                <p
-                  className="text-xs mt-1.5 flex items-center gap-1 transition-colors"
-                  style={{ color: themeColors.text3 }}
-                >
+                <p className="text-xs mt-1.5 flex items-center gap-1 transition-colors text-[#64748B] dark:text-[#94A3B8]">
                   <AlertCircle className="w-3 h-3" /> Username cannot be changed
                 </p>
               </div>
@@ -601,8 +504,7 @@ export default function ProfilePage() {
               <Button
                 type="submit"
                 disabled={isUpdating}
-                className="w-full h-11 text-white font-semibold rounded-xl transition-all hover:opacity-90 disabled:opacity-50"
-                style={{ backgroundColor: themeColors.primary }}
+                className="w-full h-11 text-white font-semibold rounded-xl transition-all hover:opacity-90 disabled:opacity-50 bg-[#0E52AC]"
               >
                 {isUpdating ? (
                   <>
@@ -623,14 +525,8 @@ export default function ProfilePage() {
           {activeTab === "password" && (
             <form onSubmit={handlePasswordSubmit} className="space-y-6">
               <div>
-                <label
-                  className="text-sm font-semibold mb-2 flex items-center gap-2 transition-colors"
-                  style={{ color: themeColors.text2 }}
-                >
-                  <Lock
-                    className="w-4 h-4"
-                    style={{ color: themeColors.primary }}
-                  />
+                <label className="text-sm font-semibold mb-2 flex items-center gap-2 transition-colors text-[#284366] dark:text-[#CBD5E1]">
+                  <Lock className="w-4 h-4 text-[#0E52AC]" />
                   Current Password
                 </label>
                 <div className="relative">
@@ -644,20 +540,16 @@ export default function ProfilePage() {
                         e.target.value
                       )
                     }
-                    className="h-11 pr-10 transition-colors"
-                    style={{
-                      backgroundColor: themeColors.inputBg,
-                      borderColor: passwordErrors.currentPassword
-                        ? "#EF4444"
-                        : themeColors.border,
-                      color: themeColors.text1,
-                    }}
+                    className={`h-11 pr-10 transition-colors bg-[#F8FBFF] dark:bg-[#0F172A] text-[#111E2F] dark:text-white ${
+                      passwordErrors.currentPassword
+                        ? "border-red-500"
+                        : "border-[#E0EDFD] dark:border-[#475569]"
+                    }`}
                   />
                   <button
                     type="button"
                     onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2"
-                    style={{ color: themeColors.text3 }}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[#64748B] dark:text-[#94A3B8]"
                   >
                     {showCurrentPassword ? (
                       <EyeOff className="w-4 h-4" />
@@ -675,14 +567,8 @@ export default function ProfilePage() {
               </div>
 
               <div>
-                <label
-                  className="text-sm font-semibold mb-2 flex items-center gap-2 transition-colors"
-                  style={{ color: themeColors.text2 }}
-                >
-                  <Lock
-                    className="w-4 h-4"
-                    style={{ color: themeColors.primary }}
-                  />
+                <label className="text-sm font-semibold mb-2 flex items-center gap-2 transition-colors text-[#284366] dark:text-[#CBD5E1]">
+                  <Lock className="w-4 h-4 text-[#0E52AC]" />
                   New Password
                 </label>
                 <div className="relative">
@@ -693,20 +579,16 @@ export default function ProfilePage() {
                     onChange={(e) =>
                       handlePasswordInputChange("newPassword", e.target.value)
                     }
-                    className="h-11 pr-10 transition-colors"
-                    style={{
-                      backgroundColor: themeColors.inputBg,
-                      borderColor: passwordErrors.newPassword
-                        ? "#EF4444"
-                        : themeColors.border,
-                      color: themeColors.text1,
-                    }}
+                    className={`h-11 pr-10 transition-colors bg-[#F8FBFF] dark:bg-[#0F172A] text-[#111E2F] dark:text-white ${
+                      passwordErrors.newPassword
+                        ? "border-red-500"
+                        : "border-[#E0EDFD] dark:border-[#475569]"
+                    }`}
                   />
                   <button
                     type="button"
                     onClick={() => setShowNewPassword(!showNewPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2"
-                    style={{ color: themeColors.text3 }}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[#64748B] dark:text-[#94A3B8]"
                   >
                     {showNewPassword ? (
                       <EyeOff className="w-4 h-4" />
@@ -724,16 +606,10 @@ export default function ProfilePage() {
                 {passwordData.newPassword && (
                   <div className="mt-2">
                     <div className="flex items-center justify-between mb-1">
-                      <span
-                        className="text-xs"
-                        style={{ color: themeColors.text3 }}
-                      >
+                      <span className="text-xs text-[#64748B] dark:text-[#94A3B8]">
                         Password Strength
                       </span>
-                      <span
-                        className="text-xs font-semibold"
-                        style={{ color: themeColors.text2 }}
-                      >
+                      <span className="text-xs font-semibold text-[#284366] dark:text-[#CBD5E1]">
                         {passwordStrength < 40
                           ? "Weak"
                           : passwordStrength < 70
@@ -741,10 +617,7 @@ export default function ProfilePage() {
                           : "Strong"}
                       </span>
                     </div>
-                    <div
-                      className="w-full h-2 rounded-full"
-                      style={{ backgroundColor: themeColors.border }}
-                    >
+                    <div className="w-full h-2 rounded-full bg-[#E0EDFD] dark:bg-[#475569]">
                       <div
                         className="h-full rounded-full transition-all"
                         style={{
@@ -763,14 +636,8 @@ export default function ProfilePage() {
               </div>
 
               <div>
-                <label
-                  className="text-sm font-semibold mb-2 flex items-center gap-2 transition-colors"
-                  style={{ color: themeColors.text2 }}
-                >
-                  <CheckCircle2
-                    className="w-4 h-4"
-                    style={{ color: themeColors.primary }}
-                  />
+                <label className="text-sm font-semibold mb-2 flex items-center gap-2 transition-colors text-[#284366] dark:text-[#CBD5E1]">
+                  <CheckCircle2 className="w-4 h-4 text-[#0E52AC]" />
                   Confirm New Password
                 </label>
                 <div className="relative">
@@ -784,20 +651,16 @@ export default function ProfilePage() {
                         e.target.value
                       )
                     }
-                    className="h-11 pr-10 transition-colors"
-                    style={{
-                      backgroundColor: themeColors.inputBg,
-                      borderColor: passwordErrors.confirmPassword
-                        ? "#EF4444"
-                        : themeColors.border,
-                      color: themeColors.text1,
-                    }}
+                    className={`h-11 pr-10 transition-colors bg-[#F8FBFF] dark:bg-[#0F172A] text-[#111E2F] dark:text-white ${
+                      passwordErrors.confirmPassword
+                        ? "border-red-500"
+                        : "border-[#E0EDFD] dark:border-[#475569]"
+                    }`}
                   />
                   <button
                     type="button"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2"
-                    style={{ color: themeColors.text3 }}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[#64748B] dark:text-[#94A3B8]"
                   >
                     {showConfirmPassword ? (
                       <EyeOff className="w-4 h-4" />
@@ -817,8 +680,7 @@ export default function ProfilePage() {
               <Button
                 type="submit"
                 disabled={isChangingPassword}
-                className="w-full h-11 text-white font-semibold rounded-xl transition-all hover:opacity-90 disabled:opacity-50"
-                style={{ backgroundColor: themeColors.primary }}
+                className="w-full h-11 text-white font-semibold rounded-xl transition-all hover:opacity-90 disabled:opacity-50 bg-[#0E52AC]"
               >
                 {isChangingPassword ? (
                   <>
@@ -837,18 +699,11 @@ export default function ProfilePage() {
         </div>
 
         {/* Info Box */}
-        <div
-          className="border rounded-xl p-4 transition-colors"
-          style={{
-            backgroundColor: themeColors.cardBg,
-            borderColor: themeColors.border,
-          }}
-        >
-          <p
-            className="text-sm transition-colors"
-            style={{ color: themeColors.text3 }}
-          >
-            <strong style={{ color: themeColors.text2 }}>Security Note:</strong>{" "}
+        <div className="border rounded-xl p-4 transition-colors bg-white dark:bg-[#1E293B] border-[#E0EDFD] dark:border-[#475569]">
+          <p className="text-sm transition-colors text-[#64748B] dark:text-[#94A3B8]">
+            <strong className="text-[#284366] dark:text-[#CBD5E1]">
+              Security Note:
+            </strong>{" "}
             Your password should be at least 8 characters long and include a mix
             of uppercase, lowercase, numbers, and special characters for better
             security.

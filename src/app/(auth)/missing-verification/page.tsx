@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { useTheme } from "@/hooks/use-theme";
 import {
   ShieldCheck,
   Clock,
@@ -23,11 +24,11 @@ export default function MissingVerificationPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { toast } = useToast();
+  const { theme, toggleTheme } = useTheme();
+  const isDark = theme === "dark";
 
   const emailFromParams = searchParams.get("email") || "";
   const autoSend = searchParams.get("autoSend") === "true";
-
-  const [isDark, setIsDark] = useState(false);
   const [email, setEmail] = useState(emailFromParams);
   const [otp, setOtp] = useState("");
   const [accountStatus, setAccountStatus] = useState<
@@ -191,7 +192,7 @@ export default function MissingVerificationPage() {
         {/* Theme Toggle Button */}
         <div className="fixed top-6 right-6 z-50">
           <button
-            onClick={() => setIsDark(!isDark)}
+            onClick={toggleTheme}
             className="p-3 rounded-full shadow-lg transition-all hover:scale-110"
             style={{
               backgroundColor: themeColors.bg2,

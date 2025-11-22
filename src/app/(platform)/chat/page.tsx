@@ -4,7 +4,6 @@ import { useEffect, useState, useRef } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
-import { useTheme } from "@/hooks/use-theme";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -82,8 +81,6 @@ export default function ChatPage() {
   const { toast } = useToast();
   const { socket, isConnected } = useSocket();
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const { theme } = useTheme();
-  const isDark = theme === "dark";
 
   const [chatList, setChatList] = useState<ChatListItem[]>([]);
   const [selectedChat, setSelectedChat] = useState<ChatListItem | null>(null);
@@ -94,21 +91,6 @@ export default function ChatPage() {
   const [isTyping, setIsTyping] = useState(false);
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
   const userRole = session?.user?.role;
-
-  // Brand colors
-  const themeColors = {
-    primary: "#0E52AC",
-    primaryHover: "#0A3D7F",
-    text1: isDark ? "#FFFFFF" : "#111E2F",
-    text2: isDark ? "#CBD5E1" : "#284366",
-    text3: isDark ? "#94A3B8" : "#64748B",
-    bg1: isDark ? "#0A0F1E" : "#FFFFFF",
-    bg2: isDark ? "#1E293B" : "#F8FBFF",
-    cardBg: isDark ? "#1E293B" : "#FFFFFF",
-    border: isDark ? "#475569" : "#E0EDFD",
-    inputBg: isDark ? "#0F172A" : "#F8FBFF",
-    messageBg: isDark ? "#334155" : "#FFFFFF",
-  };
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -438,57 +420,36 @@ export default function ChatPage() {
 
   if (status === "loading") {
     return (
-      <div
-        className="flex items-center justify-center min-h-screen"
-        style={{ backgroundColor: themeColors.bg1 }}
-      >
-        <Loader2
-          className="w-8 h-8 animate-spin"
-          style={{ color: themeColors.primary }}
-        />
+      <div className="flex items-center justify-center min-h-screen bg-white dark:bg-[#0A0F1E]">
+        <Loader2 className="w-8 h-8 animate-spin text-[#0E52AC]" />
       </div>
     );
   }
 
   return (
-    <div
-      className="flex flex-col h-screen overflow-hidden transition-colors"
-      style={{ backgroundColor: themeColors.bg2 }}
-    >
+    <div className="flex flex-col h-screen overflow-hidden transition-colors bg-[#F8FBFF] dark:bg-[#1E293B]">
       {/* Sticky Top Navbar - Only on Mobile */}
-      <div
-        className="lg:hidden sticky top-0 z-30 px-4 py-3 border-b flex items-center justify-between"
-        style={{
-          backgroundColor: themeColors.bg1,
-          borderColor: themeColors.border,
-        }}
-      >
+      <div className="lg:hidden sticky top-0 z-30 px-4 py-3 border-b flex items-center justify-between bg-white dark:bg-[#0A0F1E] border-[#E0EDFD] dark:border-[#475569]">
         <div className="flex items-center gap-3">
           <Button
             variant="ghost"
             size="icon"
             onClick={() => setShowMobileSidebar(!showMobileSidebar)}
-            style={{ color: themeColors.text1 }}
+            className="text-[#111E2F] dark:text-white"
           >
             <Menu className="w-5 h-5" />
           </Button>
-          <h1
-            className="text-lg font-bold"
-            style={{ color: themeColors.text1 }}
-          >
+          <h1 className="text-lg font-bold text-[#111E2F] dark:text-white">
             Chat
           </h1>
         </div>
         <div className="flex items-center gap-2 text-xs">
           <div
-            className="w-2 h-2 rounded-full"
-            style={{
-              backgroundColor: isConnected
-                ? themeColors.primary
-                : themeColors.text3,
-            }}
+            className={`w-2 h-2 rounded-full ${
+              isConnected ? "bg-[#0E52AC]" : "bg-[#64748B] dark:bg-[#94A3B8]"
+            }`}
           ></div>
-          <span style={{ color: themeColors.text3 }}>
+          <span className="text-[#64748B] dark:text-[#94A3B8]">
             {isConnected ? "Connected" : "Offline"}
           </span>
         </div>
@@ -508,52 +469,34 @@ export default function ChatPage() {
         <div
           className={`${
             showMobileSidebar ? "fixed inset-y-0 left-0 z-50 w-80" : "hidden"
-          } lg:flex lg:relative lg:w-96 border-r flex-col transition-all shadow-2xl lg:shadow-none`}
-          style={{
-            backgroundColor: themeColors.bg1,
-            borderColor: themeColors.border,
-          }}
+          } lg:flex lg:relative lg:w-96 border-r flex-col transition-all shadow-2xl lg:shadow-none bg-white dark:bg-[#0A0F1E] border-[#E0EDFD] dark:border-[#475569]`}
         >
           {/* Sidebar Header */}
-          <div
-            className="p-4 md:p-6 border-b flex items-center justify-between flex-shrink-0"
-            style={{ borderColor: themeColors.border }}
-          >
+          <div className="p-4 md:p-6 border-b flex items-center justify-between flex-shrink-0 border-[#E0EDFD] dark:border-[#475569]">
             <div className="flex-1">
               <div className="flex items-center justify-between mb-4">
-                <h2
-                  className="text-lg md:text-xl font-bold flex items-center gap-2 transition-colors"
-                  style={{ color: themeColors.text1 }}
-                >
-                  <MessageSquare
-                    className="w-5 h-5"
-                    style={{ color: themeColors.primary }}
-                  />
+                <h2 className="text-lg md:text-xl font-bold flex items-center gap-2 transition-colors text-[#111E2F] dark:text-white">
+                  <MessageSquare className="w-5 h-5 text-[#0E52AC]" />
                   Messages
                 </h2>
                 <Button
                   variant="ghost"
                   size="icon"
                   onClick={() => setShowMobileSidebar(false)}
-                  className="lg:hidden"
-                  style={{ color: themeColors.text1 }}
+                  className="lg:hidden text-[#111E2F] dark:text-white"
                 >
                   <X className="w-5 h-5" />
                 </Button>
               </div>
               <div className="flex items-center gap-2 text-xs md:text-sm">
                 <div
-                  className={`w-2 h-2 rounded-full transition-colors`}
-                  style={{
-                    backgroundColor: isConnected
-                      ? themeColors.primary
-                      : themeColors.text3,
-                  }}
+                  className={`w-2 h-2 rounded-full transition-colors ${
+                    isConnected
+                      ? "bg-[#0E52AC]"
+                      : "bg-[#64748B] dark:bg-[#94A3B8]"
+                  }`}
                 ></div>
-                <span
-                  className="transition-colors"
-                  style={{ color: themeColors.text3 }}
-                >
+                <span className="transition-colors text-[#64748B] dark:text-[#94A3B8]">
                   {isConnected ? "Connected" : "Disconnected"}
                 </span>
               </div>
@@ -564,21 +507,12 @@ export default function ChatPage() {
           <div className="flex-1 overflow-y-auto">
             {isLoading && chatList.length === 0 ? (
               <div className="flex items-center justify-center h-full">
-                <Loader2
-                  className="w-5 h-5 animate-spin"
-                  style={{ color: themeColors.primary }}
-                />
+                <Loader2 className="w-5 h-5 animate-spin text-[#0E52AC]" />
               </div>
             ) : chatList.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-full p-6 md:p-8 text-center">
-                <MessageSquare
-                  className="w-12 h-12 mb-3 transition-colors"
-                  style={{ color: themeColors.border }}
-                />
-                <p
-                  className="text-sm transition-colors"
-                  style={{ color: themeColors.text3 }}
-                >
+                <MessageSquare className="w-12 h-12 mb-3 transition-colors text-[#E0EDFD] dark:text-[#475569]" />
+                <p className="text-sm transition-colors text-[#64748B] dark:text-[#94A3B8]">
                   {userRole === "ADMIN"
                     ? "No students available"
                     : "No admins available"}
@@ -594,68 +528,40 @@ export default function ChatPage() {
                     key={chatItem.user.id}
                     onClick={() => selectChat(chatItem)}
                     className={`w-full p-3 md:p-4 border-b transition-all hover:opacity-90 ${
-                      isSelected ? "border-l-4" : ""
-                    }`}
-                    style={{
-                      backgroundColor: isSelected
-                        ? themeColors.bg2
-                        : "transparent",
-                      borderColor: themeColors.border,
-                      borderLeftColor: isSelected
-                        ? themeColors.primary
-                        : "transparent",
-                    }}
+                      isSelected
+                        ? "border-l-4 bg-[#F8FBFF] dark:bg-[#1E293B] border-l-[#0E52AC]"
+                        : "bg-transparent"
+                    } border-[#E0EDFD] dark:border-[#475569]`}
                   >
                     <div className="flex items-center gap-3">
                       <div className="relative">
                         <Avatar className="w-10 h-10 md:w-12 md:h-12">
                           <AvatarImage src={chatItem.user.image} />
-                          <AvatarFallback
-                            className="text-white text-sm font-medium"
-                            style={{ backgroundColor: themeColors.primary }}
-                          >
+                          <AvatarFallback className="text-white text-sm font-medium bg-[#0E52AC]">
                             {chatItem.user.name?.[0] || "U"}
                           </AvatarFallback>
                         </Avatar>
                         {isConnected && (
-                          <div
-                            className="absolute bottom-0 right-0 w-3 h-3 rounded-full border-2"
-                            style={{
-                              backgroundColor: themeColors.primary,
-                              borderColor: themeColors.bg1,
-                            }}
-                          ></div>
+                          <div className="absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 bg-[#0E52AC] border-white dark:border-[#0A0F1E]"></div>
                         )}
                       </div>
                       <div className="flex-1 text-left overflow-hidden">
                         <div className="flex items-center justify-between mb-1">
-                          <p
-                            className="font-semibold truncate text-sm md:text-base transition-colors"
-                            style={{ color: themeColors.text1 }}
-                          >
+                          <p className="font-semibold truncate text-sm md:text-base transition-colors text-[#111E2F] dark:text-white">
                             {chatItem.user.name}
                           </p>
                           {lastMessage && (
-                            <span
-                              className="text-xs transition-colors"
-                              style={{ color: themeColors.text3 }}
-                            >
+                            <span className="text-xs transition-colors text-[#64748B] dark:text-[#94A3B8]">
                               {format(new Date(lastMessage.createdAt), "p")}
                             </span>
                           )}
                         </div>
                         {lastMessage ? (
-                          <p
-                            className="text-xs truncate transition-colors"
-                            style={{ color: themeColors.text3 }}
-                          >
+                          <p className="text-xs truncate transition-colors text-[#64748B] dark:text-[#94A3B8]">
                             {lastMessage.content}
                           </p>
                         ) : (
-                          <p
-                            className="text-xs transition-colors"
-                            style={{ color: themeColors.text3 }}
-                          >
+                          <p className="text-xs transition-colors text-[#64748B] dark:text-[#94A3B8]">
                             Click to start chatting
                           </p>
                         )}
@@ -669,54 +575,33 @@ export default function ChatPage() {
         </div>
 
         {/* Chat Area */}
-        <div
-          className="flex-1 flex flex-col overflow-hidden"
-          style={{ backgroundColor: themeColors.bg2 }}
-        >
+        <div className="flex-1 flex flex-col overflow-hidden bg-[#F8FBFF] dark:bg-[#1E293B]">
           {selectedChat ? (
             <>
               {/* Chat Header - Fixed */}
-              <div
-                className="flex-shrink-0 px-4 py-2 border-b flex items-center justify-between"
-                style={{
-                  backgroundColor: themeColors.bg1,
-                  borderColor: themeColors.border,
-                }}
-              >
+              <div className="flex-shrink-0 px-4 py-2 border-b flex items-center justify-between bg-white dark:bg-[#0A0F1E] border-[#E0EDFD] dark:border-[#475569]">
                 <div className="flex items-center gap-3">
                   <Avatar className="w-8 h-8">
                     <AvatarImage src={selectedChat.user.image} />
-                    <AvatarFallback
-                      className="text-white text-sm font-medium"
-                      style={{ backgroundColor: themeColors.primary }}
-                    >
+                    <AvatarFallback className="text-white text-sm font-medium bg-[#0E52AC]">
                       {selectedChat.user.name?.[0] || "U"}
                     </AvatarFallback>
                   </Avatar>
                   <div>
-                    <h3
-                      className="font-semibold text-base transition-colors"
-                      style={{ color: themeColors.text1 }}
-                    >
+                    <h3 className="font-semibold text-base transition-colors text-[#111E2F] dark:text-white">
                       {selectedChat.user.name}
                     </h3>
-                    <p
-                      className="text-xs transition-colors flex items-center gap-1.5"
-                      style={{ color: themeColors.text3 }}
-                    >
+                    <p className="text-xs transition-colors flex items-center gap-1.5 text-[#64748B] dark:text-[#94A3B8]">
                       {isTyping ? (
-                        <span style={{ color: themeColors.primary }}>
-                          Typing...
-                        </span>
+                        <span className="text-[#0E52AC]">Typing...</span>
                       ) : (
                         <>
                           <div
-                            className="w-1.5 h-1.5 rounded-full"
-                            style={{
-                              backgroundColor: isConnected
-                                ? "#22C55E"
-                                : themeColors.text3,
-                            }}
+                            className={`w-1.5 h-1.5 rounded-full ${
+                              isConnected
+                                ? "bg-[#22C55E]"
+                                : "bg-[#64748B] dark:bg-[#94A3B8]"
+                            }`}
                           ></div>
                           {isConnected ? "Online" : "Offline"}
                         </>
@@ -728,16 +613,14 @@ export default function ChatPage() {
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="hidden md:flex"
-                    style={{ color: themeColors.text2 }}
+                    className="hidden md:flex text-[#284366] dark:text-[#CBD5E1]"
                   >
                     <Search className="w-5 h-5" />
                   </Button>
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="hidden md:flex"
-                    style={{ color: themeColors.text2 }}
+                    className="hidden md:flex text-[#284366] dark:text-[#CBD5E1]"
                   >
                     <Heart className="w-5 h-5" />
                   </Button>
@@ -759,14 +642,8 @@ export default function ChatPage() {
                         key={message.id}
                         className="flex justify-center my-4"
                       >
-                        <div
-                          className="px-4 py-2 rounded-full"
-                          style={{ backgroundColor: themeColors.border }}
-                        >
-                          <p
-                            className="text-xs transition-colors"
-                            style={{ color: themeColors.text3 }}
-                          >
+                        <div className="px-4 py-2 rounded-full bg-[#E0EDFD] dark:bg-[#475569]">
+                          <p className="text-xs transition-colors text-[#64748B] dark:text-[#94A3B8]">
                             {message.content}
                           </p>
                         </div>
@@ -783,17 +660,10 @@ export default function ChatPage() {
                     >
                       <div
                         className={`max-w-[70%] rounded-2xl px-3 py-2 shadow-sm ${
-                          isOwn ? "rounded-br-md" : "rounded-bl-md"
+                          isOwn
+                            ? "rounded-br-md bg-[#0E52AC] text-white"
+                            : "rounded-bl-md bg-white dark:bg-[#334155] text-[#111E2F] dark:text-white border border-[#E0EDFD] dark:border-[#475569]"
                         }`}
-                        style={{
-                          backgroundColor: isOwn
-                            ? themeColors.primary
-                            : themeColors.messageBg,
-                          color: isOwn ? "#FFFFFF" : themeColors.text1,
-                          border: isOwn
-                            ? "none"
-                            : `1px solid ${themeColors.border}`,
-                        }}
                       >
                         {message.attachments.length > 0 && (
                           <div className="mb-3 space-y-2">
@@ -803,12 +673,11 @@ export default function ChatPage() {
                               return (
                                 <div
                                   key={attachment.id}
-                                  className="rounded-lg overflow-hidden"
-                                  style={{
-                                    backgroundColor: isOwn
-                                      ? "rgba(255,255,255,0.1)"
-                                      : themeColors.bg2,
-                                  }}
+                                  className={`rounded-lg overflow-hidden ${
+                                    isOwn
+                                      ? "bg-white/10"
+                                      : "bg-[#F8FBFF] dark:bg-[#1E293B]"
+                                  }`}
                                 >
                                   {isImage ? (
                                     <img
@@ -841,22 +710,18 @@ export default function ChatPage() {
 
                         <div className="flex items-center justify-between gap-2 mt-1">
                           <p
-                            className="text-xs"
-                            style={{
-                              color: isOwn
-                                ? "rgba(255,255,255,0.7)"
-                                : themeColors.text3,
-                            }}
+                            className={`text-xs ${
+                              isOwn
+                                ? "text-white/70"
+                                : "text-[#64748B] dark:text-[#94A3B8]"
+                            }`}
                           >
                             {format(new Date(message.createdAt), "p")}
                           </p>
                           {isOwn &&
                             message.readReceipts &&
                             message.readReceipts.length > 0 && (
-                              <CheckCheck
-                                className="w-3.5 h-3.5"
-                                style={{ color: "rgba(255,255,255,0.7)" }}
-                              />
+                              <CheckCheck className="w-3.5 h-3.5 text-white/70" />
                             )}
                         </div>
                       </div>
@@ -867,13 +732,7 @@ export default function ChatPage() {
               </div>
 
               {/* Message Input - Fixed at Bottom */}
-              <div
-                className="flex-shrink-0 px-4 py-2 border-t"
-                style={{
-                  backgroundColor: themeColors.bg1,
-                  borderColor: themeColors.border,
-                }}
-              >
+              <div className="flex-shrink-0 px-4 py-2 border-t bg-white dark:bg-[#0A0F1E] border-[#E0EDFD] dark:border-[#475569]">
                 <div className="flex items-center gap-2">
                   <Button
                     variant="ghost"
@@ -883,13 +742,7 @@ export default function ChatPage() {
                     <Mic className="w-5 h-5" />
                   </Button>
 
-                  <div
-                    className="flex-1 flex items-center gap-2 px-3 py-2 rounded-full border"
-                    style={{
-                      backgroundColor: themeColors.inputBg,
-                      borderColor: themeColors.border,
-                    }}
-                  >
+                  <div className="flex-1 flex items-center gap-2 px-3 py-2 rounded-full border bg-[#F8FBFF] dark:bg-[#0F172A] border-[#E0EDFD] dark:border-[#475569]">
                     <Input
                       value={messageInput}
                       onChange={(e) => {
@@ -903,10 +756,7 @@ export default function ChatPage() {
                         }
                       }}
                       placeholder="Write Something..."
-                      className="flex-1 border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 p-0 h-9 text-sm"
-                      style={{
-                        color: themeColors.text1,
-                      }}
+                      className="flex-1 border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 p-0 h-9 text-sm text-[#111E2F] dark:text-white"
                     />
                     <div className="flex items-center gap-1">
                       <label className="cursor-pointer">
@@ -920,29 +770,20 @@ export default function ChatPage() {
                           type="button"
                           className="p-1 hover:bg-gray-100 rounded transition-colors"
                         >
-                          <Paperclip
-                            className="w-4 h-4"
-                            style={{ color: themeColors.text3 }}
-                          />
+                          <Paperclip className="w-4 h-4 text-[#64748B] dark:text-[#94A3B8]" />
                         </button>
                       </label>
                       <button
                         type="button"
                         className="p-1 hover:bg-gray-100 rounded transition-colors"
                       >
-                        <ImageIcon
-                          className="w-4 h-4"
-                          style={{ color: themeColors.text3 }}
-                        />
+                        <ImageIcon className="w-4 h-4 text-[#64748B] dark:text-[#94A3B8]" />
                       </button>
                       <button
                         type="button"
                         className="p-1 hover:bg-gray-100 rounded transition-colors"
                       >
-                        <Smile
-                          className="w-4 h-4"
-                          style={{ color: themeColors.text3 }}
-                        />
+                        <Smile className="w-4 h-4 text-[#64748B] dark:text-[#94A3B8]" />
                       </button>
                     </div>
                   </div>
@@ -950,8 +791,7 @@ export default function ChatPage() {
                   <Button
                     onClick={sendMessage}
                     disabled={!messageInput.trim() || isSending}
-                    className="flex-shrink-0 w-9 h-9 p-0 rounded-full transition-all hover:opacity-90 disabled:opacity-50"
-                    style={{ backgroundColor: themeColors.primary }}
+                    className="flex-shrink-0 w-9 h-9 p-0 rounded-full transition-all hover:opacity-90 disabled:opacity-50 bg-[#0E52AC]"
                   >
                     {isSending ? (
                       <Loader2 className="w-5 h-5 animate-spin text-white" />
@@ -964,25 +804,13 @@ export default function ChatPage() {
             </>
           ) : (
             <div className="flex-1 flex flex-col items-center justify-center p-6 md:p-8 text-center">
-              <div
-                className="rounded-full p-6 mb-4"
-                style={{ backgroundColor: themeColors.bg1 }}
-              >
-                <MessageSquare
-                  className="w-16 h-16 md:w-20 md:h-20"
-                  style={{ color: themeColors.primary }}
-                />
+              <div className="rounded-full p-6 mb-4 bg-white dark:bg-[#0A0F1E]">
+                <MessageSquare className="w-16 h-16 md:w-20 md:h-20 text-[#0E52AC]" />
               </div>
-              <h3
-                className="text-xl md:text-2xl font-bold mb-2 transition-colors"
-                style={{ color: themeColors.text1 }}
-              >
+              <h3 className="text-xl md:text-2xl font-bold mb-2 transition-colors text-[#111E2F] dark:text-white">
                 Welcome to Chat
               </h3>
-              <p
-                className="text-sm md:text-base max-w-md transition-colors"
-                style={{ color: themeColors.text3 }}
-              >
+              <p className="text-sm md:text-base max-w-md transition-colors text-[#64748B] dark:text-[#94A3B8]">
                 Select {userRole === "ADMIN" ? "a student" : "an admin"} from
                 the sidebar to start chatting
               </p>
@@ -992,75 +820,39 @@ export default function ChatPage() {
 
         {/* Right Sidebar - Profile & Actions (Desktop Only) */}
         {selectedChat && (
-          <div
-            className="hidden xl:flex w-80 border-l flex-col"
-            style={{
-              backgroundColor: themeColors.bg1,
-              borderColor: themeColors.border,
-            }}
-          >
+          <div className="hidden xl:flex w-80 border-l flex-col bg-white dark:bg-[#0A0F1E] border-[#E0EDFD] dark:border-[#475569]">
             {/* Profile Section */}
-            <div
-              className="p-6 border-b text-center"
-              style={{ borderColor: themeColors.border }}
-            >
+            <div className="p-6 border-b text-center border-[#E0EDFD] dark:border-[#475569]">
               <Avatar className="w-24 h-24 mx-auto mb-4">
                 <AvatarImage src={selectedChat.user.image} />
-                <AvatarFallback
-                  className="text-white text-2xl font-medium"
-                  style={{ backgroundColor: themeColors.primary }}
-                >
+                <AvatarFallback className="text-white text-2xl font-medium bg-[#0E52AC]">
                   {selectedChat.user.name?.[0] || "U"}
                 </AvatarFallback>
               </Avatar>
-              <h3
-                className="text-lg font-bold mb-1"
-                style={{ color: themeColors.text1 }}
-              >
+              <h3 className="text-lg font-bold mb-1 text-[#111E2F] dark:text-white">
                 {selectedChat.user.name}
               </h3>
-              <p className="text-sm" style={{ color: themeColors.text3 }}>
+              <p className="text-sm text-[#64748B] dark:text-[#94A3B8]">
                 {selectedChat.user.role === "ADMIN" ? "Admin" : "Student"}
               </p>
             </div>
 
             {/* Action Buttons */}
-            <div
-              className="p-6 border-b"
-              style={{ borderColor: themeColors.border }}
-            >
+            <div className="p-6 border-b border-[#E0EDFD] dark:border-[#475569]">
               <div className="grid grid-cols-2 gap-4">
-                <button
-                  className="flex flex-col items-center gap-2 p-4 rounded-lg transition-colors hover:opacity-80"
-                  style={{ backgroundColor: themeColors.bg2 }}
-                >
-                  <div
-                    className="w-12 h-12 rounded-full flex items-center justify-center"
-                    style={{ backgroundColor: themeColors.primary }}
-                  >
+                <button className="flex flex-col items-center gap-2 p-4 rounded-lg transition-colors hover:opacity-80 bg-[#F8FBFF] dark:bg-[#1E293B]">
+                  <div className="w-12 h-12 rounded-full flex items-center justify-center bg-[#0E52AC]">
                     <MessageSquare className="w-5 h-5 text-white" />
                   </div>
-                  <span
-                    className="text-xs font-medium"
-                    style={{ color: themeColors.text1 }}
-                  >
+                  <span className="text-xs font-medium text-[#111E2F] dark:text-white">
                     Chat
                   </span>
                 </button>
-                <button
-                  className="flex flex-col items-center gap-2 p-4 rounded-lg transition-colors hover:opacity-80"
-                  style={{ backgroundColor: themeColors.bg2 }}
-                >
-                  <div
-                    className="w-12 h-12 rounded-full flex items-center justify-center"
-                    style={{ backgroundColor: themeColors.primary }}
-                  >
+                <button className="flex flex-col items-center gap-2 p-4 rounded-lg transition-colors hover:opacity-80 bg-[#F8FBFF] dark:bg-[#1E293B]">
+                  <div className="w-12 h-12 rounded-full flex items-center justify-center bg-[#0E52AC]">
                     <Video className="w-5 h-5 text-white" />
                   </div>
-                  <span
-                    className="text-xs font-medium"
-                    style={{ color: themeColors.text1 }}
-                  >
+                  <span className="text-xs font-medium text-[#111E2F] dark:text-white">
                     Video Call
                   </span>
                 </button>
@@ -1068,37 +860,16 @@ export default function ChatPage() {
             </div>
 
             {/* Quick Actions */}
-            <div
-              className="p-6 border-b"
-              style={{ borderColor: themeColors.border }}
-            >
-              <button
-                className="w-full flex items-center gap-3 p-3 rounded-lg transition-colors hover:opacity-80 mb-2"
-                style={{ backgroundColor: themeColors.bg2 }}
-              >
-                <UserPlus
-                  className="w-5 h-5"
-                  style={{ color: themeColors.primary }}
-                />
-                <span
-                  className="text-sm font-medium"
-                  style={{ color: themeColors.text1 }}
-                >
+            <div className="p-6 border-b border-[#E0EDFD] dark:border-[#475569]">
+              <button className="w-full flex items-center gap-3 p-3 rounded-lg transition-colors hover:opacity-80 mb-2 bg-[#F8FBFF] dark:bg-[#1E293B]">
+                <UserPlus className="w-5 h-5 text-[#0E52AC]" />
+                <span className="text-sm font-medium text-[#111E2F] dark:text-white">
                   View Friends
                 </span>
               </button>
-              <button
-                className="w-full flex items-center gap-3 p-3 rounded-lg transition-colors hover:opacity-80"
-                style={{ backgroundColor: themeColors.bg2 }}
-              >
-                <Heart
-                  className="w-5 h-5"
-                  style={{ color: themeColors.primary }}
-                />
-                <span
-                  className="text-sm font-medium"
-                  style={{ color: themeColors.text1 }}
-                >
+              <button className="w-full flex items-center gap-3 p-3 rounded-lg transition-colors hover:opacity-80 bg-[#F8FBFF] dark:bg-[#1E293B]">
+                <Heart className="w-5 h-5 text-[#0E52AC]" />
+                <span className="text-sm font-medium text-[#111E2F] dark:text-white">
                   Add to Favorites
                 </span>
               </button>
@@ -1106,69 +877,36 @@ export default function ChatPage() {
 
             {/* Attachments */}
             <div className="flex-1 p-6 overflow-y-auto">
-              <h4
-                className="font-semibold mb-4"
-                style={{ color: themeColors.text1 }}
-              >
+              <h4 className="font-semibold mb-4 text-[#111E2F] dark:text-white">
                 Attachments
               </h4>
               <div className="grid grid-cols-4 gap-3">
-                <button
-                  className="flex flex-col items-center gap-2 p-3 rounded-lg transition-colors hover:opacity-80"
-                  style={{ backgroundColor: themeColors.bg2 }}
-                >
-                  <FileText className="w-6 h-6" style={{ color: "#DC2626" }} />
-                  <span
-                    className="text-xs"
-                    style={{ color: themeColors.text3 }}
-                  >
+                <button className="flex flex-col items-center gap-2 p-3 rounded-lg transition-colors hover:opacity-80 bg-[#F8FBFF] dark:bg-[#1E293B]">
+                  <FileText className="w-6 h-6 text-red-600" />
+                  <span className="text-xs text-[#64748B] dark:text-[#94A3B8]">
                     PDF
                   </span>
                 </button>
-                <button
-                  className="flex flex-col items-center gap-2 p-3 rounded-lg transition-colors hover:opacity-80"
-                  style={{ backgroundColor: themeColors.bg2 }}
-                >
-                  <Video className="w-6 h-6" style={{ color: "#2563EB" }} />
-                  <span
-                    className="text-xs"
-                    style={{ color: themeColors.text3 }}
-                  >
+                <button className="flex flex-col items-center gap-2 p-3 rounded-lg transition-colors hover:opacity-80 bg-[#F8FBFF] dark:bg-[#1E293B]">
+                  <Video className="w-6 h-6 text-blue-600" />
+                  <span className="text-xs text-[#64748B] dark:text-[#94A3B8]">
                     VIDEO
                   </span>
                 </button>
-                <button
-                  className="flex flex-col items-center gap-2 p-3 rounded-lg transition-colors hover:opacity-80"
-                  style={{ backgroundColor: themeColors.bg2 }}
-                >
-                  <Music className="w-6 h-6" style={{ color: "#9333EA" }} />
-                  <span
-                    className="text-xs"
-                    style={{ color: themeColors.text3 }}
-                  >
+                <button className="flex flex-col items-center gap-2 p-3 rounded-lg transition-colors hover:opacity-80 bg-[#F8FBFF] dark:bg-[#1E293B]">
+                  <Music className="w-6 h-6 text-purple-600" />
+                  <span className="text-xs text-[#64748B] dark:text-[#94A3B8]">
                     MP3
                   </span>
                 </button>
-                <button
-                  className="flex flex-col items-center gap-2 p-3 rounded-lg transition-colors hover:opacity-80"
-                  style={{ backgroundColor: themeColors.bg2 }}
-                >
-                  <ImageIcon className="w-6 h-6" style={{ color: "#16A34A" }} />
-                  <span
-                    className="text-xs"
-                    style={{ color: themeColors.text3 }}
-                  >
+                <button className="flex flex-col items-center gap-2 p-3 rounded-lg transition-colors hover:opacity-80 bg-[#F8FBFF] dark:bg-[#1E293B]">
+                  <ImageIcon className="w-6 h-6 text-green-600" />
+                  <span className="text-xs text-[#64748B] dark:text-[#94A3B8]">
                     IMAGE
                   </span>
                 </button>
               </div>
-              <button
-                className="w-full mt-4 py-2 px-4 rounded-full border text-sm font-medium transition-colors hover:opacity-80"
-                style={{
-                  borderColor: themeColors.border,
-                  color: themeColors.primary,
-                }}
-              >
+              <button className="w-full mt-4 py-2 px-4 rounded-full border text-sm font-medium transition-colors hover:opacity-80 border-[#E0EDFD] dark:border-[#475569] text-[#0E52AC]">
                 View All
               </button>
             </div>

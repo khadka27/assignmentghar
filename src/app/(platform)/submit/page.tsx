@@ -11,7 +11,6 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { useTheme } from "@/hooks/use-theme";
 import {
   Loader2,
   FileText,
@@ -26,22 +25,6 @@ export default function SubmitPage() {
   const { data: session } = useSession();
   const router = useRouter();
   const { toast } = useToast();
-  const { theme } = useTheme();
-  const isDark = theme === "dark";
-
-  // Brand theme colors
-  const themeColors = {
-    primary: "#0E52AC",
-    primaryHover: "#0A3D7F",
-    text1: isDark ? "#FFFFFF" : "#111E2F",
-    text2: isDark ? "#CBD5E1" : "#284366",
-    text3: isDark ? "#94A3B8" : "#64748B",
-    bg1: isDark ? "#0A0F1E" : "#FFFFFF",
-    bg2: isDark ? "#1E293B" : "#F8FBFF",
-    cardBg: isDark ? "#1E293B" : "#FFFFFF",
-    border: isDark ? "#475569" : "#E0EDFD",
-    inputBg: isDark ? "#0F172A" : "#F8FBFF",
-  };
 
   const [formData, setFormData] = useState({
     name: session?.user?.name || "",
@@ -175,48 +158,27 @@ export default function SubmitPage() {
   };
 
   return (
-    <div
-      className="min-h-screen py-12 px-4 sm:px-6 lg:px-8 transition-colors"
-      style={{ backgroundColor: themeColors.bg2 }}
-    >
+    <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8 transition-colors bg-[#F8FBFF] dark:bg-[#1E293B]">
       <div className="max-w-3xl mx-auto">
         {/* Header */}
         <div className="mb-8 text-center">
-          <h1
-            className="text-3xl md:text-4xl font-bold mb-3 transition-colors"
-            style={{ color: themeColors.text1 }}
-          >
+          <h1 className="text-3xl md:text-4xl font-bold mb-3 transition-colors text-[#111E2F] dark:text-white">
             Submit Your Assignment
           </h1>
-          <p
-            className="text-base md:text-lg max-w-2xl mx-auto transition-colors"
-            style={{ color: themeColors.text3 }}
-          >
+          <p className="text-base md:text-lg max-w-2xl mx-auto transition-colors text-[#64748B] dark:text-[#94A3B8]">
             Upload your assignment guide and our expert team will review it and
             provide personalized assistance
           </p>
         </div>
 
         {!submitted ? (
-          <div
-            className="border rounded-2xl p-6 md:p-8 shadow-lg transition-colors"
-            style={{
-              backgroundColor: themeColors.cardBg,
-              borderColor: themeColors.border,
-            }}
-          >
+          <div className="border rounded-2xl p-6 md:p-8 shadow-lg transition-colors bg-white dark:bg-[#1E293B] border-[#E0EDFD] dark:border-[#475569]">
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Name and Email Row */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label
-                    className="text-sm font-semibold mb-2 flex items-center gap-2 transition-colors"
-                    style={{ color: themeColors.text2 }}
-                  >
-                    <User
-                      className="w-4 h-4"
-                      style={{ color: themeColors.primary }}
-                    />
+                  <label className="text-sm font-semibold mb-2 flex items-center gap-2 transition-colors text-[#284366] dark:text-[#CBD5E1]">
+                    <User className="w-4 h-4 text-[#0E52AC]" />
                     Full Name
                   </label>
                   <Input
@@ -224,12 +186,11 @@ export default function SubmitPage() {
                     name="name"
                     value={formData.name}
                     onChange={handleChange}
-                    className="h-11 transition-colors"
-                    style={{
-                      backgroundColor: themeColors.inputBg,
-                      borderColor: errors.name ? "#EF4444" : themeColors.border,
-                      color: themeColors.text1,
-                    }}
+                    className={`h-11 transition-colors bg-[#F8FBFF] dark:bg-[#0F172A] text-[#111E2F] dark:text-white ${
+                      errors.name
+                        ? "border-red-500"
+                        : "border-[#E0EDFD] dark:border-[#475569]"
+                    }`}
                   />
                   {errors.name && (
                     <p className="text-red-500 text-xs mt-1.5 flex items-center gap-1">
@@ -239,14 +200,8 @@ export default function SubmitPage() {
                 </div>
 
                 <div>
-                  <label
-                    className="text-sm font-semibold mb-2 flex items-center gap-2 transition-colors"
-                    style={{ color: themeColors.text2 }}
-                  >
-                    <Mail
-                      className="w-4 h-4"
-                      style={{ color: themeColors.primary }}
-                    />
+                  <label className="text-sm font-semibold mb-2 flex items-center gap-2 transition-colors text-[#284366] dark:text-[#CBD5E1]">
+                    <Mail className="w-4 h-4 text-[#0E52AC]" />
                     Email Address
                   </label>
                   <Input
@@ -255,14 +210,11 @@ export default function SubmitPage() {
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
-                    className="h-11 transition-colors"
-                    style={{
-                      backgroundColor: themeColors.inputBg,
-                      borderColor: errors.email
-                        ? "#EF4444"
-                        : themeColors.border,
-                      color: themeColors.text1,
-                    }}
+                    className={`h-11 transition-colors bg-[#F8FBFF] dark:bg-[#0F172A] text-[#111E2F] dark:text-white ${
+                      errors.email
+                        ? "border-red-500"
+                        : "border-[#E0EDFD] dark:border-[#475569]"
+                    }`}
                   />
                   {errors.email && (
                     <p className="text-red-500 text-xs mt-1.5 flex items-center gap-1">
@@ -274,22 +226,18 @@ export default function SubmitPage() {
 
               {/* Course Selection */}
               <div>
-                <label
-                  className="block text-sm font-semibold mb-2 transition-colors"
-                  style={{ color: themeColors.text2 }}
-                >
+                <label className="block text-sm font-semibold mb-2 transition-colors text-[#284366] dark:text-[#CBD5E1]">
                   Course
                 </label>
                 <select
                   name="course"
                   value={formData.course}
                   onChange={handleChange}
-                  className="w-full h-11 px-4 rounded-lg border transition-all focus:outline-none focus:ring-2"
-                  style={{
-                    backgroundColor: themeColors.inputBg,
-                    borderColor: errors.course ? "#EF4444" : themeColors.border,
-                    color: themeColors.text1,
-                  }}
+                  className={`w-full h-11 px-4 rounded-lg border transition-all focus:outline-none focus:ring-2 bg-[#F8FBFF] dark:bg-[#0F172A] text-[#111E2F] dark:text-white ${
+                    errors.course
+                      ? "border-red-500"
+                      : "border-[#E0EDFD] dark:border-[#475569]"
+                  }`}
                 >
                   <option value="">Select a course</option>
                   {courses.map((course) => (
@@ -308,10 +256,7 @@ export default function SubmitPage() {
               {/* Custom Course Input */}
               {formData.course === "custom" && (
                 <div>
-                  <label
-                    className="block text-sm font-semibold mb-2 transition-colors"
-                    style={{ color: themeColors.text2 }}
-                  >
+                  <label className="block text-sm font-semibold mb-2 transition-colors text-[#284366] dark:text-[#CBD5E1]">
                     Specify Your Course
                   </label>
                   <Input
@@ -319,14 +264,11 @@ export default function SubmitPage() {
                     name="customCourse"
                     value={formData.customCourse}
                     onChange={handleChange}
-                    className="h-11 transition-colors"
-                    style={{
-                      backgroundColor: themeColors.inputBg,
-                      borderColor: errors.customCourse
-                        ? "#EF4444"
-                        : themeColors.border,
-                      color: themeColors.text1,
-                    }}
+                    className={`h-11 transition-colors bg-[#F8FBFF] dark:bg-[#0F172A] text-[#111E2F] dark:text-white ${
+                      errors.customCourse
+                        ? "border-red-500"
+                        : "border-[#E0EDFD] dark:border-[#475569]"
+                    }`}
                   />
                   {errors.customCourse && (
                     <p className="text-red-500 text-xs mt-1.5 flex items-center gap-1">
@@ -339,36 +281,24 @@ export default function SubmitPage() {
               {/* Subject and Deadline Row */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label
-                    className="block text-sm font-semibold mb-2 transition-colors"
-                    style={{ color: themeColors.text2 }}
-                  >
+                  <label className="block text-sm font-semibold mb-2 transition-colors text-[#284366] dark:text-[#CBD5E1]">
                     Subject{" "}
-                    <span style={{ color: themeColors.text3 }}>(Optional)</span>
+                    <span className="text-[#64748B] dark:text-[#94A3B8]">
+                      (Optional)
+                    </span>
                   </label>
                   <Input
                     placeholder="e.g., Database Systems"
                     name="subject"
                     value={formData.subject}
                     onChange={handleChange}
-                    className="h-11 transition-colors"
-                    style={{
-                      backgroundColor: themeColors.inputBg,
-                      borderColor: themeColors.border,
-                      color: themeColors.text1,
-                    }}
+                    className="h-11 transition-colors bg-[#F8FBFF] dark:bg-[#0F172A] border-[#E0EDFD] dark:border-[#475569] text-[#111E2F] dark:text-white"
                   />
                 </div>
 
                 <div>
-                  <label
-                    className="text-sm font-semibold mb-2 flex items-center gap-2 transition-colors"
-                    style={{ color: themeColors.text2 }}
-                  >
-                    <Calendar
-                      className="w-4 h-4"
-                      style={{ color: themeColors.primary }}
-                    />
+                  <label className="text-sm font-semibold mb-2 flex items-center gap-2 transition-colors text-[#284366] dark:text-[#CBD5E1]">
+                    <Calendar className="w-4 h-4 text-[#0E52AC]" />
                     Deadline
                   </label>
                   <Input
@@ -376,14 +306,11 @@ export default function SubmitPage() {
                     name="deadline"
                     value={formData.deadline}
                     onChange={handleChange}
-                    className="h-11 transition-colors"
-                    style={{
-                      backgroundColor: themeColors.inputBg,
-                      borderColor: errors.deadline
-                        ? "#EF4444"
-                        : themeColors.border,
-                      color: themeColors.text1,
-                    }}
+                    className={`h-11 transition-colors bg-[#F8FBFF] dark:bg-[#0F172A] text-[#111E2F] dark:text-white ${
+                      errors.deadline
+                        ? "border-red-500"
+                        : "border-[#E0EDFD] dark:border-[#475569]"
+                    }`}
                   />
                   {errors.deadline && (
                     <p className="text-red-500 text-xs mt-1.5 flex items-center gap-1">
@@ -395,22 +322,16 @@ export default function SubmitPage() {
 
               {/* File Upload */}
               <div>
-                <label
-                  className="text-sm font-semibold mb-2 flex items-center gap-2 transition-colors"
-                  style={{ color: themeColors.text2 }}
-                >
-                  <FileText
-                    className="w-4 h-4"
-                    style={{ color: themeColors.primary }}
-                  />
+                <label className="text-sm font-semibold mb-2 flex items-center gap-2 transition-colors text-[#284366] dark:text-[#CBD5E1]">
+                  <FileText className="w-4 h-4 text-[#0E52AC]" />
                   Module Guide (PDF or Word)
                 </label>
                 <div
-                  className="relative border-2 border-dashed rounded-xl p-6 transition-all hover:border-opacity-80"
-                  style={{
-                    borderColor: errors.file ? "#EF4444" : themeColors.border,
-                    backgroundColor: themeColors.inputBg,
-                  }}
+                  className={`relative border-2 border-dashed rounded-xl p-6 transition-all hover:border-opacity-80 bg-[#F8FBFF] dark:bg-[#0F172A] ${
+                    errors.file
+                      ? "border-red-500"
+                      : "border-[#E0EDFD] dark:border-[#475569]"
+                  }`}
                 >
                   <input
                     type="file"
@@ -419,20 +340,11 @@ export default function SubmitPage() {
                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                   />
                   <div className="text-center">
-                    <Upload
-                      className="w-10 h-10 mx-auto mb-3"
-                      style={{ color: themeColors.primary }}
-                    />
-                    <p
-                      className="text-sm font-medium mb-1 transition-colors"
-                      style={{ color: themeColors.text2 }}
-                    >
+                    <Upload className="w-10 h-10 mx-auto mb-3 text-[#0E52AC]" />
+                    <p className="text-sm font-medium mb-1 transition-colors text-[#284366] dark:text-[#CBD5E1]">
                       Click to upload or drag and drop
                     </p>
-                    <p
-                      className="text-xs transition-colors"
-                      style={{ color: themeColors.text3 }}
-                    >
+                    <p className="text-xs transition-colors text-[#64748B] dark:text-[#94A3B8]">
                       PDF, DOC, or DOCX (MAX. 10MB)
                     </p>
                   </div>
@@ -443,47 +355,28 @@ export default function SubmitPage() {
                   </p>
                 )}
                 {file && (
-                  <div
-                    className="mt-3 p-4 rounded-lg border flex items-center gap-3 transition-colors"
-                    style={{
-                      backgroundColor: `${themeColors.primary}15`,
-                      borderColor: themeColors.primary,
-                    }}
-                  >
-                    <FileText
-                      className="w-5 h-5 flex-shrink-0"
-                      style={{ color: themeColors.primary }}
-                    />
+                  <div className="mt-3 p-4 rounded-lg border flex items-center gap-3 transition-colors bg-[#0E52AC]/10 border-[#0E52AC]">
+                    <FileText className="w-5 h-5 flex-shrink-0 text-[#0E52AC]" />
                     <div className="flex-1 min-w-0">
-                      <p
-                        className="text-sm font-medium truncate transition-colors"
-                        style={{ color: themeColors.text1 }}
-                      >
+                      <p className="text-sm font-medium truncate transition-colors text-[#111E2F] dark:text-white">
                         {file.name}
                       </p>
-                      <p
-                        className="text-xs transition-colors"
-                        style={{ color: themeColors.text3 }}
-                      >
+                      <p className="text-xs transition-colors text-[#64748B] dark:text-[#94A3B8]">
                         {(file.size / 1024).toFixed(2)} KB
                       </p>
                     </div>
-                    <CheckCircle2
-                      className="w-5 h-5 flex-shrink-0"
-                      style={{ color: themeColors.primary }}
-                    />
+                    <CheckCircle2 className="w-5 h-5 flex-shrink-0 text-[#0E52AC]" />
                   </div>
                 )}
               </div>
 
               {/* Additional Message */}
               <div>
-                <label
-                  className="block text-sm font-semibold mb-2 transition-colors"
-                  style={{ color: themeColors.text2 }}
-                >
+                <label className="block text-sm font-semibold mb-2 transition-colors text-[#284366] dark:text-[#CBD5E1]">
                   Additional Message{" "}
-                  <span style={{ color: themeColors.text3 }}>(Optional)</span>
+                  <span className="text-[#64748B] dark:text-[#94A3B8]">
+                    (Optional)
+                  </span>
                 </label>
                 <Textarea
                   placeholder="Tell us more about your assignment or any specific requirements..."
@@ -491,12 +384,7 @@ export default function SubmitPage() {
                   value={formData.message}
                   onChange={handleChange}
                   rows={4}
-                  className="resize-none transition-colors"
-                  style={{
-                    backgroundColor: themeColors.inputBg,
-                    borderColor: themeColors.border,
-                    color: themeColors.text1,
-                  }}
+                  className="resize-none transition-colors bg-[#F8FBFF] dark:bg-[#0F172A] border-[#E0EDFD] dark:border-[#475569] text-[#111E2F] dark:text-white"
                 />
               </div>
 
@@ -504,8 +392,7 @@ export default function SubmitPage() {
               <Button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full h-12 text-white font-semibold text-base rounded-xl transition-all hover:opacity-90 disabled:opacity-50"
-                style={{ backgroundColor: themeColors.primary }}
+                className="w-full h-12 text-white font-semibold text-base rounded-xl transition-all hover:opacity-90 disabled:opacity-50 bg-[#0E52AC]"
               >
                 {isSubmitting ? (
                   <>
@@ -522,37 +409,19 @@ export default function SubmitPage() {
             </form>
           </div>
         ) : (
-          <div
-            className="border rounded-2xl p-8 md:p-12 text-center shadow-lg transition-colors"
-            style={{
-              backgroundColor: `${themeColors.primary}15`,
-              borderColor: themeColors.primary,
-            }}
-          >
-            <div
-              className="w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center mx-auto mb-4"
-              style={{ backgroundColor: themeColors.primary }}
-            >
+          <div className="border rounded-2xl p-8 md:p-12 text-center shadow-lg transition-colors bg-[#0E52AC]/10 border-[#0E52AC]">
+            <div className="w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center mx-auto mb-4 bg-[#0E52AC]">
               <CheckCircle2 className="w-10 h-10 md:w-12 md:h-12 text-white" />
             </div>
-            <h2
-              className="text-2xl md:text-3xl font-bold mb-3 transition-colors"
-              style={{ color: themeColors.text1 }}
-            >
+            <h2 className="text-2xl md:text-3xl font-bold mb-3 transition-colors text-[#111E2F] dark:text-white">
               Submission Successful!
             </h2>
-            <p
-              className="text-base md:text-lg mb-6 transition-colors"
-              style={{ color: themeColors.text2 }}
-            >
+            <p className="text-base md:text-lg mb-6 transition-colors text-[#284366] dark:text-[#CBD5E1]">
               Your assignment has been submitted successfully. Our expert team
               will review it and get back to you shortly via chat.
             </p>
             <Link href="/chat">
-              <Button
-                className="h-12 px-8 text-white font-semibold text-base rounded-xl transition-all hover:opacity-90"
-                style={{ backgroundColor: themeColors.primary }}
-              >
+              <Button className="h-12 px-8 text-white font-semibold text-base rounded-xl transition-all hover:opacity-90 bg-[#0E52AC]">
                 Go to Chat Now
               </Button>
             </Link>
@@ -560,21 +429,15 @@ export default function SubmitPage() {
         )}
 
         {/* Info Box */}
-        <div
-          className="mt-6 p-4 md:p-5 border rounded-xl transition-colors"
-          style={{
-            backgroundColor: themeColors.cardBg,
-            borderColor: themeColors.border,
-          }}
-        >
-          <p
-            className="text-sm transition-colors"
-            style={{ color: themeColors.text3 }}
-          >
-            <strong style={{ color: themeColors.text2 }}>Note:</strong> After
-            submitting your assignment, you'll be redirected to the chat where
-            you can communicate directly with our experts. Make sure to provide
-            all necessary details about your assignment for better assistance.
+        <div className="mt-6 p-4 md:p-5 border rounded-xl transition-colors bg-white dark:bg-[#1E293B] border-[#E0EDFD] dark:border-[#475569]">
+          <p className="text-sm transition-colors text-[#64748B] dark:text-[#94A3B8]">
+            <strong className="text-[#284366] dark:text-[#CBD5E1]">
+              Note:
+            </strong>{" "}
+            After submitting your assignment, you'll be redirected to the chat
+            where you can communicate directly with our experts. Make sure to
+            provide all necessary details about your assignment for better
+            assistance.
           </p>
         </div>
       </div>

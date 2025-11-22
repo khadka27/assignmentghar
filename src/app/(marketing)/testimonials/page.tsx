@@ -79,14 +79,14 @@ export default function TestimonialsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-[#F8FBFF] dark:bg-[#0A0F1E] py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         {/* Hero Section */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
+          <h1 className="text-4xl font-bold text-[#111E2F] dark:text-white mb-4">
             What Our Users Say
           </h1>
-          <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+          <p className="text-lg text-[#284366] dark:text-[#CBD5E1] max-w-2xl mx-auto">
             Real feedback from real users. See why thousands of students trust
             us with their assignments.
           </p>
@@ -100,7 +100,7 @@ export default function TestimonialsPage() {
         {/* Stats */}
         {total > 0 && (
           <div className="text-center mb-8">
-            <p className="text-gray-600 dark:text-gray-400">
+            <p className="text-[#284366] dark:text-[#CBD5E1]">
               Showing{" "}
               <span className="font-semibold">{testimonials.length}</span> of{" "}
               <span className="font-semibold">{total}</span> testimonials
@@ -111,8 +111,8 @@ export default function TestimonialsPage() {
         {/* Loading State */}
         {isLoading && (
           <div className="flex justify-center items-center py-20">
-            <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
-            <span className="ml-3 text-gray-600 dark:text-gray-400">
+            <Loader2 className="w-8 h-8 animate-spin text-[#0E52AC]" />
+            <span className="ml-3 text-[#284366] dark:text-[#CBD5E1]">
               Loading testimonials...
             </span>
           </div>

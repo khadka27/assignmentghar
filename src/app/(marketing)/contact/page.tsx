@@ -105,14 +105,14 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-black py-12 px-4">
+    <div className="min-h-screen bg-white dark:bg-[#0A0F1E] py-12 px-4">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-3">
+          <h1 className="text-3xl font-bold text-[#111E2F] dark:text-white mb-3">
             Contact Us
           </h1>
-          <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+          <p className="text-[#284366] dark:text-[#CBD5E1] max-w-2xl mx-auto">
             Have questions or need assistance? Get in touch with our support
             team.
           </p>
@@ -121,17 +121,17 @@ export default function ContactPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Contact Form */}
           <div className="lg:col-span-2">
-            <div className="bg-white dark:bg-black border border-gray-200 dark:border-gray-800 rounded-lg p-8">
-              <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
+            <div className="bg-white dark:bg-[#1E293B] border border-[#E0EDFD] dark:border-[#475569] rounded-lg p-8">
+              <h2 className="text-xl font-bold text-[#111E2F] dark:text-white mb-6">
                 Send us a Message
               </h2>
 
               {submitted ? (
-                <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg p-6">
-                  <p className="text-gray-900 dark:text-white font-medium mb-2">
+                <div className="bg-[#F8FBFF] dark:bg-[#0A0F1E] border border-[#E0EDFD] dark:border-[#475569] rounded-lg p-6">
+                  <p className="text-[#111E2F] dark:text-white font-medium mb-2">
                     Message sent successfully!
                   </p>
-                  <p className="text-gray-600 dark:text-gray-400 text-sm">
+                  <p className="text-[#284366] dark:text-[#CBD5E1] text-sm">
                     We've sent a confirmation email to your inbox. We'll get
                     back to you within 24-48 hours.
                   </p>
@@ -139,7 +139,7 @@ export default function ContactPage() {
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-5">
                   <div>
-                    <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
+                    <label className="block text-sm font-medium text-[#111E2F] dark:text-white mb-2">
                       Full Name
                     </label>
                     <Input
@@ -148,7 +148,7 @@ export default function ContactPage() {
                       value={formData.name}
                       onChange={handleChange}
                       disabled={isSubmitting}
-                      className="h-11 bg-gray-50 dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
+                      className="h-11 bg-[#F8FBFF] dark:bg-[#0A0F1E] border-[#E0EDFD] dark:border-[#475569] text-[#111E2F] dark:text-white focus:border-[#0E52AC] focus:ring-1 focus:ring-[#0E52AC]"
                     />
                     {errors.name && (
                       <p className="text-sm text-red-600 dark:text-red-400 mt-1">
@@ -158,7 +158,7 @@ export default function ContactPage() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
+                    <label className="block text-sm font-medium text-[#111E2F] dark:text-white mb-2">
                       Email Address
                     </label>
                     <Input
@@ -168,7 +168,7 @@ export default function ContactPage() {
                       value={formData.email}
                       onChange={handleChange}
                       disabled={isSubmitting}
-                      className="h-11 bg-gray-50 dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
+                      className="h-11 bg-[#F8FBFF] dark:bg-[#0A0F1E] border-[#E0EDFD] dark:border-[#475569] text-[#111E2F] dark:text-white focus:border-[#0E52AC] focus:ring-1 focus:ring-[#0E52AC]"
                     />
                     {errors.email && (
                       <p className="text-sm text-red-600 dark:text-red-400 mt-1">
@@ -178,8 +178,11 @@ export default function ContactPage() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
-                      Subject <span className="text-gray-500">(Optional)</span>
+                    <label className="block text-sm font-medium text-[#111E2F] dark:text-white mb-2">
+                      Subject{" "}
+                      <span className="text-[#284366] dark:text-[#94A3B8]">
+                        (Optional)
+                      </span>
                     </label>
                     <Input
                       placeholder="What is this about?"
@@ -187,7 +190,7 @@ export default function ContactPage() {
                       value={formData.subject}
                       onChange={handleChange}
                       disabled={isSubmitting}
-                      className="h-11 bg-gray-50 dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
+                      className="h-11 bg-[#F8FBFF] dark:bg-[#0A0F1E] border-[#E0EDFD] dark:border-[#475569] text-[#111E2F] dark:text-white focus:border-[#0E52AC] focus:ring-1 focus:ring-[#0E52AC]"
                     />
                   </div>
 

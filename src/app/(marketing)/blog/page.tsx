@@ -49,13 +49,13 @@ export default function BlogPage() {
   return (
     <div className="w-full">
       {/* Hero */}
-      <section className="bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-950 py-20 md:py-32">
+      <section className="bg-gradient-to-b from-[#F8FBFF] to-white dark:from-[#0A0F1E] dark:to-[#1E293B] py-20 md:py-32">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl mx-auto text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-6">
+            <h1 className="text-4xl md:text-5xl font-bold mb-6 text-[#111E2F] dark:text-white">
               Student Success Blog
             </h1>
-            <p className="text-lg text-slate-600 dark:text-slate-400">
+            <p className="text-lg text-[#284366] dark:text-[#CBD5E1]">
               Tips, guides, and insights to help you succeed in your academic
               journey.
             </p>
@@ -70,18 +70,23 @@ export default function BlogPage() {
             {posts.map((post) => (
               <Card
                 key={post.id}
-                className="flex flex-col hover:shadow-lg transition-shadow cursor-pointer"
+                className="flex flex-col hover:shadow-lg transition-shadow cursor-pointer bg-white dark:bg-[#1E293B] border-[#E0EDFD] dark:border-[#475569]"
               >
                 <div className="flex-1">
-                  <Badge variant="default" className="mb-3">
+                  <Badge
+                    variant="default"
+                    className="mb-3 bg-[#0E52AC] hover:bg-[#0A3D7F]"
+                  >
                     {post.category}
                   </Badge>
-                  <h3 className="text-xl font-bold mb-2">{post.title}</h3>
-                  <p className="text-slate-600 dark:text-slate-400 mb-4">
+                  <h3 className="text-xl font-bold mb-2 text-[#111E2F] dark:text-white">
+                    {post.title}
+                  </h3>
+                  <p className="text-[#284366] dark:text-[#CBD5E1] mb-4">
                     {post.excerpt}
                   </p>
                 </div>
-                <div className="flex items-center justify-between pt-4 border-t border-slate-200 dark:border-slate-700 text-sm text-slate-600 dark:text-slate-400">
+                <div className="flex items-center justify-between pt-4 border-t border-[#E0EDFD] dark:border-[#475569] text-sm text-[#284366] dark:text-[#CBD5E1]">
                   <span>{post.date}</span>
                   <span>{post.readTime}</span>
                 </div>
@@ -90,11 +95,11 @@ export default function BlogPage() {
           </div>
 
           {/* Newsletter */}
-          <div className="mt-16 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-lg p-8 text-center">
-            <h3 className="text-2xl font-bold mb-2 text-emerald-900 dark:text-emerald-100">
+          <div className="mt-16 bg-[#F8FBFF] dark:bg-[#1E293B] border border-[#E0EDFD] dark:border-[#475569] rounded-lg p-8 text-center">
+            <h3 className="text-2xl font-bold mb-2 text-[#111E2F] dark:text-white">
               Subscribe to Our Newsletter
             </h3>
-            <p className="text-emerald-800 dark:text-emerald-200 mb-6">
+            <p className="text-[#284366] dark:text-[#CBD5E1] mb-6">
               Get weekly tips and updates delivered to your inbox.
             </p>
             <div className="flex gap-2 max-w-md mx-auto">

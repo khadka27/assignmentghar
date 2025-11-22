@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import { useToast } from "@/hooks/use-toast";
+import { useTheme } from "@/hooks/use-theme";
 import {
   Mail,
   Lock,
@@ -23,8 +24,8 @@ import Link from "next/link";
 export default function RecoverPage() {
   const router = useRouter();
   const { toast } = useToast();
-
-  const [isDark, setIsDark] = useState(false);
+  const { theme, toggleTheme } = useTheme();
+  const isDark = theme === "dark";
   const [isLoading, setIsLoading] = useState(false);
   const [step, setStep] = useState<"email" | "verify" | "reset">("email");
   const [email, setEmail] = useState("");
@@ -170,7 +171,7 @@ export default function RecoverPage() {
         {/* Theme Toggle Button */}
         <div className="fixed top-6 right-6 z-50">
           <button
-            onClick={() => setIsDark(!isDark)}
+            onClick={toggleTheme}
             className="p-3 rounded-full shadow-lg transition-all hover:scale-110"
             style={{
               backgroundColor: themeColors.bg2,

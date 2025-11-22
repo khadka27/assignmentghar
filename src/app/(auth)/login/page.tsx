@@ -5,6 +5,7 @@ import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useToast } from "@/hooks/use-toast";
+import { useTheme } from "@/hooks/use-theme";
 import {
   Eye,
   EyeOff,
@@ -29,8 +30,8 @@ export default function LoginPage() {
   const router = useRouter();
   const { data: session, status } = useSession();
   const { toast } = useToast();
-
-  const [isDark, setIsDark] = useState(false);
+  const { theme, toggleTheme } = useTheme();
+  const isDark = theme === "dark";
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [checking, setChecking] = useState(false);
@@ -260,7 +261,7 @@ export default function LoginPage() {
         {/* Theme Toggle Button */}
         <div className="fixed top-6 right-6 z-50">
           <button
-            onClick={() => setIsDark(!isDark)}
+            onClick={toggleTheme}
             className="p-3 rounded-full shadow-lg transition-all hover:scale-110"
             style={{
               backgroundColor: themeColors.bg2,

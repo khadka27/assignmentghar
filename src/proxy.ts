@@ -1,9 +1,8 @@
 import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
 import { auth } from "@/lib/auth";
 
-export async function middleware(request: NextRequest) {
-  const session = await auth();
+export default auth((request) => {
+  const session = request.auth;
   const { pathname } = request.nextUrl;
 
   // Public routes that don't require authentication
@@ -73,7 +72,7 @@ export async function middleware(request: NextRequest) {
   }
 
   return NextResponse.next();
-}
+});
 
 export const config = {
   matcher: [

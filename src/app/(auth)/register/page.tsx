@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import axios from "axios";
 import { useToast } from "@/hooks/use-toast";
+import { useTheme } from "@/hooks/use-theme";
 import {
   Eye,
   EyeOff,
@@ -28,8 +29,8 @@ export default function RegisterPage() {
   const router = useRouter();
   const { data: session, status } = useSession();
   const { toast } = useToast();
-
-  const [isDark, setIsDark] = useState(false);
+  const { theme, toggleTheme } = useTheme();
+  const isDark = theme === "dark";
   const themeColors = {
     primary: "#0E52AC",
     text1: isDark ? "#FFFFFF" : "#111E2F",
@@ -366,7 +367,7 @@ export default function RegisterPage() {
     >
       {/* Theme Toggle */}
       <button
-        onClick={() => setIsDark(!isDark)}
+        onClick={toggleTheme}
         className="fixed top-6 right-6 z-50 p-3 rounded-full transition-all hover:scale-110"
         style={{
           backgroundColor: themeColors.bg2,

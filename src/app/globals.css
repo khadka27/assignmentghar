@@ -3,51 +3,51 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* 🌤️ Light Mode & 🌙 Dark Mode Theme - Black, Gray, White, Blue */
+/* 🌤️ Light Mode & 🌙 Dark Mode Theme - Assignment Ghar Brand */
 :root {
   /* Light Mode Theme - Clean & Minimal */
 
-  /* Primary - Blue */
-  --color-primary: #2563eb;
-  --primary: #2563eb;
+  /* Primary - Brand Blue #0E52AC */
+  --color-primary: #0e52ac;
+  --primary: #0e52ac;
   --primary-foreground: #ffffff;
 
   /* Secondary - Gray */
-  --color-secondary: #6b7280;
-  --secondary: #6b7280;
+  --color-secondary: #284366;
+  --secondary: #284366;
   --secondary-foreground: #ffffff;
 
-  /* Accent - Blue */
-  --color-accent: #3b82f6;
-  --accent: #3b82f6;
+  /* Accent - Brand Blue */
+  --color-accent: #0e52ac;
+  --accent: #0e52ac;
   --accent-foreground: #ffffff;
 
   /* Background - White/Light Gray */
   --background: #ffffff;
-  --foreground: #111827;
+  --foreground: #111e2f;
 
   /* Surface - Cards/Panels */
   --card: #ffffff;
-  --card-foreground: #111827;
+  --card-foreground: #111e2f;
 
   /* Popover */
   --popover: #ffffff;
-  --popover-foreground: #111827;
+  --popover-foreground: #111e2f;
 
   /* Text Colors */
-  --text-primary: #111827;
-  --text-secondary: #6b7280;
+  --text-primary: #111e2f;
+  --text-secondary: #284366;
 
   /* Muted */
-  --muted: #f3f4f6;
-  --muted-foreground: #6b7280;
+  --muted: #f8fbff;
+  --muted-foreground: #64748b;
 
   /* Border/Divider */
-  --border: #e5e7eb;
-  --input: #d1d5db;
+  --border: #e0edfd;
+  --input: #e0edfd;
 
   /* Ring */
-  --ring: #2563eb;
+  --ring: #0e52ac;
 
   /* Destructive */
   --destructive: #ef4444;
@@ -57,73 +57,77 @@
   --radius: 0.5rem;
 
   /* Chart colors - Light Mode */
-  --chart-1: #2563eb;
-  --chart-2: #3b82f6;
+  --chart-1: #0e52ac;
+  --chart-2: #284366;
   --chart-3: #60a5fa;
   --chart-4: #93c5fd;
-  --chart-5: #6b7280;
+  --chart-5: #94a3b8;
 }
 
 .dark {
-  /* Dark Mode Theme - Sleek Black & Blue */
+  /* Dark Mode Theme - Assignment Ghar Brand Dark */
 
-  /* Primary - Blue */
-  --color-primary: #3b82f6;
-  --primary: #3b82f6;
+  /* Primary - Brand Blue */
+  --color-primary: #0e52ac;
+  --primary: #0e52ac;
   --primary-foreground: #ffffff;
 
-  /* Secondary - Gray */
-  --color-secondary: #9ca3af;
-  --secondary: #9ca3af;
-  --secondary-foreground: #000000;
+  /* Secondary - Light Gray */
+  --color-secondary: #cbd5e1;
+  --secondary: #cbd5e1;
+  --secondary-foreground: #0a0f1e;
 
-  /* Accent - Light Blue */
-  --color-accent: #60a5fa;
-  --accent: #60a5fa;
-  --accent-foreground: #000000;
+  /* Accent - Brand Blue */
+  --color-accent: #0e52ac;
+  --accent: #0e52ac;
+  --accent-foreground: #ffffff;
 
-  /* Background - Black */
-  --background: #000000;
-  --foreground: #f9fafb;
+  /* Background - Dark Blue/Black */
+  --background: #0a0f1e;
+  --foreground: #ffffff;
 
   /* Surface - Dark Gray Panels */
-  --card: #111827;
-  --card-foreground: #f9fafb;
+  --card: #1e293b;
+  --card-foreground: #ffffff;
 
   /* Popover */
-  --popover: #111827;
-  --popover-foreground: #f9fafb;
+  --popover: #1e293b;
+  --popover-foreground: #ffffff;
 
   /* Text Colors */
-  --text-primary: #f9fafb;
-  --text-secondary: #d1d5db;
+  --text-primary: #ffffff;
+  --text-secondary: #cbd5e1;
 
   /* Muted */
-  --muted: #1f2937;
-  --muted-foreground: #9ca3af;
+  --muted: #1e293b;
+  --muted-foreground: #94a3b8;
 
   /* Border/Divider */
-  --border: #374151;
-  --input: #4b5563;
+  --border: #475569;
+  --input: #475569;
 
   /* Ring */
-  --ring: #3b82f6;
+  --ring: #0e52ac;
 
   /* Destructive */
   --destructive: #ef4444;
-  --destructive-foreground: #f9fafb;
+  --destructive-foreground: #ffffff;
 
   /* Chart colors - Dark Mode */
-  --chart-1: #3b82f6;
-  --chart-2: #60a5fa;
-  --chart-3: #93c5fd;
-  --chart-4: #bfdbfe;
-  --chart-5: #9ca3af;
+  --chart-1: #0e52ac;
+  --chart-2: #284366;
+  --chart-3: #60a5fa;
+  --chart-4: #93c5fd;
+  --chart-5: #94a3b8;
 }
 
 @layer base {
   * {
     border-color: var(--border);
+  }
+
+  html {
+    transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
   }
 
   body {
@@ -132,6 +136,7 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     font-feature-settings: "rlig" 1, "calt" 1;
+    transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
   }
 
   h1,
@@ -173,24 +178,24 @@ html {
 }
 
 ::-webkit-scrollbar-track {
-  background-color: #f3f4f6;
+  background-color: #f8fbff;
 }
 
 .dark ::-webkit-scrollbar-track {
-  background-color: #1f2937;
+  background-color: #1e293b;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #2563eb;
+  background: #0e52ac;
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #1d4ed8;
+  background: #0a3d7f;
 }
 
 .dark ::-webkit-scrollbar-thumb {
-  background: #3b82f6;
+  background: #0e52ac;
 }
 
 .dark ::-webkit-scrollbar-thumb:hover {
