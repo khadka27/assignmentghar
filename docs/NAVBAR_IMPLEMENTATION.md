@@ -56,7 +56,7 @@ Successfully created **three different navbars** based on user authentication st
 
 ```
 ┌─────────────────────────┐
-│ John Doe                │
+│ Your Name                │
 │ student@example.com     │
 │ STUDENT                 │
 ├─────────────────────────┤

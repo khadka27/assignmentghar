@@ -147,7 +147,7 @@ model User {
 
 ```json
 {
-  "name": "John Doe",
+  "name": "Your Name",
   "email": "john@example.com",
   "password": "SecurePassword123",
   "username": "johndoe" // Optional
@@ -366,7 +366,7 @@ AssignmentGhar Team
 
 1. **Full Name** - Required
 
-   - Placeholder: "John Doe"
+   - Placeholder: "Your Name"
    - Icon: User icon
    - Validation: Required field
 

@@ -163,7 +163,7 @@ export default function Home() {
           <div className="relative order-first lg:order-last mt-8 lg:mt-0">
             <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl h-[300px] sm:h-[400px] md:h-[500px] lg:h-[600px] transition-transform duration-300 hover:shadow-[#0E52AC]/20 hover:shadow-3xl">
               <Image
-                src="/Images/landing/hero.jpg"
+                src="/Images/landing/hero.png"
                 alt="Student studying with laptop"
                 fill
                 className="object-cover"
@@ -221,22 +221,22 @@ export default function Home() {
           {/* Features Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 md:gap-6 mb-10 sm:mb-12 md:mb-16">
             <FeatureCard
-              image="/Images/landing/1.png"
+              image="/Images/landing/Why Students Trust Us/Chat System.png"
               title="Chat System"
               description="Real time chat between student and admin"
             />
             <FeatureCard
-              image="/Images/landing/2.png"
+              image="/Images/landing/Why Students Trust Us/File Sharing.png"
               title="File Sharing"
               description="File and image sharing inside chat window"
             />
             <FeatureCard
-              image="/Images/landing/3.png"
+              image="/Images/landing/Why Students Trust Us/QR Payment.png"
               title="QR Payment"
               description="QR payment visible in chat for easy scan-and-pay"
             />
             <FeatureCard
-              image="/Images/landing/4.png"
+              image="/Images/landing/Why Students Trust Us/Consultancy Videos.png"
               title="Consultancy Videos"
               description="Free consultancy videos for students"
             />
@@ -333,32 +333,32 @@ export default function Home() {
           {/* Expertise Grid */}
           <div className="grid md:grid-cols-2 gap-6 md:gap-8 lg:gap-12 max-w-7xl mx-auto">
             <ExpertiseCardVertical
-              image="https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=400&h=300&fit=crop"
+              image="/Images/landing/Our Areas of Expertise/IT & Computer Science.png"
               title="IT & Computer Science"
               description="Coding help, software development, system design, and technical report writing tailored to university standards."
             />
             <ExpertiseCardVertical
-              image="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=300&fit=crop"
+              image="/Images/landing/Our Areas of Expertise/Business & Management.png"
               title="Business & Management"
               description="Professional support for reports, case studies, and research assignments with real-world context."
             />
             <ExpertiseCardVertical
-              image="https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=400&h=300&fit=crop"
+              image="/Images/landing/Our Areas of Expertise/Finance & Accounting.png"
               title="Finance & Accounting"
               description="Step-by-step assistance for financial analysis, problem-solving, and accounting coursework."
             />
             <ExpertiseCardVertical
-              image="https://images.unsplash.com/photo-1503220317375-aaad61436b1b?w=400&h=300&fit=crop"
+              image="/Images/landing/Our Areas of Expertise/Hospitality & Tourism.png"
               title="Hospitality & Tourism"
               description="Well-structured research papers, project reports, and essays aligned to global trends."
             />
             <ExpertiseCardVertical
-              image="https://images.unsplash.com/photo-1584820927498-cfe5211fd8bf?w=400&h=300&fit=crop"
+              image="/Images/landing/Our Areas of Expertise/Nursing & Healthcare.png"
               title="Nursing & Healthcare"
               description="Accurate care plans, reflective journals, and academic reports built on real-life medical context."
             />
             <ExpertiseCardVertical
-              image="https://images.unsplash.com/photo-1581094271901-8022df4466f9?w=400&h=300&fit=crop"
+              image="/Images/landing/Our Areas of Expertise/Engineering & Technology.png"
               title="Engineering & Technology"
               description="Comprehensive guidance for technical reports, design documentation, and project submissions."
             />
@@ -396,56 +396,16 @@ export default function Home() {
 
           {/* Content Grid */}
           <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center max-w-6xl mx-auto">
-            {/* Left Side - Decorative Pattern */}
-            <div className="hidden lg:flex justify-center items-center">
-              <div className="relative w-full max-w-md">
-                {/* Dot Pattern */}
-                <div className="grid grid-cols-6 gap-4">
-                  {Array.from({ length: 36 }, (_, i) => (
-                    <div
-                      key={`dot-${i}`}
-                      className="rounded-full transition-all duration-300 hover:scale-150"
-                      style={{
-                        width:
-                          i % 6 >= 2 &&
-                          i % 6 <= 3 &&
-                          Math.floor(i / 6) >= 2 &&
-                          Math.floor(i / 6) <= 3
-                            ? "20px"
-                            : "12px",
-                        height:
-                          i % 6 >= 2 &&
-                          i % 6 <= 3 &&
-                          Math.floor(i / 6) >= 2 &&
-                          Math.floor(i / 6) <= 3
-                            ? "20px"
-                            : "12px",
-                        backgroundColor:
-                          i % 6 >= 2 &&
-                          i % 6 <= 3 &&
-                          Math.floor(i / 6) >= 2 &&
-                          Math.floor(i / 6) <= 3
-                            ? "#0E52AC"
-                            : "#E0EDFD",
-                        opacity:
-                          i % 6 >= 2 &&
-                          i % 6 <= 3 &&
-                          Math.floor(i / 6) >= 2 &&
-                          Math.floor(i / 6) <= 3
-                            ? 1
-                            : 0.5,
-                      }}
-                    ></div>
-                  ))}
-                </div>
-                {/* Central Card */}
-                <div
-                  className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-2xl shadow-2xl p-8 bg-[#0E52AC]"
-                  style={{
-                    width: "200px",
-                    height: "140px",
-                  }}
-                ></div>
+            {/* Left Side - Image */}
+            <div className="flex justify-center items-center">
+              <div className="relative w-full max-w-lg rounded-2xl overflow-hidden shadow-2xl">
+                <Image
+                  src="/Images/landing/What Makes Us Different.png"
+                  alt="What Makes Us Different"
+                  width={600}
+                  height={500}
+                  className="w-full h-auto object-cover"
+                />
               </div>
             </div>
 
@@ -510,8 +470,8 @@ export default function Home() {
               <div className="grid md:grid-cols-3 gap-6 md:gap-8 mb-8">
                 <TestimonialCard
                   quote="Assignment Ghar became my academic home I could chat, upload, and get help in one place - it felt personal."
-                  name="John Doe"
-                  location="Australia"
+                  name="Your Name"
+                  location="Your Locations"
                   rating={5}
                 />
                 <TestimonialCard
@@ -671,6 +631,18 @@ const ExpertiseCardVertical: React.FC<ExpertiseCardProps> = ({
   title,
   description,
 }) => {
+  const getExpertiseLink = (title: string) => {
+    const linkMap: { [key: string]: string } = {
+      "IT & Computer Science": "/expertise/it-computer-science",
+      "Business & Management": "/expertise/business-management",
+      "Finance & Accounting": "/expertise/finance-accounting",
+      "Hospitality & Tourism": "/expertise/hospitality-tourism",
+      "Nursing & Healthcare": "/expertise/nursing-healthcare",
+      "Engineering & Technology": "/expertise/engineering-technology",
+    };
+    return linkMap[title] || "/";
+  };
+
   return (
     <div className="group">
       <div className="relative h-56 md:h-64 rounded-2xl overflow-hidden shadow-md group-hover:shadow-xl transition-all duration-300">
@@ -683,24 +655,26 @@ const ExpertiseCardVertical: React.FC<ExpertiseCardProps> = ({
         <p className="text-sm md:text-base mb-4 md:mb-5 transition-colors text-[#284366] dark:text-[#CBD5E1]">
           {description}
         </p>
-        <button className="flex items-center gap-2 px-6 py-2.5 rounded-full font-semibold text-white text-sm transition-all hover:opacity-90 hover:gap-3 bg-[#111E2F] dark:bg-white dark:text-[#111E2F]">
-          Learn More
-          <svg
-            width="16"
-            height="16"
-            viewBox="0 0 16 16"
-            fill="none"
-            className="transition-transform"
-          >
-            <path
-              d="M6 3L11 8L6 13"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-        </button>
+        <Link href={getExpertiseLink(title)}>
+          <button className="flex items-center gap-2 px-6 py-2.5 rounded-full font-semibold text-white text-sm transition-all hover:opacity-90 hover:gap-3 bg-[#111E2F] dark:bg-white dark:text-[#111E2F]">
+            Learn More
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 16 16"
+              fill="none"
+              className="transition-transform"
+            >
+              <path
+                d="M6 3L11 8L6 13"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
+        </Link>
       </div>
     </div>
   );

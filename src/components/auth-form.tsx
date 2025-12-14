@@ -518,7 +518,7 @@ export function AuthForm() {
                       id="register-name"
                       name="name"
                       type="text"
-                      placeholder="John Doe"
+                      placeholder="Your Name"
                       value={formData.name}
                       onChange={handleChange}
                       required

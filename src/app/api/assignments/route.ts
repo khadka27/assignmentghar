@@ -1,11 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { uploadToS3 } from "@/lib/s3";
 import { v4 as uuidv4 } from "uuid";
 import path from "path";
+import fs from "fs/promises";
 
-// Ensure this route runs on the Node.js runtime (AWS SDK requires Node, not Edge)
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
@@ -49,29 +48,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Ensure AWS S3 is configured
-    if (
-      !process.env.AWS_REGION ||
-      !process.env.AWS_ACCESS_KEY_ID ||
-      !process.env.AWS_SECRET_ACCESS_KEY
-    ) {
-      return NextResponse.json(
-        {
-          error:
-            "AWS S3 is not configured. Set AWS_REGION, AWS_ACCESS_KEY_ID, and AWS_SECRET_ACCESS_KEY in .env",
-        },
-        { status: 500 }
-      );
-    }
-    if (!process.env.AWS_S3_BUCKET_NAME) {
-      return NextResponse.json(
-        {
-          error: "AWS_S3_BUCKET_NAME is not configured. Set it in .env",
-        },
-        { status: 500 }
-      );
-    }
-
     const formData = await request.formData();
 
     const name = formData.get("name") as string;
@@ -108,32 +84,41 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Upload file to S3
+    // Save file to public/assignment directory
     const fileExtension = ext || path.extname(originalName);
     const safeName =
       name?.toString().replace(/[^a-z0-9_-]+/gi, "_") || "assignment";
     const uniqueFilename = `${safeName}_${uuidv4()}${fileExtension}`;
 
-    let s3FileKey: string;
     let fileUrl: string;
 
     try {
-      const uploadResult = await uploadToS3(file, uniqueFilename);
-      s3FileKey = uploadResult.fileKey;
-      fileUrl = uploadResult.fileUrl; // S3 file URL
+      // Create the upload directory if it doesn't exist
+      const uploadDir = path.join(process.cwd(), "public", "assignment");
+      await fs.mkdir(uploadDir, { recursive: true });
 
-      console.log("File uploaded to S3:", {
-        fileKey: s3FileKey,
+      // Convert file to buffer and save
+      const bytes = await file.arrayBuffer();
+      const buffer = Buffer.from(bytes);
+      const filePath = path.join(uploadDir, uniqueFilename);
+      
+      await fs.writeFile(filePath, buffer);
+      
+      // Store the public URL path
+      fileUrl = `/assignment/${uniqueFilename}`;
+
+      console.log("File uploaded locally:", {
         fileName: uniqueFilename,
         fileUrl,
+        filePath,
       });
     } catch (uploadError: any) {
-      console.error("S3 upload error:", uploadError);
-      const message = uploadError?.message || "Failed to upload file to S3";
+      console.error("File upload error:", uploadError);
+      const message = uploadError?.message || "Failed to upload file";
       return NextResponse.json({ error: message }, { status: 500 });
     }
 
-    // Create assignment in database with S3 file URL
+    // Create assignment in database with local file URL
     const assignment = await prisma.assignment.create({
       data: {
         title: name,
@@ -141,7 +126,7 @@ export async function POST(request: NextRequest) {
         course: course,
         subject: subject || course,
         deadline: new Date(deadline),
-        fileUrl: fileUrl, // Store S3 file URL
+        fileUrl: fileUrl, // Store local file URL
         status: "PENDING",
         userId: session.user.id,
       },
@@ -163,9 +148,8 @@ export async function POST(request: NextRequest) {
       {
         success: true,
         assignment,
-        s3FileKey,
         fileUrl,
-        message: "Assignment submitted successfully and uploaded to S3!",
+        message: "Assignment submitted successfully!",
       },
       { status: 201 }
     );

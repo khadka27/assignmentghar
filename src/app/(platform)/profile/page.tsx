@@ -433,7 +433,7 @@ export default function ProfilePage() {
                   Full Name
                 </label>
                 <Input
-                  placeholder="John Doe"
+                  placeholder="Your Name"
                   value={profileData.name}
                   onChange={(e) => {
                     setProfileData((prev) => ({

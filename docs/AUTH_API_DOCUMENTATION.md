@@ -57,7 +57,7 @@ model User {
 
 ```json
 {
-  "name": "John Doe",
+  "name": "Your Name",
   "username": "john123", // Optional
   "email": "john@example.com",
   "password": "SecurePass123!"
@@ -243,7 +243,7 @@ Example: `"UNVERIFIED: Account not verified. Please verify your email."`
   "exists": true,
   "isVerified": false,
   "email": "john@example.com",
-  "name": "John Doe",
+  "name": "Your Name",
   "message": "Account exists but not verified",
   "next": "/verify"
 }

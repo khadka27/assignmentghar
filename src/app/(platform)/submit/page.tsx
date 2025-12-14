@@ -308,7 +308,7 @@ export default function SubmitPage() {
                         Full Name
                       </label>
                       <Input
-                        placeholder="John Doe"
+                        placeholder="Your Name"
                         name="name"
                         value={formData.name}
                         onChange={handleChange}

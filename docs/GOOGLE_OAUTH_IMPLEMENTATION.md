@@ -376,7 +376,7 @@ model Account {
 
    ```sql
    INSERT INTO users (email, name, image, emailVerified, isVerified, role, password)
-   VALUES ('user@gmail.com', 'John Doe', 'https://...', NOW(), true, 'STUDENT', '');
+   VALUES ('user@gmail.com', 'Your Name', 'https://...', NOW(), true, 'STUDENT', '');
 
    INSERT INTO accounts (userId, provider, providerAccountId, ...)
    VALUES ('user_id', 'google', 'google_user_id', ...);

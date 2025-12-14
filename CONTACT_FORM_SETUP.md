@@ -69,7 +69,7 @@ The contact form includes:
 
 ```json
 {
-  "name": "John Doe",
+  "name": "Your Name",
   "email": "john@example.com",
   "subject": "Question about services" (optional),
   "message": "Your message here..."

@@ -134,7 +134,7 @@ if (result.error.includes("verify your email")) {
   "exists": true,
   "isVerified": false,
   "email": "user@example.com",
-  "name": "John Doe",
+  "name": "Your Name",
   "message": "Account exists but not verified"
 }
 ```
@@ -146,7 +146,7 @@ if (result.error.includes("verify your email")) {
   "exists": true,
   "isVerified": true,
   "email": "user@example.com",
-  "name": "John Doe",
+  "name": "Your Name",
   "message": "Account is verified"
 }
 ```

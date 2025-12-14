@@ -128,7 +128,7 @@ import prisma from "@/lib/prisma";
 const user = await prisma.user.create({
   data: {
     email: "student@example.com",
-    name: "John Doe",
+    name: "Your Name",
     role: "STUDENT",
   },
 });

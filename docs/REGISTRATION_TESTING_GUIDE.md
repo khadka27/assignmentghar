@@ -27,7 +27,7 @@ Last Updated: October 22, 2025
 
 1. Navigate to `http://localhost:3000/register`
 2. Fill in registration form:
-   - **Name:** John Doe
+   - **Name:** Your Name
    - **Email:** your-test-email@gmail.com
    - **Password:** Test@12345
    - **Confirm Password:** Test@12345
