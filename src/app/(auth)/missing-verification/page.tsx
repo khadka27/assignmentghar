@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
@@ -20,7 +20,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
-export default function MissingVerificationPage() {
+function MissingVerificationContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { toast } = useToast();
@@ -650,5 +650,17 @@ export default function MissingVerificationPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function MissingVerificationPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+      </div>
+    }>
+      <MissingVerificationContent />
+    </Suspense>
   );
 }
