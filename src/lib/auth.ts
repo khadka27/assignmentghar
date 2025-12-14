@@ -6,6 +6,7 @@ import prisma from "@/lib/prisma";
 import type { NextAuthConfig } from "next-auth";
 
 export const authOptions: NextAuthConfig = {
+  trustHost: true, // Required for production behind reverse proxy (Coolify/Nginx)
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
