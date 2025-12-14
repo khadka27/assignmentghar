@@ -1,0 +1,22 @@
+# .dockerignore
+# Ignore these files when building Docker image
+
+node_modules
+npm-debug.log
+.next
+.env
+.env.local
+.env*.local
+.git
+.gitignore
+README.md
+.vscode
+.idea
+*.log
+.DS_Store
+docs/
+.vercel
+.eslintcache
+coverage/
+dist/
+build/

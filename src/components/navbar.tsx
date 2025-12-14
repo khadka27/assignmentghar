@@ -106,7 +106,15 @@ export function Navbar() {
               width={160}
               height={40}
               priority
-              className="h-9 w-auto"
+              className="h-9 w-auto dark:hidden"
+            />
+            <Image
+              src="/Images/darklogo.png"
+              alt="AssignmentGhar"
+              width={160}
+              height={40}
+              priority
+              className="h-9 w-auto hidden dark:block"
             />
           </Link>
 

@@ -20,6 +20,7 @@ import {
   CheckCheck,
   Menu,
   X,
+  Search,
 } from "lucide-react";
 import { format } from "date-fns";
 
@@ -85,6 +86,21 @@ export default function AdminChatWithStudentsPage() {
   const [isSending, setIsSending] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
+  const [previewImage, setPreviewImage] = useState<{
+    url: string;
+    name: string;
+  } | null>(null);
+
+  // ESC key handler for preview modal
+  useEffect(() => {
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && previewImage) {
+        setPreviewImage(null);
+      }
+    };
+    window.addEventListener("keydown", handleEsc);
+    return () => window.removeEventListener("keydown", handleEsc);
+  }, [previewImage]);
 
   // Brand colors
   const themeColors = {
@@ -182,9 +198,18 @@ export default function AdminChatWithStudentsPage() {
 
     socket.on("notification", ({ type, conversationId, message }) => {
       playNotificationSound();
+
+      // Different notification messages based on type
+      const notificationTitle =
+        type === "file_uploaded" ? "New File" : "New Message";
+      const notificationDesc =
+        type === "file_uploaded"
+          ? `${message.sender?.name || "Someone"} sent a file`
+          : message.content.substring(0, 50);
+
       toast({
-        title: "New Message",
-        description: message.content.substring(0, 50),
+        title: notificationTitle,
+        description: notificationDesc,
       });
     });
 
@@ -350,6 +375,48 @@ export default function AdminChatWithStudentsPage() {
     const file = event.target.files?.[0];
     if (!file || !selectedChat?.conversation) return;
 
+    // Check file size (5MB limit)
+    const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB in bytes
+    if (file.size > MAX_FILE_SIZE) {
+      toast({
+        variant: "destructive",
+        title: "File too large",
+        description: `File size is ${(file.size / (1024 * 1024)).toFixed(
+          2
+        )}MB. Maximum allowed size is 5MB. Please contact support for large files.`,
+      });
+      event.target.value = ""; // Reset input
+      return;
+    }
+
+    // Validate file type
+    const allowedExtensions = [
+      ".jpg",
+      ".jpeg",
+      ".png",
+      ".gif",
+      ".webp",
+      ".svg",
+      ".pdf",
+      ".doc",
+      ".docx",
+    ];
+    const fileExtension = file.name
+      .substring(file.name.lastIndexOf("."))
+      .toLowerCase();
+
+    if (!allowedExtensions.includes(fileExtension)) {
+      toast({
+        variant: "destructive",
+        title: "Invalid file type",
+        description:
+          "Only images (JPG, PNG, GIF, WebP, SVG), PDFs, and Word documents are allowed.",
+      });
+      event.target.value = ""; // Reset input
+      return;
+    }
+
+    setIsSending(true);
     try {
       const formData = new FormData();
       formData.append("file", file);
@@ -364,16 +431,39 @@ export default function AdminChatWithStudentsPage() {
       const newMessage = response.data.message;
       setMessages((prev) => [...prev, newMessage]);
 
+      // Emit via Socket.IO for real-time notification
+      if (socket) {
+        socket.emit("file_uploaded", {
+          conversationId: selectedChat.conversation.id,
+          senderId: session?.user?.id,
+          receiverId: selectedChat.user.id,
+          message: newMessage,
+        });
+      }
+
       toast({
         title: "File uploaded!",
         description: `${file.name} was sent successfully`,
       });
-    } catch (error) {
+
+      event.target.value = ""; // Reset input
+
+      // Scroll to bottom
+      setTimeout(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+      }, 100);
+    } catch (error: any) {
+      console.error("File upload error:", error);
+      const errorMessage =
+        error?.response?.data?.error || "Failed to upload file";
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Failed to upload file",
+        description: errorMessage,
       });
+      event.target.value = ""; // Reset input
+    } finally {
+      setIsSending(false);
     }
   };
 
@@ -668,7 +758,7 @@ export default function AdminChatWithStudentsPage() {
                   >
                     {selectedChat.user.name}
                   </h3>
-                  <p
+                  <div
                     className="text-xs transition-colors"
                     style={{ color: themeColors.text3 }}
                   >
@@ -678,18 +768,18 @@ export default function AdminChatWithStudentsPage() {
                       </span>
                     ) : (
                       <span className="flex items-center gap-1.5">
-                        <div
-                          className={`w-1.5 h-1.5 rounded-full`}
+                        <span
+                          className={`w-1.5 h-1.5 rounded-full inline-block`}
                           style={{
                             backgroundColor: isConnected
                               ? themeColors.primary
                               : themeColors.text3,
                           }}
-                        ></div>
+                        ></span>
                         {isConnected ? "Online" : "Offline"}
                       </span>
                     )}
-                  </p>
+                  </div>
                 </div>
               </div>
 
@@ -760,11 +850,24 @@ export default function AdminChatWithStudentsPage() {
                                   }}
                                 >
                                   {isImage ? (
-                                    <img
-                                      src={attachment.fileUrl}
-                                      alt={attachment.fileName}
-                                      className="rounded-lg max-w-full h-auto max-h-64 object-cover"
-                                    />
+                                    <div
+                                      className="relative group cursor-pointer"
+                                      onClick={() =>
+                                        setPreviewImage({
+                                          url: attachment.fileUrl,
+                                          name: attachment.fileName,
+                                        })
+                                      }
+                                    >
+                                      <img
+                                        src={attachment.fileUrl}
+                                        alt={attachment.fileName}
+                                        className="rounded-lg max-w-full h-auto max-h-64 object-cover transition-transform hover:scale-[1.02]"
+                                      />
+                                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors rounded-lg flex items-center justify-center">
+                                        <Search className="w-6 h-6 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                                      </div>
+                                    </div>
                                   ) : (
                                     <a
                                       href={attachment.fileUrl}
@@ -824,27 +927,32 @@ export default function AdminChatWithStudentsPage() {
                 }}
               >
                 <div className="flex items-end gap-2 md:gap-2">
-                  <label className="cursor-pointer">
-                    <input
-                      type="file"
-                      className="hidden"
-                      onChange={handleFileUpload}
-                      accept="image/*,.pdf,.doc,.docx,.zip"
-                    />
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="icon"
-                      className="flex-shrink-0 h-9 w-9 md:h-9 md:w-9 border transition-all hover:opacity-80"
-                      style={{
-                        borderColor: themeColors.border,
-                        backgroundColor: themeColors.inputBg,
-                        color: themeColors.text2,
-                      }}
-                    >
-                      <Paperclip className="w-5 h-5" />
-                    </Button>
-                  </label>
+                  <input
+                    id="admin-file-upload"
+                    type="file"
+                    className="hidden"
+                    onChange={handleFileUpload}
+                    accept="image/jpeg,image/jpg,image/png,image/gif,image/webp,image/svg+xml,.pdf,.doc,.docx"
+                    disabled={isSending}
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    onClick={() =>
+                      document.getElementById("admin-file-upload")?.click()
+                    }
+                    className="flex-shrink-0 h-9 w-9 md:h-9 md:w-9 border transition-all hover:opacity-80 cursor-pointer"
+                    style={{
+                      borderColor: themeColors.border,
+                      backgroundColor: themeColors.inputBg,
+                      color: themeColors.text2,
+                    }}
+                    disabled={isSending}
+                    title="Upload image, PDF, or Word document (max 5MB)"
+                  >
+                    <Paperclip className="w-5 h-5" />
+                  </Button>
 
                   <Input
                     value={messageInput}
@@ -909,6 +1017,48 @@ export default function AdminChatWithStudentsPage() {
           )}
         </div>
       </div>
+
+      {/* Image Preview Modal */}
+      {previewImage && (
+        <div
+          className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-sm flex items-center justify-center p-4"
+          onClick={() => setPreviewImage(null)}
+        >
+          <div className="relative max-w-7xl max-h-[90vh] w-full flex flex-col items-center">
+            {/* Close Button */}
+            <button
+              onClick={() => setPreviewImage(null)}
+              className="absolute -top-12 right-0 p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors text-white"
+            >
+              <X className="w-6 h-6" />
+            </button>
+
+            {/* Image */}
+            <img
+              src={previewImage.url}
+              alt={previewImage.name}
+              className="max-w-full max-h-[calc(90vh-80px)] object-contain rounded-lg"
+              onClick={(e) => e.stopPropagation()}
+            />
+
+            {/* Download Button */}
+            <div className="mt-4 flex items-center gap-4">
+              <span className="text-white text-sm font-medium truncate max-w-xs">
+                {previewImage.name}
+              </span>
+              <a
+                href={previewImage.url}
+                download={previewImage.name}
+                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[#0E52AC] hover:bg-[#0D4A9A] transition-colors text-white font-medium"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <Download className="w-4 h-4" />
+                Download
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

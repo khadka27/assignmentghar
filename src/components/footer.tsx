@@ -16,7 +16,15 @@ export function Footer() {
                 alt="AssignmentGhar Logo"
                 width={180}
                 height={50}
-                className="h-10 sm:h-12 w-auto dark:brightness-110"
+                className="h-10 sm:h-12 w-auto dark:hidden"
+                priority
+              />
+              <Image
+                src="/Images/darklogo.png"
+                alt="AssignmentGhar Logo"
+                width={180}
+                height={50}
+                className="h-10 sm:h-12 w-auto hidden dark:block"
                 priority
               />
             </div>

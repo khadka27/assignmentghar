@@ -90,7 +90,22 @@ export default function ChatPage() {
   const [isSending, setIsSending] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
+  const [previewImage, setPreviewImage] = useState<{
+    url: string;
+    name: string;
+  } | null>(null);
   const userRole = session?.user?.role;
+
+  // ESC key handler for preview modal
+  useEffect(() => {
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && previewImage) {
+        setPreviewImage(null);
+      }
+    };
+    window.addEventListener("keydown", handleEsc);
+    return () => window.removeEventListener("keydown", handleEsc);
+  }, [previewImage]);
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -190,9 +205,18 @@ export default function ChatPage() {
     socket.on("notification", ({ type, conversationId, message }) => {
       console.log("🔔 Notification:", type, conversationId);
       playNotificationSound();
+
+      // Different notification messages based on type
+      const notificationTitle =
+        type === "file_uploaded" ? "New File" : "New Message";
+      const notificationDesc =
+        type === "file_uploaded"
+          ? `${message.sender?.name || "Someone"} sent a file`
+          : message.content.substring(0, 50);
+
       toast({
-        title: "New Message",
-        description: message.content.substring(0, 50),
+        title: notificationTitle,
+        description: notificationDesc,
       });
     });
 
@@ -369,6 +393,48 @@ export default function ChatPage() {
     const file = event.target.files?.[0];
     if (!file || !selectedChat?.conversation) return;
 
+    // Check file size (5MB limit)
+    const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB in bytes
+    if (file.size > MAX_FILE_SIZE) {
+      toast({
+        variant: "destructive",
+        title: "File too large",
+        description: `File size is ${(file.size / (1024 * 1024)).toFixed(
+          2
+        )}MB. Maximum allowed size is 5MB. Please contact support for large files.`,
+      });
+      event.target.value = ""; // Reset input
+      return;
+    }
+
+    // Validate file type
+    const allowedExtensions = [
+      ".jpg",
+      ".jpeg",
+      ".png",
+      ".gif",
+      ".webp",
+      ".svg",
+      ".pdf",
+      ".doc",
+      ".docx",
+    ];
+    const fileExtension = file.name
+      .substring(file.name.lastIndexOf("."))
+      .toLowerCase();
+
+    if (!allowedExtensions.includes(fileExtension)) {
+      toast({
+        variant: "destructive",
+        title: "Invalid file type",
+        description:
+          "Only images (JPG, PNG, GIF, WebP, SVG), PDFs, and Word documents are allowed.",
+      });
+      event.target.value = ""; // Reset input
+      return;
+    }
+
+    setIsSending(true);
     try {
       const formData = new FormData();
       formData.append("file", file);
@@ -383,18 +449,39 @@ export default function ChatPage() {
       const newMessage = response.data.message;
       setMessages((prev) => [...prev, newMessage]);
 
-      // Socket.IO will broadcast automatically from server
+      // Emit via Socket.IO for real-time notification
+      if (socket) {
+        socket.emit("file_uploaded", {
+          conversationId: selectedChat.conversation.id,
+          senderId: session?.user?.id,
+          receiverId: selectedChat.user.id,
+          message: newMessage,
+        });
+      }
 
       toast({
         title: "File uploaded!",
         description: `${file.name} was sent successfully`,
       });
-    } catch (error) {
+
+      event.target.value = ""; // Reset input
+
+      // Scroll to bottom after sending
+      setTimeout(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+      }, 100);
+    } catch (error: any) {
+      console.error("File upload error:", error);
+      const errorMessage =
+        error?.response?.data?.error || "Failed to upload file";
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Failed to upload file",
+        description: errorMessage,
       });
+      event.target.value = ""; // Reset input
+    } finally {
+      setIsSending(false);
     }
   };
 
@@ -622,7 +709,7 @@ export default function ChatPage() {
                     <h3 className="font-bold text-base md:text-lg transition-colors text-[#111E2F] dark:text-white">
                       {selectedChat.user.name}
                     </h3>
-                    <p className="text-xs transition-colors flex items-center gap-1.5 text-[#64748B] dark:text-[#94A3B8]">
+                    <div className="text-xs transition-colors flex items-center gap-1.5 text-[#64748B] dark:text-[#94A3B8]">
                       {isTyping ? (
                         <span className="text-[#0E52AC] dark:text-[#60A5FA] font-medium animate-pulse flex items-center gap-1">
                           <span className="w-1 h-1 rounded-full bg-[#0E52AC] dark:bg-[#60A5FA] animate-bounce"></span>
@@ -638,17 +725,17 @@ export default function ChatPage() {
                         </span>
                       ) : (
                         <>
-                          <div
-                            className={`w-2 h-2 rounded-full animate-pulse ${
+                          <span
+                            className={`w-2 h-2 rounded-full animate-pulse inline-block ${
                               isConnected ? "bg-green-500" : "bg-gray-400"
                             }`}
-                          ></div>
+                          ></span>
                           <span className="font-medium">
                             {isConnected ? "Active now" : "Offline"}
                           </span>
                         </>
                       )}
-                    </p>
+                    </div>
                   </div>
                 </div>
                 <div className="flex items-center gap-1 md:gap-2">
@@ -707,7 +794,7 @@ export default function ChatPage() {
                       <div
                         className={`max-w-[70%] rounded-2xl px-4 py-2.5 shadow-md transition-all hover:shadow-lg ${
                           isOwn
-                            ? "rounded-br-md bg-gradient-to-br from-[#0E52AC] to-[#0A3D7A] dark:from-[#60A5FA] dark:to-[#0E52AC] text-white"
+                            ? "rounded-br-md bg-gradient-to-br from-[#0E52AC] to-[#0A3D7A] dark:from-[#60A5FA] dark:to-[#0E52AC]"
                             : "rounded-bl-md bg-white dark:bg-[#334155] text-[#111E2F] dark:text-white border border-[#E0EDFD] dark:border-[#475569]"
                         }`}
                       >
@@ -726,11 +813,24 @@ export default function ChatPage() {
                                   }`}
                                 >
                                   {isImage ? (
-                                    <img
-                                      src={attachment.fileUrl}
-                                      alt={attachment.fileName}
-                                      className="rounded-lg max-w-full h-auto max-h-64 object-cover"
-                                    />
+                                    <div
+                                      className="relative group cursor-pointer"
+                                      onClick={() =>
+                                        setPreviewImage({
+                                          url: attachment.fileUrl,
+                                          name: attachment.fileName,
+                                        })
+                                      }
+                                    >
+                                      <img
+                                        src={attachment.fileUrl}
+                                        alt={attachment.fileName}
+                                        className="rounded-lg max-w-full h-auto max-h-64 object-cover transition-transform hover:scale-[1.02]"
+                                      />
+                                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors rounded-lg flex items-center justify-center">
+                                        <Search className="w-6 h-6 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                                      </div>
+                                    </div>
                                   ) : (
                                     <a
                                       href={attachment.fileUrl}
@@ -750,7 +850,11 @@ export default function ChatPage() {
                           </div>
                         )}
 
-                        <p className="text-sm break-words leading-relaxed">
+                        <p
+                          className={`text-sm break-words leading-relaxed ${
+                            isOwn ? "text-white" : ""
+                          }`}
+                        >
                           {message.content}
                         </p>
 
@@ -805,19 +909,20 @@ export default function ChatPage() {
                       className="flex-1 border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 p-0 h-7 md:h-8 text-sm md:text-base text-[#111E2F] dark:text-white placeholder:text-[#94A3B8] dark:placeholder:text-[#64748B]"
                     />
                     <div className="flex items-center gap-0.5 md:gap-1">
-                      <label className="cursor-pointer">
+                      <label
+                        htmlFor="file-upload"
+                        className="cursor-pointer p-1.5 md:p-2 hover:bg-[#0E52AC]/10 dark:hover:bg-[#60A5FA]/10 rounded-lg transition-all text-[#64748B] dark:text-[#94A3B8] hover:text-[#0E52AC] dark:hover:text-[#60A5FA]"
+                        title="Upload image, PDF, or Word document (max 5MB)"
+                      >
                         <input
+                          id="file-upload"
                           type="file"
                           className="hidden"
                           onChange={handleFileUpload}
-                          accept="image/*,.pdf,.doc,.docx,.zip"
+                          accept="image/jpeg,image/jpg,image/png,image/gif,image/webp,image/svg+xml,.pdf,.doc,.docx"
+                          disabled={isSending}
                         />
-                        <button
-                          type="button"
-                          className="p-1.5 md:p-2 hover:bg-[#0E52AC]/10 dark:hover:bg-[#60A5FA]/10 rounded-lg transition-all text-[#64748B] dark:text-[#94A3B8] hover:text-[#0E52AC] dark:hover:text-[#60A5FA]"
-                        >
-                          <Paperclip className="w-4 h-4" />
-                        </button>
+                        <Paperclip className="w-4 h-4" />
                       </label>
                       <button
                         type="button"
@@ -973,6 +1078,48 @@ export default function ChatPage() {
           </div>
         )}
       </div>
+
+      {/* Image Preview Modal */}
+      {previewImage && (
+        <div
+          className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-sm flex items-center justify-center p-4"
+          onClick={() => setPreviewImage(null)}
+        >
+          <div className="relative max-w-7xl max-h-[90vh] w-full flex flex-col items-center">
+            {/* Close Button */}
+            <button
+              onClick={() => setPreviewImage(null)}
+              className="absolute -top-12 right-0 p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors text-white"
+            >
+              <X className="w-6 h-6" />
+            </button>
+
+            {/* Image */}
+            <img
+              src={previewImage.url}
+              alt={previewImage.name}
+              className="max-w-full max-h-[calc(90vh-80px)] object-contain rounded-lg"
+              onClick={(e) => e.stopPropagation()}
+            />
+
+            {/* Download Button */}
+            <div className="mt-4 flex items-center gap-4">
+              <span className="text-white text-sm font-medium truncate max-w-xs">
+                {previewImage.name}
+              </span>
+              <a
+                href={previewImage.url}
+                download={previewImage.name}
+                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[#0E52AC] hover:bg-[#0D4A9A] transition-colors text-white font-medium"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <Download className="w-4 h-4" />
+                Download
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

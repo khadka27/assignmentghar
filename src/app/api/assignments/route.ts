@@ -101,9 +101,9 @@ export async function POST(request: NextRequest) {
       const bytes = await file.arrayBuffer();
       const buffer = Buffer.from(bytes);
       const filePath = path.join(uploadDir, uniqueFilename);
-      
+
       await fs.writeFile(filePath, buffer);
-      
+
       // Store the public URL path
       fileUrl = `/assignment/${uniqueFilename}`;
 

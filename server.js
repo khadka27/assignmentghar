@@ -5,8 +5,8 @@ const { Server } = require("socket.io");
 const { PrismaClient } = require("@prisma/client");
 
 const dev = process.env.NODE_ENV !== "production";
-const hostname = "localhost";
-const port = process.env.PORT || 3000;
+const hostname = dev ? "localhost" : "0.0.0.0";
+const port = process.env.PORT || 3001;
 
 // Initialize Next.js
 const app = next({ dev, hostname, port });
@@ -30,11 +30,14 @@ app.prepare().then(() => {
     // Initialize Socket.IO
     const io = new Server(httpServer, {
         cors: {
-            origin: process.env.NEXTAUTH_URL || `http://${hostname}:${port}`,
+            origin: dev
+                ? [`http://localhost:${port}`, `http://127.0.0.1:${port}`]
+                : [process.env.NEXTAUTH_URL, `https://www.${process.env.NEXTAUTH_URL?.replace('https://', '')}`].filter(Boolean),
             methods: ["GET", "POST"],
             credentials: true,
         },
         path: "/api/socket",
+        transports: ['websocket', 'polling'],
     });
 
     // Store online users
@@ -172,6 +175,29 @@ app.prepare().then(() => {
             } catch (error) {
                 console.error("Error sending message:", error);
                 socket.emit("error", { message: "Failed to send message" });
+            }
+        });
+
+        // File uploaded event
+        socket.on("file_uploaded", async ({ conversationId, senderId, receiverId, message }) => {
+            try {
+                // Emit message to all users in the conversation room
+                io.to(`conversation:${conversationId}`).emit("new_message", message);
+
+                // Send notification to receiver if they're online
+                const receiverSocketId = onlineUsers.get(receiverId);
+                if (receiverSocketId) {
+                    io.to(receiverSocketId).emit("notification", {
+                        type: "file_uploaded",
+                        conversationId,
+                        message,
+                    });
+                }
+
+                console.log(`📎 File uploaded in conversation ${conversationId}`);
+            } catch (error) {
+                console.error("Error handling file upload:", error);
+                socket.emit("error", { message: "Failed to broadcast file upload" });
             }
         });
 
