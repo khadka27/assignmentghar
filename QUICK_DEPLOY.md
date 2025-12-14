@@ -5,19 +5,19 @@
 ### 1. Environment Variables Ready
 
 ```env
-DATABASE_URL=postgres://postgres:assignmentghardb%4020251212@e0wckskk00oww88wc8w08c00:5432/postgres?sslmode=require
+DATABASE_URL=your_production_database_url_here
 NEXTAUTH_SECRET=[GENERATE NEW - see below]
 NEXTAUTH_URL=https://assignmentghar.com
-GOOGLE_CLIENT_ID=380246129941-bjplp5lk2i5d5lu2s6dcipld7dvrjv2n.apps.googleusercontent.com
-GOOGLE_CLIENT_SECRET=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
+GOOGLE_CLIENT_ID=your_google_client_id_here
+GOOGLE_CLIENT_SECRET=your_google_client_secret_here
 GOOGLE_OAUTH_REDIRECT_URI=https://assignmentghar.com/api/google/oauth/callback
 EMAIL_SERVER_HOST=smtp.gmail.com
 EMAIL_SERVER_PORT=587
-EMAIL_SERVER_USER=assignmentghar1@gmail.com
-EMAIL_SERVER_PASSWORD=hlkvjbnmnwhfcssl
-EMAIL_FROM=AssignmentGhar <assignmentghar1@gmail.com>
-EMAIL_USER=assignmentghar1@gmail.com
-EMAIL_PASSWORD=hlkvjbnmnwhfcssl
+EMAIL_SERVER_USER=your_email@gmail.com
+EMAIL_SERVER_PASSWORD=your_gmail_app_password_here
+EMAIL_FROM=YourAppName <your_email@gmail.com>
+EMAIL_USER=your_email@gmail.com
+EMAIL_PASSWORD=your_gmail_app_password_here
 NEXT_PUBLIC_APP_URL=https://assignmentghar.com
 NODE_ENV=production
 ```
