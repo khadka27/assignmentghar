@@ -15,8 +15,9 @@ RUN npm install -g pnpm
 COPY package.json pnpm-lock.yaml* ./
 COPY prisma ./prisma/
 
-# Install dependencies
+# Install dependencies and generate Prisma client
 RUN pnpm install --frozen-lockfile
+RUN npx prisma generate
 
 # Rebuild the source code only when needed
 FROM base AS builder
@@ -27,7 +28,7 @@ COPY . .
 # Install pnpm in builder
 RUN npm install -g pnpm
 
-# Generate Prisma Client
+# Generate Prisma Client again in builder stage
 RUN npx prisma generate
 
 # Build Next.js application
