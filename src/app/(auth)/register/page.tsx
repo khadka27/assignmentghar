@@ -950,6 +950,7 @@ export default function RegisterPage() {
                           id="password"
                           type={showPassword ? "text" : "password"}
                           placeholder="Create a strong password"
+                          autoComplete="new-password"
                           value={formData.password}
                           onChange={(e) => {
                             const password = e.target.value;

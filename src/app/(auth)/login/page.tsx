@@ -404,6 +404,7 @@ export default function LoginPage() {
                         id="email"
                         type="text"
                         placeholder="Enter username or email"
+                        autoComplete="username email"
                         value={formData.email}
                         onChange={(e) => {
                           setFormData({ ...formData, email: e.target.value });
@@ -441,9 +442,9 @@ export default function LoginPage() {
                       </p>
                     )}
                     {checkStatus === "unverified" && (
-                      <p className="text-xs text-amber-600 flex items-center gap-1">
+                      <div className="text-xs text-amber-600 flex items-center gap-1">
                         <AlertCircle className="h-3 w-3" />
-                        Account not verified.{" "}
+                        <span>Account not verified.</span>{" "}
                         <button
                           type="button"
                           onClick={() =>
@@ -457,7 +458,7 @@ export default function LoginPage() {
                         >
                           Verify now
                         </button>
-                      </p>
+                      </div>
                     )}
                   </div>
 
@@ -479,6 +480,7 @@ export default function LoginPage() {
                         id="password"
                         type={showPassword ? "text" : "password"}
                         placeholder="Enter your password"
+                        autoComplete="current-password"
                         value={formData.password}
                         onChange={(e) => {
                           setFormData({
