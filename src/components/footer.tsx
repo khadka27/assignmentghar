@@ -12,7 +12,7 @@ export function Footer() {
           <div className="sm:col-span-2 lg:col-span-1">
             <div className="mb-4 sm:mb-5">
               <Image
-                src="/Images/nav_logo.png"
+                src="/images/nav_logo.png"
                 alt="AssignmentGhar Logo"
                 width={180}
                 height={50}
@@ -20,7 +20,7 @@ export function Footer() {
                 priority
               />
               <Image
-                src="/Images/darklogo.png"
+                src="/images/darklogo.png"
                 alt="AssignmentGhar Logo"
                 width={180}
                 height={50}

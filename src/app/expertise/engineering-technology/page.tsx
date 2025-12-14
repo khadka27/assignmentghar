@@ -35,7 +35,7 @@ export default function EngineeringTechnologyPage() {
 
             <div className="relative rounded-2xl overflow-hidden shadow-2xl">
               <Image
-                src="/Images/landing/Our Areas of Expertise/Engineering & Technology.png"
+                src="/images/landing/areas/engineering-technology.png"
                 alt="Engineering & Technology"
                 width={600}
                 height={400}

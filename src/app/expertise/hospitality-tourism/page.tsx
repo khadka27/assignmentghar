@@ -35,7 +35,7 @@ export default function HospitalityTourismPage() {
 
             <div className="relative rounded-2xl overflow-hidden shadow-2xl">
               <Image
-                src="/Images/landing/Our Areas of Expertise/Hospitality & Tourism.png"
+                src="/images/landing/areas/hospitality-tourism.png"
                 alt="Hospitality & Tourism"
                 width={600}
                 height={400}

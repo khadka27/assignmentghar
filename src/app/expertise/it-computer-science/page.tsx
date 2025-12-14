@@ -35,7 +35,7 @@ export default function ITComputerSciencePage() {
 
             <div className="relative rounded-2xl overflow-hidden shadow-2xl">
               <Image
-                src="/Images/landing/Our Areas of Expertise/IT & Computer Science.png"
+                src="/images/landing/areas/it-computer-science.png"
                 alt="IT & Computer Science"
                 width={600}
                 height={400}

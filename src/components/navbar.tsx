@@ -101,7 +101,7 @@ export function Navbar() {
             className="flex items-center transition-transform hover:scale-105"
           >
             <Image
-              src="/Images/nav_logo.png"
+              src="/images/nav_logo.png"
               alt="AssignmentGhar"
               width={160}
               height={40}
@@ -109,7 +109,7 @@ export function Navbar() {
               className="h-9 w-auto dark:hidden"
             />
             <Image
-              src="/Images/darklogo.png"
+              src="/images/darklogo.png"
               alt="AssignmentGhar"
               width={160}
               height={40}

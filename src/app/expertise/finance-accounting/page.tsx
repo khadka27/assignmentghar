@@ -41,7 +41,7 @@ export default function FinanceAccountingPage() {
 
             <div className="relative rounded-2xl overflow-hidden shadow-2xl">
               <Image
-                src="/Images/landing/Our Areas of Expertise/Finance & Accounting.png"
+                src="/images/landing/areas/finance-accounting.png"
                 alt="Finance & Accounting"
                 width={600}
                 height={400}

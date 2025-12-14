@@ -40,7 +40,7 @@ export default function BusinessManagementPage() {
 
             <div className="relative rounded-2xl overflow-hidden shadow-2xl">
               <Image
-                src="/Images/landing/Our Areas of Expertise/Business & Management.png"
+                src="/images/landing/areas/business-management.png"
                 alt="Business & Management"
                 width={600}
                 height={400}

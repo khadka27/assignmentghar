@@ -48,7 +48,7 @@ export default function ExpertisePage() {
             <ExpertiseCard
               href="/expertise/it-computer-science"
               icon={<Code className="w-8 h-8" />}
-              image="/Images/landing/Our Areas of Expertise/IT & Computer Science.png"
+              image="/images/landing/areas/it-computer-science.png"
               title="IT & Computer Science"
               subtitle="💻 Coding, System Design & Technical Reporting"
               description="Comprehensive support for programming assignments, software development, system architecture, and technical documentation tailored to university standards."
@@ -57,7 +57,7 @@ export default function ExpertisePage() {
             <ExpertiseCard
               href="/expertise/business-management"
               icon={<Briefcase className="w-8 h-8" />}
-              image="/Images/landing/Our Areas of Expertise/Business & Management.png"
+              image="/images/landing/areas/business-management.png"
               title="Business & Management"
               subtitle="📈 Strategy, Case Studies & Research"
               description="Professional support for business plans, case studies, strategic reports, and research assignments with real-world context and academic rigor."
@@ -66,7 +66,7 @@ export default function ExpertisePage() {
             <ExpertiseCard
               href="/expertise/finance-accounting"
               icon={<DollarSign className="w-8 h-8" />}
-              image="/Images/landing/Our Areas of Expertise/Finance & Accounting.png"
+              image="/images/landing/areas/finance-accounting.png"
               title="Finance & Accounting"
               subtitle="💰 Analysis, Modeling & Compliance"
               description="Specialized expertise for financial analysis, accounting principles, modeling, and compliance with GAAP and IFRS standards."
@@ -75,7 +75,7 @@ export default function ExpertisePage() {
             <ExpertiseCard
               href="/expertise/hospitality-tourism"
               icon={<Plane className="w-8 h-8" />}
-              image="/Images/landing/Our Areas of Expertise/Hospitality & Tourism.png"
+              image="/images/landing/areas/hospitality-tourism.png"
               title="Hospitality & Tourism"
               subtitle="✈️ Global Trends, Projects & Research"
               description="Expert guidance for hospitality and tourism assignments aligned with international trends, industry standards, and academic excellence."
@@ -84,7 +84,7 @@ export default function ExpertisePage() {
             <ExpertiseCard
               href="/expertise/nursing-healthcare"
               icon={<Heart className="w-8 h-8" />}
-              image="/Images/landing/Our Areas of Expertise/Nursing & Healthcare.png"
+              image="/images/landing/areas/nursing-healthcare.png"
               title="Nursing & Healthcare"
               subtitle="🩺 Care Plans, Reflective Practice & Clinical Context"
               description="Evidence-based support for nursing assignments, care plans, reflective journals, and healthcare research with clinical accuracy."
@@ -93,7 +93,7 @@ export default function ExpertisePage() {
             <ExpertiseCard
               href="/expertise/engineering-technology"
               icon={<Settings className="w-8 h-8" />}
-              image="/Images/landing/Our Areas of Expertise/Engineering & Technology.png"
+              image="/images/landing/areas/engineering-technology.png"
               title="Engineering & Technology"
               subtitle="⚙️ Technical Reports, Design & Project Submissions"
               description="Comprehensive guidance for engineering projects, technical reports, design documentation, and complex problem-solving across all disciplines."

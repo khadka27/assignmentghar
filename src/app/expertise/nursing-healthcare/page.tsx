@@ -35,7 +35,7 @@ export default function NursingHealthcarePage() {
 
             <div className="relative rounded-2xl overflow-hidden shadow-2xl">
               <Image
-                src="/Images/landing/Our Areas of Expertise/Nursing & Healthcare.png"
+                src="/images/landing/areas/nursing-healthcare.png"
                 alt="Nursing & Healthcare"
                 width={600}
                 height={400}

@@ -163,7 +163,7 @@ export default function Home() {
           <div className="relative order-first lg:order-last mt-8 lg:mt-0">
             <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl h-[300px] sm:h-[400px] md:h-[500px] lg:h-[600px] transition-transform duration-300 hover:shadow-[#0E52AC]/20 hover:shadow-3xl">
               <Image
-                src="/Images/landing/hero.png"
+                src="/images/landing/hero.png"
                 alt="Student studying with laptop"
                 fill
                 className="object-cover"
@@ -221,22 +221,22 @@ export default function Home() {
           {/* Features Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 md:gap-6 mb-10 sm:mb-12 md:mb-16">
             <FeatureCard
-              image="/Images/landing/Why Students Trust Us/Chat System.png"
+              image="/images/landing/trust/chat-system.png"
               title="Chat System"
               description="Real time chat between student and admin"
             />
             <FeatureCard
-              image="/Images/landing/Why Students Trust Us/File Sharing.png"
+              image="/images/landing/trust/file-sharing.png"
               title="File Sharing"
               description="File and image sharing inside chat window"
             />
             <FeatureCard
-              image="/Images/landing/Why Students Trust Us/QR Payment.png"
+              image="/images/landing/trust/qr-payment.png"
               title="QR Payment"
               description="QR payment visible in chat for easy scan-and-pay"
             />
             <FeatureCard
-              image="/Images/landing/Why Students Trust Us/Consultancy Videos.png"
+              image="/images/landing/trust/consultancy-videos.png"
               title="Consultancy Videos"
               description="Free consultancy videos for students"
             />
@@ -333,32 +333,32 @@ export default function Home() {
           {/* Expertise Grid */}
           <div className="grid md:grid-cols-2 gap-6 md:gap-8 lg:gap-12 max-w-7xl mx-auto">
             <ExpertiseCardVertical
-              image="/Images/landing/Our Areas of Expertise/IT & Computer Science.png"
+              image="/images/landing/areas/it-computer-science.png"
               title="IT & Computer Science"
               description="Coding help, software development, system design, and technical report writing tailored to university standards."
             />
             <ExpertiseCardVertical
-              image="/Images/landing/Our Areas of Expertise/Business & Management.png"
+              image="/images/landing/areas/business-management.png"
               title="Business & Management"
               description="Professional support for reports, case studies, and research assignments with real-world context."
             />
             <ExpertiseCardVertical
-              image="/Images/landing/Our Areas of Expertise/Finance & Accounting.png"
+              image="/images/landing/areas/finance-accounting.png"
               title="Finance & Accounting"
               description="Step-by-step assistance for financial analysis, problem-solving, and accounting coursework."
             />
             <ExpertiseCardVertical
-              image="/Images/landing/Our Areas of Expertise/Hospitality & Tourism.png"
+              image="/images/landing/areas/hospitality-tourism.png"
               title="Hospitality & Tourism"
               description="Well-structured research papers, project reports, and essays aligned to global trends."
             />
             <ExpertiseCardVertical
-              image="/Images/landing/Our Areas of Expertise/Nursing & Healthcare.png"
+              image="/images/landing/areas/nursing-healthcare.png"
               title="Nursing & Healthcare"
               description="Accurate care plans, reflective journals, and academic reports built on real-life medical context."
             />
             <ExpertiseCardVertical
-              image="/Images/landing/Our Areas of Expertise/Engineering & Technology.png"
+              image="/images/landing/areas/engineering-technology.png"
               title="Engineering & Technology"
               description="Comprehensive guidance for technical reports, design documentation, and project submissions."
             />
@@ -400,7 +400,7 @@ export default function Home() {
             <div className="flex justify-center items-center">
               <div className="relative w-full max-w-lg rounded-2xl overflow-hidden shadow-2xl">
                 <Image
-                  src="/Images/landing/What Makes Us Different.png"
+                  src="/images/landing/what-makes-us-different.png"
                   alt="What Makes Us Different"
                   width={600}
                   height={500}
@@ -542,7 +542,7 @@ export default function Home() {
               {/* Right Image */}
               <div className="relative h-full hidden lg:block overflow-hidden">
                 <Image
-                  src="/Images/landing/women_with_laptop.png"
+                  src="/images/landing/women-with-laptop.png"
                   alt="Professional woman with laptop"
                   width={600}
                   height={500}
