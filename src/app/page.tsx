@@ -617,7 +617,13 @@ const ExpertiseCardVertical: React.FC<ExpertiseCardProps> = ({
   return (
     <div className="group">
       <div className="relative h-56 md:h-64 rounded-2xl overflow-hidden shadow-md group-hover:shadow-xl transition-all duration-300">
-        <Image src={image} alt={title} fill className="object-cover" unoptimized />
+        <Image
+          src={image}
+          alt={title}
+          fill
+          className="object-cover"
+          unoptimized
+        />
       </div>
       <div className="mt-4 md:mt-6">
         <h3 className="text-lg md:text-xl font-bold mb-2 md:mb-3 transition-colors text-[#111E2F] dark:text-white">
