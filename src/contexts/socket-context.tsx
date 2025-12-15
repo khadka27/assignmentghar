@@ -30,15 +30,20 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
     }
 
     // Initialize Socket.IO connection
-    const socketInstance = io(
-      process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:3000",
-      {
-        path: "/api/socket",
-        auth: {
-          userId: session.user.id,
-        },
-      }
-    );
+    // Use window.location.origin in production, or env variable
+    const socketUrl =
+      process.env.NEXT_PUBLIC_SOCKET_URL ||
+      (typeof window !== "undefined"
+        ? window.location.origin
+        : "http://localhost:3000");
+
+    const socketInstance = io(socketUrl, {
+      path: "/api/socket",
+      auth: {
+        userId: session.user.id,
+      },
+      transports: ["websocket", "polling"], // Try websocket first, fallback to polling
+    });
 
     socketInstance.on("connect", () => {
       console.log("✅ Socket connected");

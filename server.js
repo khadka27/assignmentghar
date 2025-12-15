@@ -6,7 +6,7 @@ const { PrismaClient } = require("@prisma/client");
 
 const dev = process.env.NODE_ENV !== "production";
 const hostname = dev ? "localhost" : "0.0.0.0";
-const port = process.env.PORT || 3001;
+const port = process.env.PORT || 3010;
 
 // Initialize Next.js
 const app = next({ dev, hostname, port });

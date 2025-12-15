@@ -1,6 +1,7 @@
 # ✅ Image Paths Verification Report
 
 ## Image Folder Structure
+
 ```
 public/images/
 ├── 3.png
@@ -29,6 +30,7 @@ public/images/
 ## ✅ All Image Paths Fixed
 
 ### Files Using Images:
+
 1. ✅ `src/app/page.tsx` - All paths using `/images/landing/...`
 2. ✅ `src/app/expertise/page.tsx` - All paths using `/images/landing/areas/...`
 3. ✅ `src/app/expertise/it-computer-science/page.tsx` - Correct path
@@ -44,12 +46,14 @@ public/images/
 ## Naming Conventions Applied
 
 ### ✅ All filenames now follow best practices:
+
 - ✅ Lowercase letters only
 - ✅ Hyphens instead of spaces
 - ✅ No special characters (& replaced with "and" or removed)
 - ✅ No underscores (changed to hyphens)
 
 ### Examples:
+
 - ❌ `IT & Computer Science.png` → ✅ `it-computer-science.png`
 - ❌ `Business & Management.png` → ✅ `business-management.png`
 - ❌ `women_with_laptop.png` → ✅ `women-with-laptop.png`
@@ -58,6 +62,7 @@ public/images/
 ## Linux/Production Compatibility
 
 All paths are now:
+
 - ✅ Case-sensitive safe (all lowercase)
 - ✅ URL-safe (no spaces or special characters)
 - ✅ Cross-platform compatible
@@ -67,6 +72,7 @@ All paths are now:
 ## Testing Checklist
 
 When deployed, verify these images load:
+
 - [ ] Logo in navbar (light and dark mode)
 - [ ] Hero image on homepage
 - [ ] All 6 expertise area images
