@@ -135,7 +135,6 @@ export default function Home() {
                 fill
                 className="object-cover"
                 priority
-                unoptimized
               />
               {/* Overlay gradient for better text visibility on mobile */}
               <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/10 lg:hidden"></div>
@@ -373,7 +372,6 @@ export default function Home() {
                   width={600}
                   height={500}
                   className="w-full h-auto object-cover"
-                  unoptimized
                 />
               </div>
             </div>
@@ -517,7 +515,6 @@ export default function Home() {
                   height={500}
                   className="absolute right-0 bottom-0 h-full w-auto object-cover object-left"
                   style={{ maxHeight: "500px" }}
-                  unoptimized
                 />
               </div>
             </div>
@@ -575,7 +572,6 @@ const FeatureCard: React.FC<FeatureCardProps> = ({
           alt={title}
           fill
           className="object-cover transition-transform duration-500 group-hover:scale-110"
-          unoptimized
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
       </div>
@@ -617,13 +613,7 @@ const ExpertiseCardVertical: React.FC<ExpertiseCardProps> = ({
   return (
     <div className="group">
       <div className="relative h-56 md:h-64 rounded-2xl overflow-hidden shadow-md group-hover:shadow-xl transition-all duration-300">
-        <Image
-          src={image}
-          alt={title}
-          fill
-          className="object-cover"
-          unoptimized
-        />
+        <Image src={image} alt={title} fill className="object-cover" />
       </div>
       <div className="mt-4 md:mt-6">
         <h3 className="text-lg md:text-xl font-bold mb-2 md:mb-3 transition-colors text-[#111E2F] dark:text-white">

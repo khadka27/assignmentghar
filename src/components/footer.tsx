@@ -18,7 +18,6 @@ export function Footer() {
                 height={50}
                 className="h-10 sm:h-12 w-auto dark:hidden"
                 priority
-                unoptimized
               />
               <Image
                 src="/images/darklogo.png"
@@ -27,7 +26,6 @@ export function Footer() {
                 height={50}
                 className="h-10 sm:h-12 w-auto hidden dark:block"
                 priority
-                unoptimized
               />
             </div>
             <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 leading-relaxed max-w-sm">
