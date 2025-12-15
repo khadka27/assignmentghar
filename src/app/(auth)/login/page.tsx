@@ -57,7 +57,12 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (status === "authenticated" && session?.user) {
-      router.push("/");
+      // Redirect admin users to admin panel, others to home
+      if (session.user.role === "ADMIN") {
+        router.push("/admin");
+      } else {
+        router.push("/");
+      }
     }
   }, [status, session, router]);
 
@@ -173,7 +178,16 @@ export default function LoginPage() {
           title: "Welcome back!",
           description: "Login successful",
         });
-        router.push("/");
+
+        // Redirect based on user role
+        const response = await fetch("/api/auth/session");
+        const sessionData = await response.json();
+
+        if (sessionData?.user?.role === "ADMIN") {
+          router.push("/admin");
+        } else {
+          router.push("/");
+        }
       }
     } catch (error) {
       toast({
@@ -241,7 +255,14 @@ export default function LoginPage() {
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
     try {
-      await signIn("google", { callbackUrl: "/" });
+      // Google OAuth will redirect back and session will be created
+      // The useEffect will handle the redirect based on role
+      await signIn("google", { redirect: false });
+
+      // Wait for session to update
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
     } catch (error) {
       toast({
         variant: "destructive",
