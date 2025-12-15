@@ -106,6 +106,7 @@ export function Navbar() {
               width={160}
               height={40}
               priority
+              unoptimized
               className="h-9 w-auto dark:hidden"
             />
             <Image
@@ -114,6 +115,7 @@ export function Navbar() {
               width={160}
               height={40}
               priority
+              unoptimized
               className="h-9 w-auto hidden dark:block"
             />
           </Link>
