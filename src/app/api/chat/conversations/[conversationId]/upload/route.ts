@@ -165,7 +165,11 @@ export async function POST(
       console.log(`✅ File saved successfully: ${filePath}`);
     } catch (fsError) {
       console.error("❌ File system error:", fsError);
-      throw new Error(`Failed to save file: ${fsError instanceof Error ? fsError.message : 'Unknown error'}`);
+      throw new Error(
+        `Failed to save file: ${
+          fsError instanceof Error ? fsError.message : "Unknown error"
+        }`
+      );
     }
 
     const fileUrl = `/assignment/${fileName}`;
@@ -233,10 +237,8 @@ export async function POST(
     return NextResponse.json({ message }, { status: 201 });
   } catch (error) {
     console.error("Error uploading file:", error);
-    const errorMessage = error instanceof Error ? error.message : "Failed to upload file";
-    return NextResponse.json(
-      { error: errorMessage },
-      { status: 500 }
-    );
+    const errorMessage =
+      error instanceof Error ? error.message : "Failed to upload file";
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }
