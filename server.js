@@ -32,15 +32,21 @@ app.prepare().then(() => {
         cors: {
             origin: dev
                 ? [`http://localhost:${port}`, `http://127.0.0.1:${port}`]
-                : [process.env.NEXTAUTH_URL, `https://www.${process.env.NEXTAUTH_URL?.replace('https://', '')}`].filter(Boolean),
-            methods: ["GET", "POST"],
+                : [
+                    "https://assignmentghar.com",
+                    "https://www.assignmentghar.com",
+                    process.env.NEXTAUTH_URL
+                ].filter(Boolean),
+            methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
             credentials: true,
+            allowedHeaders: ["Content-Type", "Authorization"],
         },
         path: "/api/socket",
         transports: ['websocket', 'polling'],
         maxHttpBufferSize: 10e6, // 10MB - increased for file uploads
         pingTimeout: 60000,
         pingInterval: 25000,
+        allowEIO3: true,
     });
 
     // Store online users

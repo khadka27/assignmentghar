@@ -3,7 +3,14 @@ import { auth } from "@/lib/auth";
 
 export default auth((request) => {
   const session = request.auth;
-  const { pathname } = request.nextUrl;
+  const { pathname, hostname } = request.nextUrl;
+
+  // Redirect www to non-www for consistency (optional - or do opposite)
+  if (hostname === "www.assignmentghar.com") {
+    const url = request.nextUrl.clone();
+    url.hostname = "assignmentghar.com";
+    return NextResponse.redirect(url, 301);
+  }
 
   // Public routes that don't require authentication
   const publicRoutes = [
