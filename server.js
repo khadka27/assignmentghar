@@ -38,6 +38,9 @@ app.prepare().then(() => {
         },
         path: "/api/socket",
         transports: ['websocket', 'polling'],
+        maxHttpBufferSize: 10e6, // 10MB - increased for file uploads
+        pingTimeout: 60000,
+        pingInterval: 25000,
     });
 
     // Store online users
