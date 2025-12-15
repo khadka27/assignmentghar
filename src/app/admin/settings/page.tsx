@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Mail, User, Calendar, Shield } from "lucide-react";
+import { ChangePasswordForm } from "@/components/admin/change-password-form";
 
 export default async function SettingsPage() {
   const session = await auth();
@@ -94,6 +95,8 @@ export default async function SettingsPage() {
           </div>
         </div>
       </Card>
+
+      <ChangePasswordForm />
     </div>
   );
 }
