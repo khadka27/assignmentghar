@@ -255,14 +255,8 @@ export default function LoginPage() {
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
     try {
-      // Google OAuth will redirect back and session will be created
-      // The useEffect will handle the redirect based on role
-      await signIn("google", { redirect: false });
-
-      // Wait for session to update
-      setTimeout(() => {
-        window.location.reload();
-      }, 1000);
+      // Redirect to Google OAuth - callback will handle role-based redirect
+      await signIn("google", { callbackUrl: "/" });
     } catch (error) {
       toast({
         variant: "destructive",
