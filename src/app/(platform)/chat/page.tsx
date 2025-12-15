@@ -803,6 +803,16 @@ export default function ChatPage() {
                             {message.attachments.map((attachment) => {
                               const isImage =
                                 attachment.fileType.startsWith("image/");
+                              // Convert /assignment/ to /api/files/
+                              const fileUrl = attachment.fileUrl.startsWith(
+                                "/assignment/"
+                              )
+                                ? `/api/files/${attachment.fileUrl.replace(
+                                    "/assignment/",
+                                    ""
+                                  )}`
+                                : attachment.fileUrl;
+
                               return (
                                 <div
                                   key={attachment.id}
@@ -817,13 +827,13 @@ export default function ChatPage() {
                                       className="relative group cursor-pointer"
                                       onClick={() =>
                                         setPreviewImage({
-                                          url: attachment.fileUrl,
+                                          url: fileUrl,
                                           name: attachment.fileName,
                                         })
                                       }
                                     >
                                       <img
-                                        src={attachment.fileUrl}
+                                        src={fileUrl}
                                         alt={attachment.fileName}
                                         className="rounded-lg max-w-full h-auto max-h-64 object-cover transition-transform hover:scale-[1.02]"
                                       />
@@ -833,8 +843,8 @@ export default function ChatPage() {
                                     </div>
                                   ) : (
                                     <a
-                                      href={attachment.fileUrl}
-                                      download
+                                      href={fileUrl}
+                                      download={attachment.fileName}
                                       className="flex items-center gap-2 p-2 hover:opacity-80 transition-opacity text-xs"
                                     >
                                       <FileText className="w-4 h-4 flex-shrink-0" />
