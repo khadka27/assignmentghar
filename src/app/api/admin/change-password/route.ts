@@ -44,7 +44,9 @@ export async function POST(request: NextRequest) {
     // Check if user has a password (OAuth users might not)
     if (!user.password) {
       return NextResponse.json(
-        { error: "This account uses OAuth sign-in and doesn't have a password" },
+        {
+          error: "This account uses OAuth sign-in and doesn't have a password",
+        },
         { status: 400 }
       );
     }

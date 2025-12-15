@@ -4,81 +4,48 @@ import Link from "next/link";
 import Image from "next/image";
 import { Check } from "lucide-react";
 import React from "react";
-import Script from "next/script";
+import { OrganizationSchema } from "@/components/seo/organization-schema";
+import { WebsiteSchema } from "@/components/seo/website-schema";
+import { ServiceSchema } from "@/components/seo/service-schema";
+import { FAQSchema } from "@/components/seo/faq-schema";
 
 export default function Home() {
-  // JSON-LD Structured Data
-  const organizationSchema = {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    name: "AssignmentGhar",
-    url: "https://assignmentghar.com",
-    logo: {
-      "@type": "ImageObject",
-      url: "https://assignmentghar.com/logo.png",
+  const faqItems = [
+    {
+      question: "What is AssignmentGhar?",
+      answer:
+        "AssignmentGhar is a professional academic writing service that provides expert assistance with assignments, essays, research papers, dissertations, and more. We connect students with qualified writers to help them achieve academic success.",
     },
-    description:
-      "Professional assignment help and academic writing services for students worldwide.",
-    sameAs: [
-      "https://twitter.com/assignmentghar",
-      "https://facebook.com/assignmentghar",
-    ],
-    contactPoint: {
-      "@type": "ContactPoint",
-      contactType: "Customer Service",
-      email: "support@assignmentghar.com",
+    {
+      question: "How does AssignmentGhar work?",
+      answer:
+        "Simply submit your assignment requirements through our platform, get matched with an expert writer, and receive your completed work on time. Our process is simple: submit, relax, and receive quality work.",
     },
-  };
-
-  const websiteSchema = {
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    name: "AssignmentGhar",
-    url: "https://assignmentghar.com",
-    description:
-      "Get professional assignment help from expert writers. Quality academic writing services for students.",
-    potentialAction: {
-      "@type": "SearchAction",
-      target: {
-        "@type": "EntryPoint",
-        urlTemplate: "https://assignmentghar.com/search?q={search_term_string}",
-      },
-      "query-input": "required name=search_term_string",
+    {
+      question: "Is the content plagiarism-free?",
+      answer:
+        "Yes, all work delivered by AssignmentGhar is 100% original and plagiarism-free. We use advanced plagiarism detection tools and provide plagiarism reports upon request.",
     },
-  };
-
-  const serviceSchema = {
-    "@context": "https://schema.org",
-    "@type": "Service",
-    name: "Assignment Writing Service",
-    description: "Professional assignment help and academic writing services",
-    provider: {
-      "@type": "Organization",
-      name: "AssignmentGhar",
-      url: "https://assignmentghar.com",
+    {
+      question: "What subjects do you cover?",
+      answer:
+        "We cover a wide range of subjects including but not limited to: Business, Engineering, Computer Science, Nursing, Law, Psychology, Mathematics, English Literature, and many more.",
     },
-    serviceType: "Academic Writing Service",
-    areaServed: "Worldwide",
-  };
+    {
+      question: "How fast can I get my assignment completed?",
+      answer:
+        "We offer flexible deadlines ranging from 24 hours to several weeks, depending on the complexity and length of your assignment. Rush orders are available for urgent requirements.",
+    },
+  ];
 
   return (
     <div className="min-h-screen relative transition-colors bg-white dark:bg-[#0A0F1E]">
-      {/* JSON-LD Structured Data */}
-      <Script
-        id="organization-schema"
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
-      />
-      <Script
-        id="website-schema"
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
-      />
-      <Script
-        id="service-schema"
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceSchema) }}
-      />
+      {/* SEO Schema Markup */}
+      <OrganizationSchema />
+      <WebsiteSchema />
+      <ServiceSchema />
+      <FAQSchema faqs={faqItems} />
+
       {/* Hero Section */}
       <div className="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12 py-12 sm:py-16 md:py-20 lg:py-24">
         <div className="grid lg:grid-cols-2 gap-8 sm:gap-10 md:gap-12 lg:gap-16 items-center">

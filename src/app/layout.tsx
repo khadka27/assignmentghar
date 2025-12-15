@@ -27,6 +27,7 @@ export const metadata: Metadata = {
   },
   description:
     "Get professional assignment help from expert writers. Quality academic writing services for students. Fast delivery, plagiarism-free, 24/7 support. AssignmentGhar - Your trusted assignment partner.",
+  applicationName: "AssignmentGhar",
   keywords: [
     "assignment help",
     "academic writing",
@@ -38,10 +39,21 @@ export const metadata: Metadata = {
     "online tutoring",
     "student services",
     "assignment writing",
+    "college assignment help",
+    "university assignment help",
+    "plagiarism free",
+    "expert writers",
+    "academic support",
   ],
-  authors: [{ name: "AssignmentGhar Team" }],
+  authors: [{ name: "AssignmentGhar Team", url: "https://assignmentghar.com" }],
   creator: "AssignmentGhar",
   publisher: "AssignmentGhar",
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  category: "Education",
   openGraph: {
     type: "website",
     locale: "en_US",
