@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import { Card } from "@/components/ui/card";
 import {
   Users,
@@ -34,6 +35,7 @@ interface DashboardStats {
   adminUsers: number;
   completedAssignments: number;
   pendingAssignments: number;
+  inProgressAssignments: number;
   chartData: ChartData[];
   recentUsers: RecentUser[];
   recentAssignments: RecentAssignment[];
@@ -64,6 +66,7 @@ interface RecentAssignment {
 }
 
 export default function DashboardOverview() {
+  const pathname = usePathname();
   const [stats, setStats] = useState<DashboardStats>({
     totalUsers: 0,
     totalAssignments: 0,
@@ -73,6 +76,7 @@ export default function DashboardOverview() {
     adminUsers: 0,
     completedAssignments: 0,
     pendingAssignments: 0,
+    inProgressAssignments: 0,
     chartData: [],
     recentUsers: [],
     recentAssignments: [],
@@ -82,8 +86,28 @@ export default function DashboardOverview() {
 
   useEffect(() => {
     fetchStats();
-  }, []);
 
+    // Refresh stats when page becomes visible
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        fetchStats();
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    // Auto-refresh every 30 seconds when on dashboard
+    const interval = setInterval(() => {
+      if (pathname === "/admin") {
+        fetchStats();
+      }
+    }, 30000);
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      clearInterval(interval);
+    };
+  }, [pathname]);
   const fetchStats = async () => {
     try {
       const response = await fetch("/api/admin/stats");
@@ -142,18 +166,25 @@ export default function DashboardOverview() {
       bgColor: "bg-indigo-50 dark:bg-indigo-900/20",
     },
     {
+      title: "Pending",
+      value: stats.pendingAssignments,
+      icon: Clock,
+      color: "text-orange-600",
+      bgColor: "bg-orange-50 dark:bg-orange-900/20",
+    },
+    {
+      title: "In Progress",
+      value: stats.inProgressAssignments,
+      icon: TrendingUp,
+      color: "text-blue-600",
+      bgColor: "bg-blue-50 dark:bg-blue-900/20",
+    },
+    {
       title: "Completed",
       value: stats.completedAssignments,
       icon: CheckCircle,
-      color: "text-teal-600",
-      bgColor: "bg-teal-50 dark:bg-teal-900/20",
-    },
-    {
-      title: "Pending Tasks",
-      value: stats.pendingAssignments,
-      icon: TrendingUp,
-      color: "text-red-600",
-      bgColor: "bg-red-50 dark:bg-red-900/20",
+      color: "text-green-600",
+      bgColor: "bg-green-50 dark:bg-green-900/20",
     },
   ];
 

@@ -30,6 +30,7 @@ export async function GET() {
       adminUsers,
       completedAssignments,
       pendingAssignments,
+      inProgressAssignments,
     ] = await Promise.all([
       prisma.user.count(),
       prisma.assignment.count(),
@@ -39,6 +40,7 @@ export async function GET() {
       prisma.user.count({ where: { role: "ADMIN" } }),
       prisma.assignment.count({ where: { status: "COMPLETED" } }),
       prisma.assignment.count({ where: { status: "PENDING" } }),
+      prisma.assignment.count({ where: { status: "IN_PROGRESS" } }),
     ]);
 
     // Get chart data for last 6 months
@@ -111,6 +113,7 @@ export async function GET() {
       adminUsers,
       completedAssignments,
       pendingAssignments,
+      inProgressAssignments,
       chartData:
         chartData.length > 0
           ? chartData
