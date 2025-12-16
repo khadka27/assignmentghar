@@ -55,15 +55,15 @@ export async function GET() {
     >`
       SELECT 
         TO_CHAR(DATE_TRUNC('month', "createdAt"), 'Mon') as month,
-        COUNT(DISTINCT CASE WHEN table_name = 'User' THEN id END) as users,
-        COUNT(DISTINCT CASE WHEN table_name = 'Assignment' THEN id END) as assignments,
-        COUNT(DISTINCT CASE WHEN table_name = 'Message' THEN id END) as messages
+        COUNT(DISTINCT CASE WHEN table_name = 'users' THEN id END) as users,
+        COUNT(DISTINCT CASE WHEN table_name = 'assignments' THEN id END) as assignments,
+        COUNT(DISTINCT CASE WHEN table_name = 'messages' THEN id END) as messages
       FROM (
-        SELECT id, "createdAt", 'User' as table_name FROM "User" WHERE "createdAt" >= ${sixMonthsAgo}
+        SELECT id, "createdAt", 'users' as table_name FROM users WHERE "createdAt" >= ${sixMonthsAgo}
         UNION ALL
-        SELECT id, "createdAt", 'Assignment' as table_name FROM "Assignment" WHERE "createdAt" >= ${sixMonthsAgo}
+        SELECT id, "createdAt", 'assignments' as table_name FROM assignments WHERE "createdAt" >= ${sixMonthsAgo}
         UNION ALL
-        SELECT id, "createdAt", 'Message' as table_name FROM "Message" WHERE "createdAt" >= ${sixMonthsAgo}
+        SELECT id, "createdAt", 'messages' as table_name FROM messages WHERE "createdAt" >= ${sixMonthsAgo}
       ) combined
       GROUP BY DATE_TRUNC('month', "createdAt")
       ORDER BY DATE_TRUNC('month', "createdAt") ASC
