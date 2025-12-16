@@ -155,13 +155,13 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
             <Link href="/admin" className="block">
               {/* Light mode logo */}
               <img
-                src="/Images/landing/logo-dark.png"
+                src="/images/landing/logo-dark.png"
                 alt="AssignmentGhar"
                 className="h-12 w-auto dark:hidden"
               />
               {/* Dark mode logo */}
               <img
-                src="/Images/landing/logo-light.png"
+                src="/images/landing/logo-light.png"
                 alt="AssignmentGhar"
                 className="h-12 w-auto hidden dark:block"
               />
