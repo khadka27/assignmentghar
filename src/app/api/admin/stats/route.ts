@@ -98,7 +98,7 @@ export async function GET() {
         title: true,
         status: true,
         createdAt: true,
-        student: { select: { name: true, email: true } },
+        user: { select: { name: true, email: true } },
       },
     });
 

@@ -58,7 +58,7 @@ interface RecentAssignment {
   title: string;
   status: string;
   createdAt: string;
-  student: {
+  user: {
     name: string;
   };
 }
@@ -329,7 +329,7 @@ export default function DashboardOverview() {
                       {assignment.title}
                     </p>
                     <p className="text-sm text-gray-500 dark:text-gray-400">
-                      by {assignment.student.name}
+                      by {assignment.user.name}
                     </p>
                   </div>
                   <div className="text-right">
