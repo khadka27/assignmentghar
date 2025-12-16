@@ -38,7 +38,7 @@ export function Navbar() {
   // Guest links (not logged in)
   const guestLinks = [
     { href: "/", label: "Home" },
-    { href: "/#services", label: "Services" },
+    { href: "/services", label: "Services" },
     { href: "/contact", label: "Contact" },
     { href: "/testimonials", label: "Testimonials" },
     { href: "/about", label: "About Us" },
