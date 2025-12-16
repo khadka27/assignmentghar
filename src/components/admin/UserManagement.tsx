@@ -49,6 +49,7 @@ export default function UserManagement() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [actionType, setActionType] = useState<
     "delete" | "makeAdmin" | "removeAdmin" | null
@@ -140,16 +141,18 @@ export default function UserManagement() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between gap-4">
-        <div>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-            User Management
-          </h2>
-          <p className="text-gray-600 dark:text-gray-400 mt-1">
-            Manage users and admin roles
-          </p>
-        </div>
+      {/* Page Header */}
+      <div>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+          User Management
+        </h1>
+        <p className="text-gray-500 dark:text-gray-400 mt-1">
+          Manage users and assign admin roles
+        </p>
+      </div>
+
+      {/* Search */}
+      <div className="flex justify-end">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
           <Input

@@ -22,7 +22,17 @@ export async function GET() {
 
     // Fetch all assignments
     const assignments = await prisma.assignment.findMany({
-      include: {
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        subject: true,
+        course: true,
+        deadline: true,
+        status: true,
+        fileUrl: true,
+        createdAt: true,
+        updatedAt: true,
         user: {
           select: {
             name: true,

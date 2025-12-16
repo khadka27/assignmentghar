@@ -17,7 +17,6 @@ import {
   FileText,
   Search,
   Calendar,
-  User,
   Eye,
   Download,
   CheckCircle,
@@ -47,6 +46,7 @@ interface Assignment {
   subject: string;
   deadline: string;
   status: string;
+  fileUrl: string | null;
   createdAt: string;
   user: {
     name: string | null;
@@ -107,6 +107,7 @@ export default function AssignmentsManagement() {
         throw new Error("Update failed");
       }
     } catch (error) {
+      console.error("Failed to update assignment status:", error);
       toast({
         title: "Error",
         description: "Failed to update assignment status",
@@ -183,9 +184,12 @@ export default function AssignmentsManagement() {
         <div className="h-12 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
         <Card className="p-6">
           <div className="space-y-4">
-            {Array.from({ length: 5 }).map((_, i) => (
+            {Array.from(
+              { length: 5 },
+              (_, i) => `skeleton-${Date.now()}-${i}`
+            ).map((key) => (
               <div
-                key={i}
+                key={key}
                 className="h-16 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"
               ></div>
             ))}
@@ -197,17 +201,19 @@ export default function AssignmentsManagement() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between gap-4">
-        <div>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-            Assignments Management
-          </h2>
-          <p className="text-gray-600 dark:text-gray-400 mt-1">
-            View and manage all student assignments
-          </p>
-        </div>
-        <div className="flex gap-2">
+      {/* Page Header */}
+      <div>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+          Assignments Management
+        </h1>
+        <p className="text-gray-500 dark:text-gray-400 mt-1">
+          View and manage all student assignments
+        </p>
+      </div>
+
+      {/* Search & Filter */}
+      <div className="flex flex-col sm:flex-row justify-end items-start sm:items-center gap-3">
+        <div className="flex items-center gap-2">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
             <Input
@@ -217,7 +223,10 @@ export default function AssignmentsManagement() {
               className="pl-10 w-full sm:w-64"
             />
           </div>
-          <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value)}>
+          <Select
+            value={statusFilter}
+            onValueChange={(value) => setStatusFilter(value)}
+          >
             <SelectTrigger className="w-[140px]">
               <SelectValue placeholder="Filter" />
             </SelectTrigger>
@@ -392,10 +401,12 @@ export default function AssignmentsManagement() {
         open={!!selectedAssignment}
         onOpenChange={() => setSelectedAssignment(null)}
       >
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-2xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800">
           <DialogHeader>
-            <DialogTitle>{selectedAssignment?.title}</DialogTitle>
-            <DialogDescription>
+            <DialogTitle className="text-gray-900 dark:text-white">
+              {selectedAssignment?.title}
+            </DialogTitle>
+            <DialogDescription className="text-gray-600 dark:text-gray-400">
               Submitted by{" "}
               {selectedAssignment?.user.name || selectedAssignment?.user.email}
             </DialogDescription>
@@ -449,6 +460,42 @@ export default function AssignmentsManagement() {
                 </p>
               </div>
             </div>
+            {selectedAssignment?.fileUrl && (
+              <div>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                  Submitted File
+                </p>
+                <div className="flex items-center gap-2 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+                  <FileText className="w-5 h-5 text-blue-600" />
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-gray-900 dark:text-white">
+                      {selectedAssignment.fileUrl.split("/").pop()}
+                    </p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      Click download to view the file
+                    </p>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      const link = document.createElement("a");
+                      link.href = selectedAssignment.fileUrl!;
+                      link.download =
+                        selectedAssignment.fileUrl!.split("/").pop() || "file";
+                      link.target = "_blank";
+                      document.body.appendChild(link);
+                      link.click();
+                      link.remove();
+                    }}
+                    className="border-blue-300 dark:border-blue-700 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                  >
+                    <Download className="w-4 h-4 mr-2" />
+                    Download
+                  </Button>
+                </div>
+              </div>
+            )}
           </div>
         </DialogContent>
       </Dialog>

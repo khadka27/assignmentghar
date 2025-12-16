@@ -13,7 +13,6 @@ import {
   Sun,
   User,
   LogOut,
-  Settings,
   LayoutDashboard,
   MessageSquare,
   FileText,
@@ -51,6 +50,7 @@ export function Navbar() {
     { href: "/submit", label: "Submit" },
     { href: "/my-assignments", label: "My Assignments" },
     { href: "/chat", label: "Chat" },
+    { href: "/testimonials", label: "Testimonials" },
     { href: "/contact", label: "Support" },
     { href: "/about", label: "About Us" },
   ];
@@ -192,15 +192,6 @@ export function Navbar() {
                           Profile
                         </Link>
 
-                        <Link
-                          href="/settings"
-                          onClick={() => setIsDropdownOpen(false)}
-                          className="flex items-center px-4 py-2.5 text-sm font-medium text-[#284366] dark:text-[#CBD5E1] hover:bg-[#F0F7FF] dark:hover:bg-[#0F172A] hover:text-[#0E52AC] dark:hover:text-[#60A5FA] transition-all"
-                        >
-                          <Settings className="mr-3 h-4 w-4" />
-                          Settings
-                        </Link>
-
                         {isAdmin && (
                           <Link
                             href="/admin"
@@ -310,15 +301,6 @@ export function Navbar() {
                 >
                   <User className="w-4 h-4" />
                   Profile
-                </Link>
-
-                <Link
-                  href="/settings"
-                  className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-[#284366] dark:text-[#CBD5E1] hover:bg-white dark:hover:bg-[#0F172A] hover:text-[#0E52AC] dark:hover:text-[#60A5FA] rounded-lg transition-all mx-2"
-                  onClick={() => setIsOpen(false)}
-                >
-                  <Settings className="w-4 h-4" />
-                  Settings
                 </Link>
 
                 {isAdmin && (

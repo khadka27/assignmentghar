@@ -129,13 +129,13 @@ export default function TestimonialsManagement() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
+      {/* Page Header */}
       <div>
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
           Testimonials Management
-        </h2>
-        <p className="text-gray-600 dark:text-gray-400 mt-1">
-          Approve, hide, or reject testimonials
+        </h1>
+        <p className="text-gray-500 dark:text-gray-400 mt-1">
+          Approve, hide, or reject student testimonials
         </p>
       </div>
 

@@ -41,6 +41,67 @@ export async function GET() {
       prisma.assignment.count({ where: { status: "PENDING" } }),
     ]);
 
+    // Get chart data for last 6 months
+    const sixMonthsAgo = new Date();
+    sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+
+    const monthlyData = await prisma.$queryRaw<
+      Array<{
+        month: string;
+        users: bigint;
+        assignments: bigint;
+        messages: bigint;
+      }>
+    >`
+      SELECT 
+        TO_CHAR(DATE_TRUNC('month', created_at), 'Mon') as month,
+        COUNT(DISTINCT CASE WHEN table_name = 'User' THEN id END) as users,
+        COUNT(DISTINCT CASE WHEN table_name = 'Assignment' THEN id END) as assignments,
+        COUNT(DISTINCT CASE WHEN table_name = 'Message' THEN id END) as messages
+      FROM (
+        SELECT id, created_at, 'User' as table_name FROM "User" WHERE created_at >= ${sixMonthsAgo}
+        UNION ALL
+        SELECT id, created_at, 'Assignment' as table_name FROM "Assignment" WHERE created_at >= ${sixMonthsAgo}
+        UNION ALL
+        SELECT id, created_at, 'Message' as table_name FROM "Message" WHERE created_at >= ${sixMonthsAgo}
+      ) combined
+      GROUP BY DATE_TRUNC('month', created_at)
+      ORDER BY DATE_TRUNC('month', created_at) ASC
+    `;
+
+    // Format chart data
+    const chartData = monthlyData.map((row) => ({
+      name: row.month,
+      users: Number(row.users),
+      assignments: Number(row.assignments),
+      messages: Number(row.messages),
+    }));
+
+    // Get recent activity
+    const recentUsers = await prisma.user.findMany({
+      take: 5,
+      orderBy: { createdAt: "desc" },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        createdAt: true,
+        role: true,
+      },
+    });
+
+    const recentAssignments = await prisma.assignment.findMany({
+      take: 5,
+      orderBy: { createdAt: "desc" },
+      select: {
+        id: true,
+        title: true,
+        status: true,
+        createdAt: true,
+        student: { select: { name: true, email: true } },
+      },
+    });
+
     return NextResponse.json({
       totalUsers,
       totalAssignments,
@@ -50,6 +111,12 @@ export async function GET() {
       adminUsers,
       completedAssignments,
       pendingAssignments,
+      chartData:
+        chartData.length > 0
+          ? chartData
+          : [{ name: "No Data", users: 0, assignments: 0, messages: 0 }],
+      recentUsers,
+      recentAssignments,
     });
   } catch (error) {
     console.error("Admin stats error:", error);

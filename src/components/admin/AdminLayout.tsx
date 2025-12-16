@@ -12,13 +12,10 @@ import {
   Star,
   Settings,
   Menu,
-  X,
   LogOut,
   Bell,
-  Search,
   Moon,
   Sun,
-  User,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -78,6 +75,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     try {
       await signOut({ callbackUrl: "/login" });
     } catch (error) {
+      console.error("Logout failed:", error);
       toast({
         variant: "destructive",
         title: "Error",
@@ -101,9 +99,6 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
             >
               <Menu className="h-5 w-5" />
             </Button>
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white hidden lg:block">
-              Admin Dashboard
-            </h2>
           </div>
 
           {/* Right side actions */}
@@ -157,12 +152,20 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         <div className="flex flex-col h-full">
           {/* Logo */}
           <div className="p-6 border-b border-gray-200 dark:border-gray-800">
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-              Admin Panel
-            </h1>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-              AssignmentGhar
-            </p>
+            <Link href="/admin" className="block">
+              {/* Light mode logo */}
+              <img
+                src="/Images/landing/logo-dark.png"
+                alt="AssignmentGhar"
+                className="h-12 w-auto dark:hidden"
+              />
+              {/* Dark mode logo */}
+              <img
+                src="/Images/landing/logo-light.png"
+                alt="AssignmentGhar"
+                className="h-12 w-auto hidden dark:block"
+              />
+            </Link>
           </div>
 
           {/* Navigation */}
@@ -193,11 +196,11 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           <div className="p-4 border-t border-gray-200 dark:border-gray-800">
             <Button
               onClick={handleLogout}
-              variant="outline"
-              className="w-full justify-start gap-3 border-gray-300 dark:border-gray-700 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400 hover:border-red-300 dark:hover:border-red-700"
+              variant="ghost"
+              className="w-full justify-start gap-3 text-gray-700 dark:text-gray-300 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400 transition-colors"
             >
               <LogOut className="w-5 h-5" />
-              Logout
+              <span className="font-medium">Logout</span>
             </Button>
           </div>
         </div>
@@ -205,9 +208,12 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
       {/* Overlay for mobile */}
       {sidebarOpen && (
-        <div
-          className="fixed inset-0 bg-black/50 z-30 lg:hidden"
+        <button
+          type="button"
+          className="fixed inset-0 bg-black/50 z-30 lg:hidden cursor-default"
           onClick={() => setSidebarOpen(false)}
+          onKeyDown={(e) => e.key === "Escape" && setSidebarOpen(false)}
+          aria-label="Close sidebar"
         />
       )}
 

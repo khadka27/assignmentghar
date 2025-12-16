@@ -34,12 +34,33 @@ interface DashboardStats {
   adminUsers: number;
   completedAssignments: number;
   pendingAssignments: number;
+  chartData: ChartData[];
+  recentUsers: RecentUser[];
+  recentAssignments: RecentAssignment[];
 }
 
 interface ChartData {
   name: string;
   users: number;
   assignments: number;
+  messages: number;
+}
+
+interface RecentUser {
+  name: string;
+  email: string;
+  createdAt: string;
+  role: string;
+}
+
+interface RecentAssignment {
+  id: string;
+  title: string;
+  status: string;
+  createdAt: string;
+  student: {
+    name: string;
+  };
 }
 
 export default function DashboardOverview() {
@@ -52,16 +73,10 @@ export default function DashboardOverview() {
     adminUsers: 0,
     completedAssignments: 0,
     pendingAssignments: 0,
+    chartData: [],
+    recentUsers: [],
+    recentAssignments: [],
   });
-
-  const [chartData, setChartData] = useState<ChartData[]>([
-    { name: "Jan", users: 40, assignments: 24 },
-    { name: "Feb", users: 30, assignments: 13 },
-    { name: "Mar", users: 20, assignments: 38 },
-    { name: "Apr", users: 27, assignments: 39 },
-    { name: "May", users: 18, assignments: 48 },
-    { name: "Jun", users: 23, assignments: 38 },
-  ]);
 
   const [loading, setLoading] = useState(true);
 
@@ -155,7 +170,17 @@ export default function DashboardOverview() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
+      {/* Page Header */}
+      <div>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+          Dashboard
+        </h1>
+        <p className="text-gray-500 dark:text-gray-400 mt-1">
+          Overview of your platform statistics
+        </p>
+      </div>
+
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {statCards.map((stat, index) => (
@@ -184,13 +209,13 @@ export default function DashboardOverview() {
 
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Line Chart */}
+        {/* Line Chart - Multi-line Growth */}
         <Card className="p-6 border border-gray-200 dark:border-gray-800">
           <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
-            User Growth
+            Growth Overview
           </h3>
           <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={chartData}>
+            <LineChart data={stats.chartData}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="name" />
               <YAxis />
@@ -201,30 +226,140 @@ export default function DashboardOverview() {
                 dataKey="users"
                 stroke="#2563eb"
                 strokeWidth={2}
+                name="Users"
+              />
+              <Line
+                type="monotone"
+                dataKey="assignments"
+                stroke="#16a34a"
+                strokeWidth={2}
+                name="Assignments"
+              />
+              <Line
+                type="monotone"
+                dataKey="messages"
+                stroke="#9333ea"
+                strokeWidth={2}
+                name="Messages"
               />
             </LineChart>
           </ResponsiveContainer>
         </Card>
 
-        {/* Bar Chart */}
+        {/* Bar Chart - Monthly Comparison */}
         <Card className="p-6 border border-gray-200 dark:border-gray-800">
           <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
-            Assignments Overview
+            Monthly Activity
           </h3>
           <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={chartData}>
+            <BarChart data={stats.chartData}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="name" />
               <YAxis />
               <Tooltip />
               <Legend />
-              <Bar dataKey="assignments" fill="#2563eb" />
+              <Bar dataKey="users" fill="#2563eb" name="Users" />
+              <Bar dataKey="assignments" fill="#16a34a" name="Assignments" />
+              <Bar dataKey="messages" fill="#9333ea" name="Messages" />
             </BarChart>
           </ResponsiveContainer>
         </Card>
       </div>
 
       {/* Recent Activity */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Recent Users */}
+        <Card className="p-6 border border-gray-200 dark:border-gray-800">
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
+            Recent Users
+          </h3>
+          <div className="space-y-4">
+            {stats.recentUsers.length > 0 ? (
+              stats.recentUsers.map((user, index) => (
+                <div
+                  key={index}
+                  className="flex items-center justify-between py-3 border-b border-gray-200 dark:border-gray-800 last:border-b-0"
+                >
+                  <div className="flex-1">
+                    <p className="font-semibold text-gray-900 dark:text-white">
+                      {user.name}
+                    </p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      {user.email}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <span
+                      className={`inline-block px-2 py-1 text-xs rounded-full ${
+                        user.role === "ADMIN"
+                          ? "bg-purple-100 text-purple-700 dark:bg-purple-900/20 dark:text-purple-400"
+                          : "bg-blue-100 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400"
+                      }`}
+                    >
+                      {user.role}
+                    </span>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                      {new Date(user.createdAt).toLocaleDateString()}
+                    </p>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <p className="text-gray-500 dark:text-gray-400">
+                No recent users
+              </p>
+            )}
+          </div>
+        </Card>
+
+        {/* Recent Assignments */}
+        <Card className="p-6 border border-gray-200 dark:border-gray-800">
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
+            Recent Assignments
+          </h3>
+          <div className="space-y-4">
+            {stats.recentAssignments.length > 0 ? (
+              stats.recentAssignments.map((assignment) => (
+                <div
+                  key={assignment.id}
+                  className="flex items-center justify-between py-3 border-b border-gray-200 dark:border-gray-800 last:border-b-0"
+                >
+                  <div className="flex-1">
+                    <p className="font-semibold text-gray-900 dark:text-white">
+                      {assignment.title}
+                    </p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      by {assignment.student.name}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <span
+                      className={`inline-block px-2 py-1 text-xs rounded-full ${
+                        assignment.status === "COMPLETED"
+                          ? "bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400"
+                          : assignment.status === "IN_PROGRESS"
+                          ? "bg-blue-100 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400"
+                          : "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-400"
+                      }`}
+                    >
+                      {assignment.status.replace("_", " ")}
+                    </span>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                      {new Date(assignment.createdAt).toLocaleDateString()}
+                    </p>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <p className="text-gray-500 dark:text-gray-400">
+                No recent assignments
+              </p>
+            )}
+          </div>
+        </Card>
+      </div>
+
+      {/* Quick Overview */}
       <Card className="p-6 border border-gray-200 dark:border-gray-800">
         <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
           Quick Overview
@@ -232,21 +367,40 @@ export default function DashboardOverview() {
         <div className="space-y-4">
           <div className="flex items-center justify-between py-3 border-b border-gray-200 dark:border-gray-800">
             <span className="text-gray-600 dark:text-gray-400">
-              User Growth Rate
+              Total System Users
             </span>
-            <span className="text-green-600 font-semibold">+12.5%</span>
+            <span className="text-blue-600 font-semibold">
+              {stats.totalUsers}
+            </span>
           </div>
           <div className="flex items-center justify-between py-3 border-b border-gray-200 dark:border-gray-800">
             <span className="text-gray-600 dark:text-gray-400">
               Assignment Completion Rate
             </span>
-            <span className="text-blue-600 font-semibold">87.3%</span>
+            <span className="text-green-600 font-semibold">
+              {stats.totalAssignments > 0
+                ? `${(
+                    (stats.completedAssignments / stats.totalAssignments) *
+                    100
+                  ).toFixed(1)}%`
+                : "0%"}
+            </span>
+          </div>
+          <div className="flex items-center justify-between py-3 border-b border-gray-200 dark:border-gray-800">
+            <span className="text-gray-600 dark:text-gray-400">
+              Active Chat Conversations
+            </span>
+            <span className="text-purple-600 font-semibold">
+              {stats.activeChats}
+            </span>
           </div>
           <div className="flex items-center justify-between py-3">
             <span className="text-gray-600 dark:text-gray-400">
-              Customer Satisfaction
+              Pending Testimonial Reviews
             </span>
-            <span className="text-yellow-600 font-semibold">4.8/5.0</span>
+            <span className="text-orange-600 font-semibold">
+              {stats.pendingTestimonials}
+            </span>
           </div>
         </div>
       </Card>
