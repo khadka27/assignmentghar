@@ -54,19 +54,19 @@ export async function GET() {
       }>
     >`
       SELECT 
-        TO_CHAR(DATE_TRUNC('month', created_at), 'Mon') as month,
+        TO_CHAR(DATE_TRUNC('month', "createdAt"), 'Mon') as month,
         COUNT(DISTINCT CASE WHEN table_name = 'User' THEN id END) as users,
         COUNT(DISTINCT CASE WHEN table_name = 'Assignment' THEN id END) as assignments,
         COUNT(DISTINCT CASE WHEN table_name = 'Message' THEN id END) as messages
       FROM (
-        SELECT id, created_at, 'User' as table_name FROM "User" WHERE created_at >= ${sixMonthsAgo}
+        SELECT id, "createdAt", 'User' as table_name FROM "User" WHERE "createdAt" >= ${sixMonthsAgo}
         UNION ALL
-        SELECT id, created_at, 'Assignment' as table_name FROM "Assignment" WHERE created_at >= ${sixMonthsAgo}
+        SELECT id, "createdAt", 'Assignment' as table_name FROM "Assignment" WHERE "createdAt" >= ${sixMonthsAgo}
         UNION ALL
-        SELECT id, created_at, 'Message' as table_name FROM "Message" WHERE created_at >= ${sixMonthsAgo}
+        SELECT id, "createdAt", 'Message' as table_name FROM "Message" WHERE "createdAt" >= ${sixMonthsAgo}
       ) combined
-      GROUP BY DATE_TRUNC('month', created_at)
-      ORDER BY DATE_TRUNC('month', created_at) ASC
+      GROUP BY DATE_TRUNC('month', "createdAt")
+      ORDER BY DATE_TRUNC('month', "createdAt") ASC
     `;
 
     // Format chart data

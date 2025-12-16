@@ -197,7 +197,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
             <Button
               onClick={handleLogout}
               variant="ghost"
-              className="w-full justify-start gap-3 text-gray-700 dark:text-gray-300 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400 transition-colors"
+              className="w-full flex items-center justify-start gap-3 px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400 transition-colors rounded-lg"
             >
               <LogOut className="w-5 h-5" />
               <span className="font-medium">Logout</span>
